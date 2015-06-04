@@ -17,26 +17,32 @@ public class Folder {
         return TABLE + "." + column;
     }
 
-    private int mId;
+    private long mId;
     private String mPath;
-    private String mDate;
+    private long mDate;
     private boolean mIsLocal;
 
     public Folder() {
     }
 
+    public Folder(String path, long date, boolean isLocal) {
+        mPath = path;
+        mDate = date;
+        mIsLocal = isLocal;
+    }
+
     public Folder(Cursor cursor) {
-        mId = cursor.getInt(cursor.getColumnIndex(ID));
+        mId = cursor.getLong(cursor.getColumnIndex(ID));
         mPath = cursor.getString(cursor.getColumnIndex(PATH));
-        mDate = cursor.getString(cursor.getColumnIndex(DATE));
+        mDate = cursor.getLong(cursor.getColumnIndex(DATE));
         mIsLocal = (cursor.getInt(cursor.getColumnIndex(LOCAL)) == 1);
     }
 
-    public int getId() {
+    public long getId() {
         return mId;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         mId = id;
     }
 
@@ -48,11 +54,11 @@ public class Folder {
         mPath = path;
     }
 
-    public String getDate() {
+    public long getDate() {
         return mDate;
     }
 
-    public void setDate(String date) {
+    public void setDate(long date) {
         mDate = date;
     }
 
@@ -71,21 +77,21 @@ public class Folder {
 
         Folder folder = (Folder) o;
 
-        return getPath().equals(folder.getPath()) && getDate().equals(folder.getDate());
+        return getDate() == folder.getDate() && getPath().equals(folder.getPath());
 
     }
 
     @Override
     public int hashCode() {
         int result = getPath().hashCode();
-        result = 31 * result + getDate().hashCode();
+        result = 31 * result + (int) (getDate() ^ (getDate() >>> 32));
         return result;
     }
 
     public static final class Builder {
         private final ContentValues mValues = new ContentValues();
 
-        public Builder id(int id) {
+        public Builder id(long id) {
             mValues.put(ID, id);
             return this;
         }
@@ -95,7 +101,7 @@ public class Folder {
             return this;
         }
 
-        public Builder date(String date) {
+        public Builder date(long date) {
             mValues.put(DATE, date);
             return this;
         }

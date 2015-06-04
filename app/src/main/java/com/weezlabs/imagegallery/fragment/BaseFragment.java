@@ -8,22 +8,6 @@ import android.net.Uri;
  */
 public abstract class BaseFragment extends Fragment {
 
-    public enum ViewMode {
-        LIST_MODE(0),
-        GRID_MODE(1),
-        STAGGERED_MODE(2);
-
-        private int mMode;
-
-        private ViewMode(int modeValue) {
-            mMode = modeValue;
-        }
-
-        public int getMode() {
-            return mMode;
-        }
-    }
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

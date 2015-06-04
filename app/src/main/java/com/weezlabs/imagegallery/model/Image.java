@@ -4,6 +4,8 @@ package com.weezlabs.imagegallery.model;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import static com.weezlabs.imagegallery.db.DbHelper.ImageFolder.FOLDER_ID;
+
 public class Image {
     public static final String TABLE = "images";
     public static final String ID = "_id";
@@ -18,28 +20,32 @@ public class Image {
         return TABLE + "." + column;
     }
 
-    private int mId;
+    private long mId;
     private String mPath;
-    private String mDate;
+    private long mDate;
     private long mSize;
     private boolean mIsLocalFile;
 
     public Image() {
     }
 
+    public Image(String path, long date, long size, boolean isLocal) {
+
+    }
+
     public Image(Cursor cursor) {
-        mId = cursor.getInt(cursor.getColumnIndex(ID));
+        mId = cursor.getLong(cursor.getColumnIndex(ID));
         mPath = cursor.getString(cursor.getColumnIndex(PATH));
-        mDate = cursor.getString(cursor.getColumnIndex(DATE));
+        mDate = cursor.getLong(cursor.getColumnIndex(DATE));
         mSize = cursor.getLong(cursor.getColumnIndex(SIZE));
         mIsLocalFile = (cursor.getInt(cursor.getColumnIndex(LOCAL)) == 1);
     }
 
-    public int getId() {
+    public long getId() {
         return mId;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         mId = id;
     }
 
@@ -51,11 +57,11 @@ public class Image {
         mPath = path;
     }
 
-    public String getDate() {
+    public long getDate() {
         return mDate;
     }
 
-    public void setDate(String date) {
+    public void setDate(long date) {
         mDate = date;
     }
 
@@ -82,16 +88,16 @@ public class Image {
 
         Image image = (Image) o;
 
-        return getSize() == image.getSize()
-                && getPath().equals(image.getPath())
-                && getDate().equals(image.getDate());
+        return getDate() == image.getDate()
+                && getSize() == image.getSize()
+                && getPath().equals(image.getPath());
 
     }
 
     @Override
     public int hashCode() {
         int result = getPath().hashCode();
-        result = 31 * result + getDate().hashCode();
+        result = 31 * result + (int) (getDate() ^ (getDate() >>> 32));
         result = 31 * result + (int) (getSize() ^ (getSize() >>> 32));
         return result;
     }
@@ -111,7 +117,7 @@ public class Image {
     public static final class Builder {
         private final ContentValues mValues = new ContentValues();
 
-        public Builder id(int id) {
+        public Builder id(long id) {
             mValues.put(ID, id);
             return this;
         }
@@ -121,7 +127,7 @@ public class Image {
             return this;
         }
 
-        public Builder date(String date) {
+        public Builder date(long date) {
             mValues.put(DATE, date);
             return this;
         }
@@ -133,6 +139,11 @@ public class Image {
 
         public Builder local(boolean isLocal) {
             mValues.put(LOCAL, isLocal ? 1 : 0);
+            return this;
+        }
+
+        public Builder folderId(long folderId) {
+            mValues.put(FOLDER_ID, folderId);
             return this;
         }
 

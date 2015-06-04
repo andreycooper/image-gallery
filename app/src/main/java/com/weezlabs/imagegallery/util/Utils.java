@@ -1,13 +1,17 @@
-package com.weezlabs.imagegallery;
+package com.weezlabs.imagegallery.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import static com.weezlabs.imagegallery.fragment.BaseFragment.ViewMode;
+import static com.weezlabs.imagegallery.BaseActivity.ViewMode;
 
 
-public class Utils {
+public final class Utils {
+
+    private Utils() {
+        // prevent creation of instance
+    }
 
     public static final int DEFAULT_VIEW_MODE = ViewMode.LIST_MODE.getMode();
     private static final String VIEW_MODE = "view_mode";
