@@ -1,13 +1,17 @@
 package com.weezlabs.imagegallery.fragment;
 
 import android.app.Activity;
+import android.content.Loader;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.weezlabs.imagegallery.R;
+import com.weezlabs.imagegallery.model.Folder;
 
 
 /**
@@ -18,6 +22,8 @@ import com.weezlabs.imagegallery.R;
  * create an instance of this fragment.
  */
 public class ListFragment extends BaseFragment {
+
+    private static final String LOG_TAG = ListFragment.class.getSimpleName();
 
     private OnFragmentInteractionListener mListener;
 
@@ -45,6 +51,8 @@ public class ListFragment extends BaseFragment {
         if (getArguments() != null) {
             // get parameters there if need
         }
+
+        loadFoldersCursor();
     }
 
     @Override
@@ -78,4 +86,39 @@ public class ListFragment extends BaseFragment {
         mListener = null;
     }
 
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        switch (loader.getId()) {
+            case FOLDERS_LOADER:
+                // TODO: delete temp implementation
+                if (cursor != null && cursor.moveToFirst()) {
+                    Log.i(LOG_TAG, "Folders with images:");
+                    Folder folder;
+                    do {
+                        folder = new Folder(cursor);
+                        Log.i(LOG_TAG, folder.toString());
+                    } while (cursor.moveToNext());
+                }
+                if (cursor != null) {
+                    cursor.close();
+                }
+                break;
+            case IMAGES_LOADER:
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        switch (loader.getId()) {
+            case FOLDERS_LOADER:
+                break;
+            case IMAGES_LOADER:
+                break;
+            default:
+                break;
+        }
+    }
 }

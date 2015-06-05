@@ -1,17 +1,23 @@
 package com.weezlabs.imagegallery.db;
 
 import android.content.ContentProvider;
+import android.content.ContentProviderOperation;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.OperationApplicationException;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.weezlabs.imagegallery.db.DbHelper.ImageFolder;
 import com.weezlabs.imagegallery.model.Folder;
 import com.weezlabs.imagegallery.model.Image;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImageContentProvider extends ContentProvider {
     private static final String LOG_TAG = ImageContentProvider.class.getSimpleName();
@@ -30,6 +36,8 @@ public class ImageContentProvider extends ContentProvider {
     private static final int FOLDER_ID = 21;
     private static final int FOLDER_IMAGES = 22;
 
+    private static final int FOLDER_ID_POSITION = 1;
+
     public static final long INCORRECT_ID = -1;
 
     public static final Uri BASE_CONTENT_URI = Uri.parse(SCHEME + AUTHORITY);
@@ -40,15 +48,15 @@ public class ImageContentProvider extends ContentProvider {
     public static final Uri FOLDERS_CONTENT_URI = BASE_CONTENT_URI.buildUpon()
             .appendPath(FOLDERS_PATH).build();
 
-    public static Uri buildImageIdUri(int imageId) {
+    public static Uri buildImageIdUri(long imageId) {
         return IMAGES_CONTENT_URI.buildUpon().appendPath(String.valueOf(imageId)).build();
     }
 
-    public static Uri buildFolderIdUri(int folderId) {
+    public static Uri buildFolderIdUri(long folderId) {
         return FOLDERS_CONTENT_URI.buildUpon().appendPath(String.valueOf(folderId)).build();
     }
 
-    public static Uri buildFolderImagesUri(int folderId) {
+    public static Uri buildFolderImagesUri(long folderId) {
         return buildFolderIdUri(folderId).buildUpon().appendPath(IMAGES_PATH).build();
     }
 
@@ -93,8 +101,9 @@ public class ImageContentProvider extends ContentProvider {
                 rowId = mDbHelper.getWritableDatabase().insert(Folder.TABLE, null, values);
                 break;
             case IMAGES:
-                rowId = mDbHelper.getWritableDatabase().insert(Image.TABLE, null, values);
                 Long folderId = values.getAsLong(ImageFolder.FOLDER_ID);
+                values.remove(ImageFolder.FOLDER_ID);
+                rowId = mDbHelper.getWritableDatabase().insert(Image.TABLE, null, values);
                 if (rowId != INCORRECT_ID && folderId != null) {
                     ContentValues linkValues = new ImageFolder.Builder()
                             .imageId(rowId)
@@ -150,13 +159,31 @@ public class ImageContentProvider extends ContentProvider {
             case IMAGE_ID:
                 selection = getImageSelection(uri, selection);
                 countRows = mDbHelper.getWritableDatabase().delete(Image.TABLE, selection, selectionArgs);
-                // TODO: clean link in "image_folder" table
-
+                // clean link in "image_folder" table
+                if (countRows > 0) {
+                    String imageId = uri.getLastPathSegment();
+                    mDbHelper.getWritableDatabase()
+                            .delete(ImageFolder.TABLE, ImageFolder.IMAGE_ID + "=" + imageId, null);
+                }
                 break;
             case FOLDER_ID:
                 selection = getFolderSelection(uri, selection);
                 countRows = mDbHelper.getWritableDatabase().delete(Folder.TABLE, selection, selectionArgs);
-                // TODO: clean link in "image_folder" table and all images in "images" table
+                // clean link in "image_folder" table
+                if (countRows > 0) {
+                    String folderId = uri.getLastPathSegment();
+                    // query all images in this folder from "image_folder" table
+                    // and use applyBatch to delete all images
+                    List<Long> imageIdList = getImageIdList(folderId);
+                    ArrayList<ContentProviderOperation> operationList =
+                            getDeleteImageOperations(imageIdList);
+                    try {
+                        applyBatch(operationList);
+                    } catch (OperationApplicationException e) {
+                        e.printStackTrace();
+                        Log.e(LOG_TAG, "Can't delete image!");
+                    }
+                }
 
                 break;
             default:
@@ -180,7 +207,10 @@ public class ImageContentProvider extends ContentProvider {
                 queryBuilder.setTables(Folder.TABLE);
                 break;
             case FOLDER_IMAGES:
-                // TODO: return cursor with images in folder from uri
+                queryBuilder.setTables(getImagesInnerJoinTable());
+                queryBuilder.setProjectionMap(ImageFolder.PROJECTION_MAP);
+                queryBuilder.appendWhere(ImageFolder.FOLDER_ID + "="
+                        + uri.getPathSegments().get(FOLDER_ID_POSITION));
                 break;
             default:
                 throw new IllegalArgumentException(UNKNOWN_URI + uri.toString());
@@ -209,5 +239,42 @@ public class ImageContentProvider extends ContentProvider {
             selection = selection + " AND " + Folder.ID + "=" + userId;
         }
         return selection;
+    }
+
+    private String getImagesInnerJoinTable() {
+        return Image.TABLE + " INNER JOIN " + ImageFolder.TABLE +
+                " ON " + Image.getTableColumn(Image.ID) +
+                "=" + ImageFolder.getTableColumn(ImageFolder.IMAGE_ID);
+    }
+
+    private List<Long> getImageIdList(String folderId) {
+        List<Long> imageIdList = new ArrayList<>();
+        long imageId;
+        Cursor cursor = mDbHelper.getReadableDatabase()
+                .query(ImageFolder.TABLE,
+                        new String[]{ImageFolder.ID, ImageFolder.IMAGE_ID},
+                        ImageFolder.FOLDER_ID + "=?",
+                        new String[]{folderId},
+                        null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                imageId = cursor.getLong(cursor.getColumnIndex(ImageFolder.IMAGE_ID));
+                imageIdList.add(imageId);
+            } while (cursor.moveToNext());
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+        return imageIdList;
+    }
+
+    private ArrayList<ContentProviderOperation> getDeleteImageOperations(List<Long> imageIdList) {
+        ArrayList<ContentProviderOperation> operationList = new ArrayList<>();
+        for (Long imageId : imageIdList) {
+            operationList.add(ContentProviderOperation.newDelete(buildImageIdUri(imageId))
+                    .withYieldAllowed(true).build());
+        }
+        return operationList;
     }
 }

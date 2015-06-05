@@ -4,6 +4,9 @@ package com.weezlabs.imagegallery.model;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import java.io.File;
+import java.util.HashMap;
+
 import static com.weezlabs.imagegallery.db.DbHelper.ImageFolder.FOLDER_ID;
 
 public class Image {
@@ -14,7 +17,19 @@ public class Image {
     public static final String SIZE = "size";
     public static final String LOCAL = "local_file";
 
-    public final static String[] PROJECTION_ALL = {ID, PATH, DATE, SIZE, LOCAL};
+    public static final String[] PROJECTION_ALL = {ID, PATH, DATE, SIZE, LOCAL};
+
+    public static final HashMap<String, String> PROJECTION_MAP = buildProjectionMap();
+
+    private static HashMap<String, String> buildProjectionMap() {
+        HashMap<String, String> projectionMap = new HashMap<>();
+        projectionMap.put(ID, getTableColumn(ID));
+        projectionMap.put(PATH, getTableColumn(PATH));
+        projectionMap.put(DATE, getTableColumn(DATE));
+        projectionMap.put(SIZE, getTableColumn(SIZE));
+        projectionMap.put(LOCAL, getTableColumn(LOCAL));
+        return projectionMap;
+    }
 
     public static String getTableColumn(String column) {
         return TABLE + "." + column;
@@ -30,7 +45,20 @@ public class Image {
     }
 
     public Image(String path, long date, long size, boolean isLocal) {
+        mPath = path;
+        mDate = date;
+        mSize = size;
+    }
 
+    public Image(File file) {
+        mPath = file.getAbsolutePath();
+        mDate = file.lastModified();
+        mDate = file.length();
+    }
+
+    public Image(File file, boolean isLocalFile) {
+        this(file);
+        mIsLocalFile = isLocalFile;
     }
 
     public Image(Cursor cursor) {

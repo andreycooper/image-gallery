@@ -4,6 +4,9 @@ package com.weezlabs.imagegallery.model;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import java.io.File;
+import java.util.HashMap;
+
 public class Folder {
     public static final String TABLE = "folders";
     public static final String ID = "_id";
@@ -11,7 +14,18 @@ public class Folder {
     public static final String DATE = "date";
     public static final String LOCAL = "local_folder";
 
-    public final static String[] PROJECTION_ALL = {ID, PATH, DATE, LOCAL};
+    public static final String[] PROJECTION_ALL = {ID, PATH, DATE, LOCAL};
+
+    public static final HashMap<String, String> PROJECTION_MAP = buildProjectionMap();
+
+    private static HashMap<String, String> buildProjectionMap() {
+        HashMap<String, String> projectionMap = new HashMap<>();
+        projectionMap.put(ID, getTableColumn(ID));
+        projectionMap.put(PATH, getTableColumn(PATH));
+        projectionMap.put(DATE, getTableColumn(DATE));
+        projectionMap.put(LOCAL, getTableColumn(LOCAL));
+        return projectionMap;
+    }
 
     public static String getTableColumn(String column) {
         return TABLE + "." + column;
@@ -28,6 +42,16 @@ public class Folder {
     public Folder(String path, long date, boolean isLocal) {
         mPath = path;
         mDate = date;
+        mIsLocal = isLocal;
+    }
+
+    public Folder(File file) {
+        mPath = file.getAbsolutePath();
+        mDate = file.lastModified();
+    }
+
+    public Folder(File file, boolean isLocal) {
+        this(file);
         mIsLocal = isLocal;
     }
 
@@ -86,6 +110,17 @@ public class Folder {
         int result = getPath().hashCode();
         result = 31 * result + (int) (getDate() ^ (getDate() >>> 32));
         return result;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Folder{");
+        sb.append("mId=").append(mId);
+        sb.append(", mPath='").append(mPath).append('\'');
+        sb.append(", mDate=").append(mDate);
+        sb.append(", mIsLocal=").append(mIsLocal);
+        sb.append('}');
+        return sb.toString();
     }
 
     public static final class Builder {

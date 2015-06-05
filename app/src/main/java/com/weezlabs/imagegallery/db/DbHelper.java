@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.weezlabs.imagegallery.model.Folder;
 import com.weezlabs.imagegallery.model.Image;
 
+import java.util.HashMap;
+
 
 public class DbHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
@@ -68,6 +70,16 @@ public class DbHelper extends SQLiteOpenHelper {
         public static final String ID = "_id";
         public static final String FOLDER_ID = "folder_id";
         public static final String IMAGE_ID = "image_id";
+
+        public static final HashMap<String, String> PROJECTION_MAP = buildProjectionMap();
+
+        private static HashMap<String, String> buildProjectionMap() {
+            HashMap<String, String> projectionMap = new HashMap<>();
+            projectionMap.put(ID, getTableColumn(ID));
+            projectionMap.put(FOLDER_ID, getTableColumn(FOLDER_ID));
+            projectionMap.put(IMAGE_ID, getTableColumn(IMAGE_ID));
+            return projectionMap;
+        }
 
         public static String getTableColumn(String column) {
             return TABLE + "." + column;

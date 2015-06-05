@@ -19,6 +19,8 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
         ViewMode viewMode = Utils.getViewMode(this);
         setupModeFragment(viewMode);
 
+        SyncImagesIntentService.startActionSyncImages(this, null);
+
     }
 
     @Override
