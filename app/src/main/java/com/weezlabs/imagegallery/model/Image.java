@@ -17,7 +17,12 @@ public class Image {
     public static final String SIZE = "size";
     public static final String LOCAL = "local_file";
 
-    public static final String[] PROJECTION_ALL = {ID, PATH, DATE, SIZE, LOCAL};
+    public static final String[] PROJECTION_ALL = {
+            getTableColumn(ID),
+            getTableColumn(PATH),
+            getTableColumn(DATE),
+            getTableColumn(SIZE),
+            getTableColumn(LOCAL)};
 
     public static final HashMap<String, String> PROJECTION_MAP = buildProjectionMap();
 
@@ -48,12 +53,13 @@ public class Image {
         mPath = path;
         mDate = date;
         mSize = size;
+        mIsLocalFile = isLocal;
     }
 
     public Image(File file) {
         mPath = file.getAbsolutePath();
         mDate = file.lastModified();
-        mDate = file.length();
+        mSize = file.length();
     }
 
     public Image(File file, boolean isLocalFile) {

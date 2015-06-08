@@ -208,7 +208,6 @@ public class ImageContentProvider extends ContentProvider {
                 break;
             case FOLDER_IMAGES:
                 queryBuilder.setTables(getImagesInnerJoinTable());
-                queryBuilder.setProjectionMap(ImageFolder.PROJECTION_MAP);
                 queryBuilder.appendWhere(ImageFolder.FOLDER_ID + "="
                         + uri.getPathSegments().get(FOLDER_ID_POSITION));
                 break;

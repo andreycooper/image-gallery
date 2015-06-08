@@ -14,7 +14,11 @@ public class Folder {
     public static final String DATE = "date";
     public static final String LOCAL = "local_folder";
 
-    public static final String[] PROJECTION_ALL = {ID, PATH, DATE, LOCAL};
+    public static final String[] PROJECTION_ALL = {
+            getTableColumn(ID),
+            getTableColumn(PATH),
+            getTableColumn(DATE),
+            getTableColumn(LOCAL)};
 
     public static final HashMap<String, String> PROJECTION_MAP = buildProjectionMap();
 

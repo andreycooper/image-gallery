@@ -9,31 +9,23 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
+import com.weezlabs.imagegallery.FolderCursorAdapter;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.model.Folder;
 
 
-/**
- * Activities that contain this fragment must implement the
- * {@link ListFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ListFragment extends BaseFragment {
 
     private static final String LOG_TAG = ListFragment.class.getSimpleName();
 
+    private ListView mFolderListView;
+
+    private FolderCursorAdapter mFolderCursorAdapter;
+
     private OnFragmentInteractionListener mListener;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment ListFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static ListFragment newInstance() {
         ListFragment fragment = new ListFragment();
         Bundle args = new Bundle();
@@ -53,13 +45,17 @@ public class ListFragment extends BaseFragment {
         }
 
         loadFoldersCursor();
+        mFolderCursorAdapter = new FolderCursorAdapter(getActivity(), null, true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_list, container, false);
+        mFolderListView = (ListView) rootView.findViewById(R.id.list_view);
+        mFolderListView.setAdapter(mFolderCursorAdapter);
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -91,17 +87,8 @@ public class ListFragment extends BaseFragment {
         switch (loader.getId()) {
             case FOLDERS_LOADER:
                 // TODO: delete temp implementation
-                if (cursor != null && cursor.moveToFirst()) {
-                    Log.i(LOG_TAG, "Folders with images:");
-                    Folder folder;
-                    do {
-                        folder = new Folder(cursor);
-                        Log.i(LOG_TAG, folder.toString());
-                    } while (cursor.moveToNext());
-                }
-                if (cursor != null) {
-                    cursor.close();
-                }
+//                logCursor(cursor);
+                mFolderCursorAdapter.changeCursor(cursor);
                 break;
             case IMAGES_LOADER:
                 break;
@@ -114,11 +101,26 @@ public class ListFragment extends BaseFragment {
     public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
             case FOLDERS_LOADER:
+                mFolderCursorAdapter.changeCursor(null);
                 break;
             case IMAGES_LOADER:
                 break;
             default:
                 break;
+        }
+    }
+
+    private void logCursor(Cursor cursor) {
+        if (cursor != null && cursor.moveToFirst()) {
+            Log.i(LOG_TAG, "Folders with images:");
+            Folder folder;
+            do {
+                folder = new Folder(cursor);
+                Log.i(LOG_TAG, folder.toString());
+            } while (cursor.moveToNext());
+        }
+        if (cursor != null) {
+            cursor.close();
         }
     }
 }

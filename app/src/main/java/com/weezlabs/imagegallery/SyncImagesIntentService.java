@@ -74,7 +74,9 @@ public class SyncImagesIntentService extends IntentService {
                     folderId = storeParentFolderToDb(folder);
                 }
                 if (getImageId(file) == INCORRECT_ID) {
-                    storeImageToDb(file, folderId);
+                    // TODO: refactor below
+                    // if folderId == INCORRECT_ID read it from DB and save it
+                    storeImageToDb(file, getFolderId(folder));
                 }
             }
         }
