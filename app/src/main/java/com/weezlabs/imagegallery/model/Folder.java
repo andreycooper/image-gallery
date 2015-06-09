@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import java.io.File;
-import java.util.HashMap;
 
 public class Folder {
     public static final String TABLE = "folders";
@@ -19,17 +18,6 @@ public class Folder {
             getTableColumn(PATH),
             getTableColumn(DATE),
             getTableColumn(LOCAL)};
-
-    public static final HashMap<String, String> PROJECTION_MAP = buildProjectionMap();
-
-    private static HashMap<String, String> buildProjectionMap() {
-        HashMap<String, String> projectionMap = new HashMap<>();
-        projectionMap.put(ID, getTableColumn(ID));
-        projectionMap.put(PATH, getTableColumn(PATH));
-        projectionMap.put(DATE, getTableColumn(DATE));
-        projectionMap.put(LOCAL, getTableColumn(LOCAL));
-        return projectionMap;
-    }
 
     public static String getTableColumn(String column) {
         return TABLE + "." + column;

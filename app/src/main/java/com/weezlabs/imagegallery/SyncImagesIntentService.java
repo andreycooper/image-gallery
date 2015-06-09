@@ -11,7 +11,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 
 import com.weezlabs.imagegallery.model.Folder;
-import com.weezlabs.imagegallery.model.Image;
+import com.weezlabs.imagegallery.model.ImageFile;
 
 import java.io.File;
 
@@ -95,13 +95,14 @@ public class SyncImagesIntentService extends IntentService {
     }
 
     private long storeImageToDb(File file, long folderId) {
-        Image image = new Image(file, true);
-        ContentValues values = new Image.Builder()
-                .path(image.getPath())
-                .date(image.getDate())
-                .size(image.getSize())
-                .local(image.isLocalFile())
-                .folderId(folderId).build();
+        ImageFile imageFile = new ImageFile(file, true, folderId);
+        ContentValues values = new ImageFile.Builder()
+                .path(imageFile.getPath())
+                .date(imageFile.getDate())
+                .size(imageFile.getSize())
+                .local(imageFile.isLocalFile())
+                .folderId(imageFile.getFolderId())
+                .build();
         Uri resultUri = getContentResolver()
                 .insert(IMAGES_CONTENT_URI, values);
 
@@ -118,6 +119,8 @@ public class SyncImagesIntentService extends IntentService {
                         null);
         if (cursor != null && cursor.moveToFirst()) {
             folderId = cursor.getLong(cursor.getColumnIndex(Folder.ID));
+        }
+        if (cursor != null) {
             cursor.close();
         }
         return folderId;
@@ -128,13 +131,16 @@ public class SyncImagesIntentService extends IntentService {
         // TODO: maybe add DATE and SIZE to selection
         Cursor cursor = getContentResolver()
                 .query(IMAGES_CONTENT_URI,
-                        Image.PROJECTION_ALL,
-                        Image.PATH + "=?",
+                        ImageFile.PROJECTION_ALL,
+                        ImageFile.PATH + "=?",
                         new String[]{file.getAbsolutePath()}, null);
         if (cursor != null && cursor.moveToFirst()) {
-            imageId = cursor.getLong(cursor.getColumnIndex(Image.ID));
+            imageId = cursor.getLong(cursor.getColumnIndex(ImageFile.ID));
+        }
+        if (cursor != null) {
             cursor.close();
         }
+
         return imageId;
     }
 

@@ -4,19 +4,20 @@
               android:layout_height="wrap_content"
               android:gravity="center_vertical"
               android:orientation="horizontal"
-              android:padding="10dp">
+              android:padding="@dimen/item_list_padding">
 
-    <com.weezlabs.imagegallery.FolderView
+    <com.weezlabs.imagegallery.widget.FolderView
         android:id="@+id/folder_view"
-        android:layout_width="100dp"
-        android:layout_height="100dp"/>
+        android:layout_width="@dimen/item_list_folder_view_size"
+        android:layout_height="@dimen/item_list_folder_view_size"/>
 
     <TextView
         android:id="@+id/folder_name_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:layout_marginLeft="@dimen/item_list_label_margin"
+        android:padding="@dimen/item_list_label_padding"
         android:text="@string/label_folder_name_sample"
-        android:textSize="16sp"/>
+        android:textSize="@dimen/item_list_label_text_size"/>
 
 </LinearLayout>

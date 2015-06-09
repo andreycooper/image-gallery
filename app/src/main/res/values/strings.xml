@@ -8,5 +8,7 @@
     <string name="hello_grid_fragment">Grid fragment</string>
     <string name="hello_staggered_fragment">Staggered fragment</string>
 
+    <string name="label_folder_view_images_count">Total images: %1$d</string>
+
 
 </resources>

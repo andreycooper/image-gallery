@@ -12,9 +12,8 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.weezlabs.imagegallery.db.DbHelper.ImageFolder;
 import com.weezlabs.imagegallery.model.Folder;
-import com.weezlabs.imagegallery.model.Image;
+import com.weezlabs.imagegallery.model.ImageFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,15 +100,7 @@ public class ImageContentProvider extends ContentProvider {
                 rowId = mDbHelper.getWritableDatabase().insert(Folder.TABLE, null, values);
                 break;
             case IMAGES:
-                Long folderId = values.getAsLong(ImageFolder.FOLDER_ID);
-                values.remove(ImageFolder.FOLDER_ID);
-                rowId = mDbHelper.getWritableDatabase().insert(Image.TABLE, null, values);
-                if (rowId != INCORRECT_ID && folderId != null) {
-                    ContentValues linkValues = new ImageFolder.Builder()
-                            .imageId(rowId)
-                            .folderId(folderId).build();
-                    mDbHelper.getWritableDatabase().insert(ImageFolder.TABLE, null, linkValues);
-                }
+                rowId = mDbHelper.getWritableDatabase().insert(ImageFile.TABLE, null, values);
                 break;
             default:
                 throw new IllegalArgumentException(UNKNOWN_URI + uri.toString());
@@ -127,12 +118,12 @@ public class ImageContentProvider extends ContentProvider {
         switch (match) {
             case IMAGES:
                 count = mDbHelper.getWritableDatabase()
-                        .update(Image.TABLE, values, selection, selectionArgs);
+                        .update(ImageFile.TABLE, values, selection, selectionArgs);
                 break;
             case IMAGE_ID:
                 selection = getImageSelection(uri, selection);
                 count = mDbHelper.getWritableDatabase()
-                        .update(Image.TABLE, values, selection, selectionArgs);
+                        .update(ImageFile.TABLE, values, selection, selectionArgs);
                 break;
             case FOLDERS:
                 count = mDbHelper.getWritableDatabase()
@@ -158,21 +149,15 @@ public class ImageContentProvider extends ContentProvider {
         switch (match) {
             case IMAGE_ID:
                 selection = getImageSelection(uri, selection);
-                countRows = mDbHelper.getWritableDatabase().delete(Image.TABLE, selection, selectionArgs);
-                // clean link in "image_folder" table
-                if (countRows > 0) {
-                    String imageId = uri.getLastPathSegment();
-                    mDbHelper.getWritableDatabase()
-                            .delete(ImageFolder.TABLE, ImageFolder.IMAGE_ID + "=" + imageId, null);
-                }
+                countRows = mDbHelper.getWritableDatabase().delete(ImageFile.TABLE, selection, selectionArgs);
                 break;
             case FOLDER_ID:
                 selection = getFolderSelection(uri, selection);
                 countRows = mDbHelper.getWritableDatabase().delete(Folder.TABLE, selection, selectionArgs);
-                // clean link in "image_folder" table
+                // clean link in "images" table
                 if (countRows > 0) {
                     String folderId = uri.getLastPathSegment();
-                    // query all images in this folder from "image_folder" table
+                    // query all images in this folder from "images" table
                     // and use applyBatch to delete all images
                     List<Long> imageIdList = getImageIdList(folderId);
                     ArrayList<ContentProviderOperation> operationList =
@@ -201,14 +186,14 @@ public class ImageContentProvider extends ContentProvider {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         switch (match) {
             case IMAGES:
-                queryBuilder.setTables(Image.TABLE);
+                queryBuilder.setTables(ImageFile.TABLE);
                 break;
             case FOLDERS:
                 queryBuilder.setTables(Folder.TABLE);
                 break;
             case FOLDER_IMAGES:
-                queryBuilder.setTables(getImagesInnerJoinTable());
-                queryBuilder.appendWhere(ImageFolder.FOLDER_ID + "="
+                queryBuilder.setTables(ImageFile.TABLE);
+                queryBuilder.appendWhere(ImageFile.FOLDER_ID + "="
                         + uri.getPathSegments().get(FOLDER_ID_POSITION));
                 break;
             default:
@@ -223,9 +208,9 @@ public class ImageContentProvider extends ContentProvider {
     private String getImageSelection(Uri uri, String selection) {
         String bookId = uri.getLastPathSegment();
         if (TextUtils.isEmpty(selection)) {
-            selection = Image.ID + "=" + bookId;
+            selection = ImageFile.ID + "=" + bookId;
         } else {
-            selection = selection + " AND " + Image.ID + "=" + bookId;
+            selection = selection + " AND " + ImageFile.ID + "=" + bookId;
         }
         return selection;
     }
@@ -240,25 +225,19 @@ public class ImageContentProvider extends ContentProvider {
         return selection;
     }
 
-    private String getImagesInnerJoinTable() {
-        return Image.TABLE + " INNER JOIN " + ImageFolder.TABLE +
-                " ON " + Image.getTableColumn(Image.ID) +
-                "=" + ImageFolder.getTableColumn(ImageFolder.IMAGE_ID);
-    }
-
     private List<Long> getImageIdList(String folderId) {
         List<Long> imageIdList = new ArrayList<>();
         long imageId;
         Cursor cursor = mDbHelper.getReadableDatabase()
-                .query(ImageFolder.TABLE,
-                        new String[]{ImageFolder.ID, ImageFolder.IMAGE_ID},
-                        ImageFolder.FOLDER_ID + "=?",
+                .query(ImageFile.TABLE,
+                        new String[]{ImageFile.ID},
+                        ImageFile.FOLDER_ID + "=?",
                         new String[]{folderId},
                         null, null, null);
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                imageId = cursor.getLong(cursor.getColumnIndex(ImageFolder.IMAGE_ID));
+                imageId = cursor.getLong(cursor.getColumnIndex(ImageFile.ID));
                 imageIdList.add(imageId);
             } while (cursor.moveToNext());
         }
