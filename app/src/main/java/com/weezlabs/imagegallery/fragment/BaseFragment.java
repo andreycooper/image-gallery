@@ -5,9 +5,7 @@ import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import com.weezlabs.imagegallery.FolderCursorAdapter;
@@ -31,7 +29,6 @@ public abstract class BaseFragment extends Fragment implements LoaderManager.Loa
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         loadFoldersCursor();
-        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
     }
 
     @Override
@@ -122,14 +119,4 @@ public abstract class BaseFragment extends Fragment implements LoaderManager.Loa
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
 }

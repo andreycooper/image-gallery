@@ -1,7 +1,5 @@
 package com.weezlabs.imagegallery.fragment;
 
-import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +11,6 @@ import com.weezlabs.imagegallery.R;
 
 
 public class GridFragment extends BaseFragment {
-
-    private OnFragmentInteractionListener mListener;
 
     public static GridFragment newInstance() {
         GridFragment fragment = new GridFragment();
@@ -39,35 +35,10 @@ public class GridFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_grid, container, false);
         GridView folderGridView = (GridView) rootView.findViewById(R.id.grid_view);
         folderGridView.setAdapter(mFolderCursorAdapter);
         return rootView;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
 }

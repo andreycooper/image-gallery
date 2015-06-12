@@ -1,16 +1,14 @@
 package com.weezlabs.imagegallery;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.weezlabs.imagegallery.fragment.ListFragment;
 import com.weezlabs.imagegallery.util.Utils;
 
 
-public class MainActivity extends BaseActivity implements ListFragment.OnFragmentInteractionListener {
+public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +48,4 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
         }
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
 }

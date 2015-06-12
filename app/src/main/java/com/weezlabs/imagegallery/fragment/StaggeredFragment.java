@@ -1,7 +1,5 @@
 package com.weezlabs.imagegallery.fragment;
 
-import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +11,6 @@ import com.weezlabs.imagegallery.R;
 
 
 public class StaggeredFragment extends BaseFragment {
-
-    private OnFragmentInteractionListener mListener;
 
     public static StaggeredFragment newInstance() {
         StaggeredFragment fragment = new StaggeredFragment();
@@ -43,30 +39,6 @@ public class StaggeredFragment extends BaseFragment {
         StaggeredGridView staggeredGridView = (StaggeredGridView) rootView.findViewById(R.id.staggered_view);
         staggeredGridView.setAdapter(mFolderCursorAdapter);
         return rootView;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
 }

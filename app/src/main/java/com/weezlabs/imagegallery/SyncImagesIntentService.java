@@ -6,7 +6,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -26,6 +28,7 @@ public class SyncImagesIntentService extends IntentService {
     private static final String LOG_TAG = SyncImagesIntentService.class.getSimpleName();
     private static final String ACTION_SYNC_IMAGES = "com.weezlabs.imagegallery.action.SYNC_IMAGES";
     private static final String ACTION_GET_IMAGES = "com.weezlabs.imagegallery.action.GET_IMAGES";
+    private static final String ACTION_SEND_SCAN_INTENT = "com.weezlabs.imagegallery.action.SEND_SCAN_INTENT";
 
     public static final String ROOT_FOLDER = Environment.getExternalStorageDirectory().getPath();
     public static final String FOLDER = "com.weezlabs.imagegallery.extra.FOLDER";
@@ -43,6 +46,27 @@ public class SyncImagesIntentService extends IntentService {
         intent.setAction(ACTION_GET_IMAGES);
         intent.putExtra(URI, uri);
         context.startService(intent);
+    }
+
+    public static void startActionSendScanIntent(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // TODO: not working for folder!
+            MediaScannerConnection.scanFile(context,
+                    new String[]{Environment.getExternalStorageDirectory().toString()},
+                    null,
+                    new MediaScannerConnection.OnScanCompletedListener() {
+
+                        public void onScanCompleted(String path, Uri uri) {
+                            Log.i("ExternalStorage", "Scanned " + path + ":");
+                            Log.i("ExternalStorage", "-> uri=" + uri);
+                        }
+                    });
+        } else {
+            context.sendBroadcast(new Intent(
+                    Intent.ACTION_MEDIA_MOUNTED,
+                    Uri.parse("file://"
+                            + Environment.getExternalStorageDirectory())));
+        }
     }
 
     private ImageFileFilter mImageFileFilter;
