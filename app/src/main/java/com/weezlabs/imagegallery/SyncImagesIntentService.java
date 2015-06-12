@@ -101,6 +101,7 @@ public class SyncImagesIntentService extends IntentService {
             long takenDate;
             long size;
             String displayName;
+            String path;
             int orientation;
             String bucketName;
             if (cursor != null && cursor.moveToFirst()) {
@@ -109,6 +110,7 @@ public class SyncImagesIntentService extends IntentService {
                     takenDate = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN));
                     size = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.SIZE));
                     displayName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
+                    path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
                     orientation = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION));
                     bucketName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
                     Log.i(LOG_TAG, "=== Image ===");
@@ -116,6 +118,7 @@ public class SyncImagesIntentService extends IntentService {
                             " | date: " + takenDate +
                             " | size: " + size +
                             " | name: " + displayName +
+                            " | path: " + path +
                             " | orientation: " + orientation +
                             " | bucket: " + bucketName);
                 } while (cursor.moveToNext());
