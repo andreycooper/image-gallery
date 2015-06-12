@@ -7,6 +7,11 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
+
+import com.weezlabs.imagegallery.FolderCursorAdapter;
+import com.weezlabs.imagegallery.model.Folder;
 
 import static com.weezlabs.imagegallery.db.ImageContentProvider.FOLDERS_CONTENT_URI;
 import static com.weezlabs.imagegallery.db.ImageContentProvider.INCORRECT_ID;
@@ -18,6 +23,25 @@ public abstract class BaseFragment extends Fragment implements LoaderManager.Loa
     public static final int IMAGES_LOADER = 335;
 
     public static final String FOLDER_ID = "com.weezlabs.imagegallery.extra.FOLDER_ID";
+
+    private static final String LOG_TAG = BaseFragment.class.getSimpleName();
+    protected FolderCursorAdapter mFolderCursorAdapter;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        loadFoldersCursor();
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Loader<Cursor> folderLoader = getLoaderManager().getLoader(FOLDERS_LOADER);
+        if (folderLoader != null) {
+            folderLoader.reset();
+        }
+    }
 
     protected void loadFoldersCursor() {
         Loader<Cursor> folderLoader = getLoaderManager().getLoader(FOLDERS_LOADER);
@@ -41,6 +65,20 @@ public abstract class BaseFragment extends Fragment implements LoaderManager.Loa
         imagesLoader.forceLoad();
     }
 
+    protected void logCursor(Cursor cursor) {
+        if (cursor != null && cursor.moveToFirst()) {
+            Log.i(LOG_TAG, "Folders with images:");
+            Folder folder;
+            do {
+                folder = new Folder(cursor);
+                Log.i(LOG_TAG, folder.toString());
+            } while (cursor.moveToNext());
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+    }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         long folderId = INCORRECT_ID;
@@ -59,13 +97,29 @@ public abstract class BaseFragment extends Fragment implements LoaderManager.Loa
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // TODO: override this method
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        switch (loader.getId()) {
+            case FOLDERS_LOADER:
+                mFolderCursorAdapter.changeCursor(cursor);
+                break;
+            case IMAGES_LOADER:
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        // TODO: override this method
+        switch (loader.getId()) {
+            case FOLDERS_LOADER:
+                mFolderCursorAdapter.changeCursor(null);
+                break;
+            case IMAGES_LOADER:
+                break;
+            default:
+                break;
+        }
     }
 
     /**

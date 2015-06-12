@@ -33,6 +33,12 @@ public class FolderView extends RelativeLayout {
         inflateViews(context);
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        setMeasuredDimension(getMeasuredWidth(), getMeasuredWidth()); //Snap to width
+    }
+
     private void inflateViews(Context context) {
         LayoutInflater.from(context).inflate(R.layout.view_folder, this);
         mImageViews[0] = (ImageView) findViewById(R.id.top_left_image_view);

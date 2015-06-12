@@ -1,7 +1,7 @@
 package com.weezlabs.imagegallery;
 
-import android.content.ContentResolver;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.database.Cursor;
 import android.support.v4.util.LongSparseArray;
 import android.view.LayoutInflater;
@@ -22,15 +22,17 @@ import static com.weezlabs.imagegallery.model.FolderViewModel.MAX_COUNT_IMAGES;
 
 public class FolderCursorAdapter extends CursorAdapter {
     private LongSparseArray<FolderViewModel> mSparseArray;
+    private int mLayoutResource;
 
-    public FolderCursorAdapter(Context context, Cursor c, boolean autoRequery) {
-        super(context, c, autoRequery);
+    public FolderCursorAdapter(Context context, Cursor c, int layout) {
+        super(context, c, true);
         mSparseArray = new LongSparseArray<>();
+        mLayoutResource = layout;
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View rowView = LayoutInflater.from(context).inflate(R.layout.item_list, parent, false);
+        View rowView = LayoutInflater.from(context).inflate(mLayoutResource, parent, false);
         ViewHolder holder = new ViewHolder(rowView);
         rowView.setTag(holder);
         return rowView;
@@ -51,9 +53,10 @@ public class FolderCursorAdapter extends CursorAdapter {
     private FolderViewModel getFolderViewModel(Context context, Cursor cursor, long folderId) {
         FolderViewModel folderViewModel = mSparseArray.get(folderId, null);
         if (folderViewModel == null) {
-            ContentResolver contentResolver = context.getContentResolver();
-            Cursor imagesCursor = contentResolver.query(ImageContentProvider.buildFolderImagesUri(folderId),
+            CursorLoader loader = new CursorLoader(context,
+                    ImageContentProvider.buildFolderImagesUri(folderId),
                     ImageFile.PROJECTION_ALL, null, null, null);
+            Cursor imagesCursor = loader.loadInBackground();
             folderViewModel = new FolderViewModel(imagesCursor);
             if (imagesCursor != null && !cursor.isClosed()) {
                 imagesCursor.close();

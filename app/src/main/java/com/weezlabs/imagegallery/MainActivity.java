@@ -2,6 +2,7 @@ package com.weezlabs.imagegallery;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -18,6 +19,9 @@ public class MainActivity extends BaseActivity implements ListFragment.OnFragmen
 
         ViewMode viewMode = Utils.getViewMode(this);
         setupModeFragment(viewMode);
+
+        SyncImagesIntentService.startActionGetImagesFromUri(this,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
         SyncImagesIntentService.startActionSyncImages(this, null);
 

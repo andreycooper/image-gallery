@@ -1,11 +1,8 @@
 package com.weezlabs.imagegallery.fragment;
 
 import android.app.Activity;
-import android.content.Loader;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +10,11 @@ import android.widget.ListView;
 
 import com.weezlabs.imagegallery.FolderCursorAdapter;
 import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.model.Folder;
 
 
 public class ListFragment extends BaseFragment {
 
     private static final String LOG_TAG = ListFragment.class.getSimpleName();
-
-    private ListView mFolderListView;
-
-    private FolderCursorAdapter mFolderCursorAdapter;
 
     private OnFragmentInteractionListener mListener;
 
@@ -43,9 +35,7 @@ public class ListFragment extends BaseFragment {
         if (getArguments() != null) {
             // get parameters there if need
         }
-
-        loadFoldersCursor();
-        mFolderCursorAdapter = new FolderCursorAdapter(getActivity(), null, true);
+        mFolderCursorAdapter = new FolderCursorAdapter(getActivity(), null, R.layout.item_list);
     }
 
     @Override
@@ -53,8 +43,8 @@ public class ListFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_list, container, false);
-        mFolderListView = (ListView) rootView.findViewById(R.id.list_view);
-        mFolderListView.setAdapter(mFolderCursorAdapter);
+        ListView folderListView = (ListView) rootView.findViewById(R.id.list_view);
+        folderListView.setAdapter(mFolderCursorAdapter);
         return rootView;
     }
 
@@ -82,45 +72,4 @@ public class ListFragment extends BaseFragment {
         mListener = null;
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        switch (loader.getId()) {
-            case FOLDERS_LOADER:
-                // TODO: delete temp implementation
-//                logCursor(cursor);
-                mFolderCursorAdapter.changeCursor(cursor);
-                break;
-            case IMAGES_LOADER:
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        switch (loader.getId()) {
-            case FOLDERS_LOADER:
-                mFolderCursorAdapter.changeCursor(null);
-                break;
-            case IMAGES_LOADER:
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void logCursor(Cursor cursor) {
-        if (cursor != null && cursor.moveToFirst()) {
-            Log.i(LOG_TAG, "Folders with images:");
-            Folder folder;
-            do {
-                folder = new Folder(cursor);
-                Log.i(LOG_TAG, folder.toString());
-            } while (cursor.moveToNext());
-        }
-        if (cursor != null) {
-            cursor.close();
-        }
-    }
 }

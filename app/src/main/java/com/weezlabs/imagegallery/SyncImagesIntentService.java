@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.weezlabs.imagegallery.model.Folder;
 import com.weezlabs.imagegallery.model.ImageFile;
@@ -23,14 +25,23 @@ import static com.weezlabs.imagegallery.db.ImageContentProvider.INCORRECT_ID;
 public class SyncImagesIntentService extends IntentService {
     private static final String LOG_TAG = SyncImagesIntentService.class.getSimpleName();
     private static final String ACTION_SYNC_IMAGES = "com.weezlabs.imagegallery.action.SYNC_IMAGES";
+    private static final String ACTION_GET_IMAGES = "com.weezlabs.imagegallery.action.GET_IMAGES";
 
     public static final String ROOT_FOLDER = Environment.getExternalStorageDirectory().getPath();
     public static final String FOLDER = "com.weezlabs.imagegallery.extra.FOLDER";
+    public static final String URI = "com.weezlabs.imagegallery.extra.URI";
 
     public static void startActionSyncImages(Context context, String folderPath) {
         Intent intent = new Intent(context.getApplicationContext(), SyncImagesIntentService.class);
         intent.setAction(ACTION_SYNC_IMAGES);
         intent.putExtra(FOLDER, folderPath);
+        context.startService(intent);
+    }
+
+    public static void startActionGetImagesFromUri(Context context, Uri uri) {
+        Intent intent = new Intent(context.getApplicationContext(), SyncImagesIntentService.class);
+        intent.setAction(ACTION_GET_IMAGES);
+        intent.putExtra(URI, uri);
         context.startService(intent);
     }
 
@@ -51,6 +62,42 @@ public class SyncImagesIntentService extends IntentService {
                 } else {
                     handleActionSyncImages(folderPath);
                 }
+            } else if (ACTION_GET_IMAGES.equals(action)) {
+                final Uri uri = intent.getParcelableExtra(URI);
+                handleActionGetImagesFromUri(uri);
+            }
+        }
+    }
+
+    private void handleActionGetImagesFromUri(Uri uri) {
+        if (uri != null) {
+            Cursor cursor = getContentResolver().query(uri, null,
+                    null, null, null);
+            long providerId;
+            long takenDate;
+            long size;
+            String displayName;
+            int orientation;
+            String bucketName;
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    providerId = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media._ID));
+                    takenDate = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN));
+                    size = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.SIZE));
+                    displayName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
+                    orientation = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION));
+                    bucketName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
+                    Log.i(LOG_TAG, "=== Image ===");
+                    Log.i(LOG_TAG, "id: " + providerId +
+                            " | date: " + takenDate +
+                            " | size: " + size +
+                            " | name: " + displayName +
+                            " | orientation: " + orientation +
+                            " | bucket: " + bucketName);
+                } while (cursor.moveToNext());
+            }
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
             }
         }
     }

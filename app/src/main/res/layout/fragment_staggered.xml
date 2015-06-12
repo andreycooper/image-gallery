@@ -8,10 +8,13 @@
              android:layout_marginTop="@dimen/activity_horizontal_margin"
              tools:context="com.weezlabs.imagegallery.fragment.StaggeredFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <com.etsy.android.grid.StaggeredGridView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/staggered_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_staggered_fragment"/>
+        app:item_margin="8dp"
+        app:column_count="2" />
 
 </FrameLayout>
