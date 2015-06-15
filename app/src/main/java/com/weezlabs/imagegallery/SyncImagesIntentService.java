@@ -95,8 +95,7 @@ public class SyncImagesIntentService extends IntentService {
 
     private void handleActionGetImagesFromUri(Uri uri) {
         if (uri != null) {
-            Cursor cursor = getContentResolver().query(uri, null,
-                    null, null, null);
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
             long providerId;
             long takenDate;
             long size;

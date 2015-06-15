@@ -3,6 +3,7 @@ package com.weezlabs.imagegallery;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.database.Cursor;
+import android.provider.MediaStore;
 import android.support.v4.util.LongSparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,20 +12,19 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.weezlabs.imagegallery.db.ImageContentProvider;
-import com.weezlabs.imagegallery.model.Folder;
+import com.weezlabs.imagegallery.model.Bucket;
 import com.weezlabs.imagegallery.model.FolderViewModel;
-import com.weezlabs.imagegallery.model.ImageFile;
 import com.weezlabs.imagegallery.widget.FolderView;
 
 import static com.weezlabs.imagegallery.model.FolderViewModel.MAX_COUNT_IMAGES;
 
 
-public class FolderCursorAdapter extends CursorAdapter {
+public class FolderAdapter extends CursorAdapter {
+
     private LongSparseArray<FolderViewModel> mSparseArray;
     private int mLayoutResource;
 
-    public FolderCursorAdapter(Context context, Cursor c, int layout) {
+    public FolderAdapter(Context context, Cursor c, int layout) {
         super(context, c, true);
         mSparseArray = new LongSparseArray<>();
         mLayoutResource = layout;
@@ -42,28 +42,14 @@ public class FolderCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder holder = (ViewHolder) view.getTag();
 
-        Folder folder = new Folder(cursor);
-        String folderName = folder.getPath().substring(folder.getPath().lastIndexOf('/') + 1);
+        Bucket bucket = new Bucket(cursor);
+        FolderViewModel folderViewModel = getFolderViewModel(context, bucket.getBucketId());
+        fillHolderViews(context, holder, bucket.getBucketName(), folderViewModel);
 
-        FolderViewModel folderViewModel = getFolderViewModel(context, folder.getId());
-
-        fillHolderViews(context, holder, folderName, folderViewModel);
     }
 
-    private FolderViewModel getFolderViewModel(Context context, long folderId) {
-        FolderViewModel folderViewModel = mSparseArray.get(folderId, null);
-        if (folderViewModel == null) {
-            CursorLoader loader = new CursorLoader(context,
-                    ImageContentProvider.buildFolderImagesUri(folderId),
-                    ImageFile.PROJECTION_ALL, null, null, null);
-            Cursor imagesCursor = loader.loadInBackground();
-            folderViewModel = new FolderViewModel(imagesCursor);
-            if (imagesCursor != null && !imagesCursor.isClosed()) {
-                imagesCursor.close();
-            }
-            mSparseArray.append(folderId, folderViewModel);
-        }
-        return folderViewModel;
+    public Bucket getBucket(int clickedPosition) {
+        return new Bucket((Cursor) getItem(clickedPosition));
     }
 
     private void fillHolderViews(Context context, ViewHolder holder, String folderName, FolderViewModel folderViewModel) {
@@ -72,6 +58,7 @@ public class FolderCursorAdapter extends CursorAdapter {
             holder.mFolderView.getImageViews()[i].setVisibility(View.VISIBLE);
             Glide.with(context)
                     .load(folderViewModel.getImagePaths().get(i))
+                    .thumbnail(0.3f)
                     .centerCrop()
                     .into(holder.mFolderView.getImageViews()[i]);
         }
@@ -82,6 +69,23 @@ public class FolderCursorAdapter extends CursorAdapter {
 
         holder.mFolderView.setCountText(context.getString(R.string.label_folder_view_images_count,
                 folderViewModel.getImageCount()));
+    }
+
+    private FolderViewModel getFolderViewModel(Context context, long bucketId) {
+        FolderViewModel folderViewModel = mSparseArray.get(bucketId, null);
+        if (folderViewModel == null) {
+            CursorLoader loader = new CursorLoader(context,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    null, MediaStore.Images.Media.BUCKET_ID + "=?",
+                    new String[]{String.valueOf(bucketId)}, null);
+            Cursor imagesCursor = loader.loadInBackground();
+            folderViewModel = new FolderViewModel(imagesCursor);
+            if (imagesCursor != null && !imagesCursor.isClosed()) {
+                imagesCursor.close();
+            }
+            mSparseArray.append(bucketId, folderViewModel);
+        }
+        return folderViewModel;
     }
 
     public static class ViewHolder {

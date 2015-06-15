@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.etsy.android.grid.StaggeredGridView;
-import com.weezlabs.imagegallery.FolderCursorAdapter;
+import com.weezlabs.imagegallery.FolderAdapter;
 import com.weezlabs.imagegallery.R;
 
 
@@ -29,15 +29,15 @@ public class StaggeredFragment extends BaseFragment {
         if (getArguments() != null) {
             // get parameters there if need
         }
-        mFolderCursorAdapter = new FolderCursorAdapter(getActivity(), null, R.layout.item_grid);
+        mFolderAdapter = new FolderAdapter(getActivity(), null, R.layout.item_folder_grid);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_staggered, container, false);
-        StaggeredGridView staggeredGridView = (StaggeredGridView) rootView.findViewById(R.id.staggered_view);
-        staggeredGridView.setAdapter(mFolderCursorAdapter);
+        mListView = (StaggeredGridView) rootView.findViewById(R.id.staggered_view);
+        mListView.setAdapter(mFolderAdapter);
         return rootView;
     }
 

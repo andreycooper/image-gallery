@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="label_folder_name_sample">Temp Folder Name</string>
+    <string name="label_image_name_sample">temp image name</string>
+    <string name="label_image_date_sample">Date: 01.06.2015</string>
+    <string name="label_image_size_sample">Size: 2048 KB</string>
 </resources>

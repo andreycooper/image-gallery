@@ -14,6 +14,10 @@
     <dimen name="item_list_label_text_size">18sp</dimen>
     <dimen name="item_list_label_margin">12dp</dimen>
 
+    <dimen name="item_list_image_size">110dp</dimen>
+    <dimen name="item_list_image_label_padding">2dp</dimen>
+    <dimen name="item_list_image_info_label_text_size">12sp</dimen>
+
     <dimen name="item_grid_label_text_size">18sp</dimen>
     <dimen name="item_grid_label_text_padding">2dp</dimen>
     <dimen name="item_grid_label_margin">12dp</dimen>

@@ -1,6 +1,7 @@
 package com.weezlabs.imagegallery.model;
 
 import android.database.Cursor;
+import android.provider.MediaStore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ public class FolderViewModel {
         int i = 0;
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                mImagePaths.add(cursor.getString(cursor.getColumnIndex(ImageFile.PATH)));
+                mImagePaths.add(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA)));
                 i++;
             } while (i < MAX_COUNT_IMAGES && cursor.moveToNext());
             mImageCount = cursor.getCount();

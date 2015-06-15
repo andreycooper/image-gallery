@@ -6,7 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.weezlabs.imagegallery.FolderCursorAdapter;
+import com.weezlabs.imagegallery.FolderAdapter;
+import com.weezlabs.imagegallery.ImageAdapter;
 import com.weezlabs.imagegallery.R;
 
 
@@ -31,15 +32,17 @@ public class ListFragment extends BaseFragment {
         if (getArguments() != null) {
             // get parameters there if need
         }
-        mFolderCursorAdapter = new FolderCursorAdapter(getActivity(), null, R.layout.item_list);
+        mFolderAdapter = new FolderAdapter(getActivity(), null, R.layout.item_folder_list);
+        mImageAdapter = new ImageAdapter(getActivity(), null, R.layout.item_image_list);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_list, container, false);
-        ListView folderListView = (ListView) rootView.findViewById(R.id.list_view);
-        folderListView.setAdapter(mFolderCursorAdapter);
+        mListView = (ListView) rootView.findViewById(R.id.list_view);
+        mListView.setAdapter(mFolderAdapter);
+        mListView.setOnItemClickListener(new OnGalleryItemClickListener());
         return rootView;
     }
 
