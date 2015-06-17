@@ -12,8 +12,8 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-import com.weezlabs.imagegallery.widget.FolderAdapter;
-import com.weezlabs.imagegallery.widget.ImageAdapter;
+import com.weezlabs.imagegallery.adapter.FolderAdapter;
+import com.weezlabs.imagegallery.adapter.ImageAdapter;
 import com.weezlabs.imagegallery.model.Bucket;
 
 

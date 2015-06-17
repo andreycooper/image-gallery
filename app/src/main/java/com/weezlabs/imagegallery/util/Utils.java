@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import static com.weezlabs.imagegallery.BaseActivity.ViewMode;
+import static com.weezlabs.imagegallery.activity.BaseActivity.ViewMode;
 
 
 public final class Utils {

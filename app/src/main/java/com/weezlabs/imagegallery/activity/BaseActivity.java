@@ -1,4 +1,4 @@
-package com.weezlabs.imagegallery;
+package com.weezlabs.imagegallery.activity;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.fragment.GridFragment;
 import com.weezlabs.imagegallery.fragment.ListFragment;
 import com.weezlabs.imagegallery.fragment.StaggeredFragment;

@@ -11,6 +11,9 @@
     <string name="label_drawer_list">List</string>
     <string name="label_drawer_grid">Grid</string>
     <string name="label_drawer_staggered">Staggered</string>
+    <string name="title_activity_view">ViewActivity</string>
+
+    <string name="hello_world">Hello world!</string>
 
 
 </resources>

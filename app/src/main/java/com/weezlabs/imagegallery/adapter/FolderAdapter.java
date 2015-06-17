@@ -1,4 +1,4 @@
-package com.weezlabs.imagegallery.widget;
+package com.weezlabs.imagegallery.adapter;
 
 import android.content.Context;
 import android.content.CursorLoader;

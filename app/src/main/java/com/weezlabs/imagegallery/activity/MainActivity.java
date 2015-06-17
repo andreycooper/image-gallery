@@ -1,5 +1,6 @@
-package com.weezlabs.imagegallery;
+package com.weezlabs.imagegallery.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -10,6 +11,7 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.fragment.BackHandledFragment;
 import com.weezlabs.imagegallery.fragment.BackHandledFragment.BackHandlerInterface;
 import com.weezlabs.imagegallery.util.Utils;
@@ -67,6 +69,7 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
 
         switch (id) {
             case R.id.action_settings:
+                startActivity(new Intent(this, PreviewActivity.class));
                 return true;
             case R.id.action_change_mode:
                 changeViewMode(item);
