@@ -1,9 +1,11 @@
 package com.weezlabs.imagegallery;
 
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -16,29 +18,38 @@ import com.weezlabs.imagegallery.util.Utils;
 public class MainActivity extends BaseActivity implements BackHandlerInterface {
     private BackHandledFragment mBackHandledFragment;
     private Drawer mDrawer;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+
         ViewMode viewMode = Utils.getViewMode(this);
         setupModeFragment(viewMode);
 
-        mDrawer = new DrawerBuilder()
+        mDrawer = getDrawer(savedInstanceState);
+    }
+
+    private Drawer getDrawer(Bundle savedInstanceState) {
+        return new DrawerBuilder()
                 .withActivity(this)
-                .withTranslucentStatusBar(false)
-                .withActionBarDrawerToggle(false)
+                .withToolbar(mToolbar)
+                .withActionBarDrawerToggleAnimated(true)
                 .addDrawerItems(
-                        //pass your items here
-                        new PrimaryDrawerItem().withName(R.string.label_drawer_list).withIcon(R.drawable.ic_mode_list),
-                        new PrimaryDrawerItem().withName(R.string.label_drawer_grid).withIcon(R.drawable.ic_mode_grid),
-                        new PrimaryDrawerItem().withName(R.string.label_drawer_staggered).withIcon(R.drawable.ic_mode_staggered),
+                        new PrimaryDrawerItem().withName(R.string.label_drawer_list)
+                                .withIcon(GoogleMaterial.Icon.gmd_view_list),
+                        new PrimaryDrawerItem().withName(R.string.label_drawer_grid)
+                                .withIcon(GoogleMaterial.Icon.gmd_view_module),
+                        new PrimaryDrawerItem().withName(R.string.label_drawer_staggered)
+                                .withIcon(GoogleMaterial.Icon.gmd_view_quilt),
                         new DividerDrawerItem()
                 )
+                .withSavedInstance(savedInstanceState)
                 .build();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(false);
     }
 
     @Override
@@ -69,6 +80,14 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //add the values which need to be saved from the drawer to the bundle
+        outState = mDrawer.saveInstanceState(outState);
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
     public void onBackPressed() {
         if (mDrawer.isDrawerOpen()) {
             mDrawer.closeDrawer();
@@ -87,17 +106,17 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
 
     @Override
     public void setBackArrow() {
-        if (getSupportActionBar() != null) {
-            mDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+//        if (getSupportActionBar() != null) {
+//            mDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
+//            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        }
     }
 
     @Override
-    public void setHamurgerIcon() {
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            mDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
-        }
+    public void setHamburgerIcon() {
+//        if (getSupportActionBar() != null) {
+//            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+//            mDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+//        }
     }
 }

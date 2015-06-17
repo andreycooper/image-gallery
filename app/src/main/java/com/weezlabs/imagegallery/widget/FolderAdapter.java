@@ -1,4 +1,4 @@
-package com.weezlabs.imagegallery;
+package com.weezlabs.imagegallery.widget;
 
 import android.content.Context;
 import android.content.CursorLoader;
@@ -12,6 +12,7 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.model.Bucket;
 import com.weezlabs.imagegallery.model.FolderViewModel;
 import com.weezlabs.imagegallery.widget.FolderView;
@@ -33,14 +34,14 @@ public class FolderAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View rowView = LayoutInflater.from(context).inflate(mLayoutResource, parent, false);
-        ViewHolder holder = new ViewHolder(rowView);
+        FolderViewHolder holder = new FolderViewHolder(rowView);
         rowView.setTag(holder);
         return rowView;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ViewHolder holder = (ViewHolder) view.getTag();
+        FolderViewHolder holder = (FolderViewHolder) view.getTag();
 
         Bucket bucket = new Bucket(cursor);
         FolderViewModel folderViewModel = getFolderViewModel(context, bucket.getBucketId());
@@ -52,7 +53,8 @@ public class FolderAdapter extends CursorAdapter {
         return new Bucket((Cursor) getItem(clickedPosition));
     }
 
-    private void fillHolderViews(Context context, ViewHolder holder, String folderName, FolderViewModel folderViewModel) {
+    private void fillHolderViews(Context context, FolderViewHolder holder, String folderName,
+                                 FolderViewModel folderViewModel) {
         holder.mFolderName.setText(folderName);
         for (int i = 0; i < folderViewModel.getImagePaths().size(); i++) {
             holder.mFolderView.getImageViews()[i].setVisibility(View.VISIBLE);
@@ -88,11 +90,11 @@ public class FolderAdapter extends CursorAdapter {
         return folderViewModel;
     }
 
-    public static class ViewHolder {
+    public static class FolderViewHolder {
         FolderView mFolderView;
         TextView mFolderName;
 
-        public ViewHolder(View view) {
+        public FolderViewHolder(View view) {
             mFolderView = (FolderView) view.findViewById(R.id.folder_view);
             mFolderName = (TextView) view.findViewById(R.id.folder_name_text_view);
         }

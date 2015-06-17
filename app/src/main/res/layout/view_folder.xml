@@ -30,8 +30,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
                 android:layout_toLeftOf="@id/top_center_divider"
-                android:padding="@dimen/folder_view_image_padding"
-                android:src="@mipmap/ic_launcher"/>
+                android:padding="@dimen/folder_view_image_padding"/>
 
 
             <ImageView
@@ -40,8 +39,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:layout_toRightOf="@id/top_center_divider"
-                android:padding="@dimen/folder_view_image_padding"
-                android:src="@mipmap/ic_launcher"/>
+                android:padding="@dimen/folder_view_image_padding"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -64,8 +62,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
                 android:layout_toLeftOf="@id/bottom_center_divider"
-                android:padding="@dimen/folder_view_image_padding"
-                android:src="@mipmap/ic_launcher"/>
+                android:padding="@dimen/folder_view_image_padding"/>
 
 
             <ImageView
@@ -74,8 +71,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:layout_toRightOf="@id/bottom_center_divider"
-                android:padding="@dimen/folder_view_image_padding"
-                android:src="@mipmap/ic_launcher"/>
+                android:padding="@dimen/folder_view_image_padding"/>
         </RelativeLayout>
     </LinearLayout>
 

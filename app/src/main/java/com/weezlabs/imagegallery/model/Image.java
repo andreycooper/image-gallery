@@ -21,6 +21,8 @@ public class Image {
     private String mDisplayName;
     private String mPath;
     private int mOrientation;
+    private int mWidth;
+    private int mHeight;
     private long mBucketId;
     private String mBucketName;
 
@@ -31,6 +33,8 @@ public class Image {
         mDisplayName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
         mPath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
         mOrientation = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION));
+        mWidth = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.WIDTH));
+        mHeight = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT));
         mBucketId = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID));
         mBucketName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
     }
@@ -67,6 +71,14 @@ public class Image {
         return mOrientation;
     }
 
+    public int getWidth() {
+        return mWidth;
+    }
+
+    public int getHeight() {
+        return mHeight;
+    }
+
     public long getBucketId() {
         return mBucketId;
     }
@@ -84,6 +96,8 @@ public class Image {
         sb.append(", mDisplayName='").append(mDisplayName).append('\'');
         sb.append(", mPath='").append(mPath).append('\'');
         sb.append(", mOrientation=").append(mOrientation);
+        sb.append(", mWidth=").append(mWidth);
+        sb.append(", mHeight=").append(mHeight);
         sb.append(", mBucketId=").append(mBucketId);
         sb.append(", mBucketName='").append(mBucketName).append('\'');
         sb.append('}');

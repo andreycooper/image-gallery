@@ -27,9 +27,17 @@ public abstract class BackHandledFragment extends Fragment {
         mBackHandlerInterface.setSelectedFragment(this);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mBackHandlerInterface = null;
+    }
+
     public interface BackHandlerInterface {
         void setSelectedFragment(BackHandledFragment backHandledFragment);
+
         void setBackArrow();
-        void setHamurgerIcon();
+
+        void setHamburgerIcon();
     }
 }

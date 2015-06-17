@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:background="@color/item_grid_label_text_color"
+        android:background="@color/item_grid_label_background_color"
         android:gravity="center_horizontal"
         android:padding="@dimen/item_grid_label_text_padding"
         android:singleLine="true"

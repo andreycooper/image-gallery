@@ -6,8 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.etsy.android.grid.StaggeredGridView;
-import com.weezlabs.imagegallery.FolderAdapter;
+import com.weezlabs.imagegallery.widget.FolderAdapter;
 import com.weezlabs.imagegallery.R;
+import com.weezlabs.imagegallery.widget.StaggeredImageAdapter;
 
 
 public class StaggeredFragment extends BaseFragment {
@@ -29,7 +30,8 @@ public class StaggeredFragment extends BaseFragment {
         if (getArguments() != null) {
             // get parameters there if need
         }
-        mFolderAdapter = new FolderAdapter(getActivity(), null, R.layout.item_folder_grid);
+        mFolderAdapter = new FolderAdapter(getActivity(), null, R.layout.item_folder_staggered);
+        mImageAdapter = new StaggeredImageAdapter(getActivity(), null, R.layout.item_image_staggered);
     }
 
     @Override
@@ -38,6 +40,7 @@ public class StaggeredFragment extends BaseFragment {
         View rootView = inflater.inflate(R.layout.fragment_staggered, container, false);
         mListView = (StaggeredGridView) rootView.findViewById(R.id.staggered_view);
         mListView.setAdapter(mFolderAdapter);
+        mListView.setOnItemClickListener(new OnGalleryItemClickListener());
         return rootView;
     }
 

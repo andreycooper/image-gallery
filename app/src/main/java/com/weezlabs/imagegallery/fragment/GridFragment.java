@@ -6,7 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
-import com.weezlabs.imagegallery.FolderAdapter;
+import com.weezlabs.imagegallery.widget.FolderAdapter;
+import com.weezlabs.imagegallery.widget.ImageAdapter;
 import com.weezlabs.imagegallery.R;
 
 
@@ -30,6 +31,7 @@ public class GridFragment extends BaseFragment {
             // get parameters there if need
         }
         mFolderAdapter = new FolderAdapter(getActivity(), null, R.layout.item_folder_grid);
+        mImageAdapter = new ImageAdapter(getActivity(), null, R.layout.item_image_grid);
     }
 
     @Override
@@ -38,6 +40,7 @@ public class GridFragment extends BaseFragment {
         View rootView = inflater.inflate(R.layout.fragment_grid, container, false);
         mListView = (GridView) rootView.findViewById(R.id.grid_view);
         mListView.setAdapter(mFolderAdapter);
+        mListView.setOnItemClickListener(new OnGalleryItemClickListener());
         return rootView;
     }
 

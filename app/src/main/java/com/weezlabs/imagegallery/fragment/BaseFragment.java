@@ -12,20 +12,20 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-import com.weezlabs.imagegallery.FolderAdapter;
-import com.weezlabs.imagegallery.ImageAdapter;
+import com.weezlabs.imagegallery.widget.FolderAdapter;
+import com.weezlabs.imagegallery.widget.ImageAdapter;
 import com.weezlabs.imagegallery.model.Bucket;
-
-import static com.weezlabs.imagegallery.db.ImageContentProvider.INCORRECT_ID;
 
 
 public abstract class BaseFragment extends BackHandledFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final int FOLDERS_LOADER = 113;
     public static final int IMAGES_LOADER = 335;
+    public static final long INCORRECT_ID = -1;
 
     public static final String FOLDER_ID = "com.weezlabs.imagegallery.extra.FOLDER_ID";
 
     private static final String LOG_TAG = BaseFragment.class.getSimpleName();
+
     protected FolderAdapter mFolderAdapter;
     protected ImageAdapter mImageAdapter;
     protected AbsListView mListView;
@@ -39,32 +39,34 @@ public abstract class BaseFragment extends BackHandledFragment implements Loader
     @Override
     public void onDetach() {
         super.onDetach();
-        Loader<Cursor> folderLoader = getLoaderManager().getLoader(FOLDERS_LOADER);
-        if (folderLoader != null) {
-            folderLoader.reset();
+        Loader<Cursor> foldersLoader = getLoaderManager().getLoader(FOLDERS_LOADER);
+        if (foldersLoader != null) {
+            foldersLoader.reset();
+        }
+        Loader<Cursor> imagesLoader = getLoaderManager().getLoader(IMAGES_LOADER);
+        if (imagesLoader != null) {
+            imagesLoader.reset();
         }
     }
 
     protected void loadFoldersCursor() {
-        Loader<Cursor> folderLoader = getLoaderManager().getLoader(FOLDERS_LOADER);
-        if (folderLoader == null) {
-            folderLoader = getLoaderManager().initLoader(FOLDERS_LOADER, null, this);
-        } else {
-            folderLoader = getLoaderManager().restartLoader(FOLDERS_LOADER, null, this);
-        }
-        folderLoader.forceLoad();
+        loadCursor(FOLDERS_LOADER, null);
     }
 
     protected void loadImagesCursor(long folderId) {
         Bundle args = new Bundle();
         args.putLong(FOLDER_ID, folderId);
-        Loader<Cursor> imagesLoader = getLoaderManager().getLoader(IMAGES_LOADER);
-        if (imagesLoader == null) {
-            imagesLoader = getLoaderManager().initLoader(IMAGES_LOADER, args, this);
+        loadCursor(IMAGES_LOADER, args);
+    }
+
+    protected void loadCursor(int loaderId, Bundle args) {
+        Loader<Cursor> loader = getLoaderManager().getLoader(loaderId);
+        if (loader == null) {
+            loader = getLoaderManager().initLoader(loaderId, args, this);
         } else {
-            imagesLoader = getLoaderManager().restartLoader(IMAGES_LOADER, args, this);
+            loader = getLoaderManager().restartLoader(loaderId, args, this);
         }
-        imagesLoader.forceLoad();
+        loader.forceLoad();
     }
 
     @Override
@@ -128,7 +130,8 @@ public abstract class BaseFragment extends BackHandledFragment implements Loader
         } else if (mListView.getAdapter() instanceof ImageAdapter) {
             loadFoldersCursor();
             mListView.setAdapter(mFolderAdapter);
-            mBackHandlerInterface.setHamurgerIcon();
+            mImageAdapter.changeCursor(null);
+//            mBackHandlerInterface.setHamburgerIcon();
             return true;
         }
         return false;
@@ -145,7 +148,8 @@ public abstract class BaseFragment extends BackHandledFragment implements Loader
                 Bucket bucket = mFolderAdapter.getBucket(position);
                 loadImagesCursor(bucket.getBucketId());
                 mListView.setAdapter(mImageAdapter);
-                mBackHandlerInterface.setBackArrow();
+                mFolderAdapter.changeCursor(null);
+//                mBackHandlerInterface.setBackArrow();
             } else if (mListView.getAdapter() instanceof ImageAdapter) {
                 Log.i(LOG_TAG, "click in ImageAdapter, position: " + position + " id: " + id);
                 Toast.makeText(getActivity(), "click in ImageAdapter, position: "

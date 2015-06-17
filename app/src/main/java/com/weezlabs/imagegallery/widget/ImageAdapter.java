@@ -1,4 +1,4 @@
-package com.weezlabs.imagegallery;
+package com.weezlabs.imagegallery.widget;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.model.Image;
 
 
@@ -24,14 +25,14 @@ public class ImageAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View rowView = LayoutInflater.from(context).inflate(mLayoutResource, parent, false);
-        ViewHolder holder = new ViewHolder(rowView);
+        ImageViewHolder holder = new ImageViewHolder(rowView);
         rowView.setTag(holder);
         return rowView;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ViewHolder holder = (ViewHolder) view.getTag();
+        ImageViewHolder holder = (ImageViewHolder) view.getTag();
 
         Image image = new Image(cursor);
 
@@ -42,20 +43,23 @@ public class ImageAdapter extends CursorAdapter {
         holder.mImageDate.setText(imageDate);
         holder.mImageSize.setText(imageSize);
 
+        loadImage(context, holder.mImage, image);
+    }
+
+    protected void loadImage(Context context, ImageView imageView, Image image) {
         Glide.with(context)
                 .load(image.getPath())
                 .centerCrop()
-                .thumbnail(0.3f)
-                .into(holder.mImage);
+                .into(imageView);
     }
 
-    public static class ViewHolder {
+    public static class ImageViewHolder {
         ImageView mImage;
         TextView mImageName;
         TextView mImageDate;
         TextView mImageSize;
 
-        public ViewHolder(View view) {
+        public ImageViewHolder(View view) {
             mImage = (ImageView) view.findViewById(R.id.image_view);
             mImageName = (TextView) view.findViewById(R.id.image_name_text_view);
             mImageDate = (TextView) view.findViewById(R.id.image_date_text_view);

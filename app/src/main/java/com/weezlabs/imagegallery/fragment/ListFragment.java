@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.weezlabs.imagegallery.FolderAdapter;
-import com.weezlabs.imagegallery.ImageAdapter;
+import com.weezlabs.imagegallery.widget.FolderAdapter;
+import com.weezlabs.imagegallery.widget.ImageAdapter;
 import com.weezlabs.imagegallery.R;
 
 
