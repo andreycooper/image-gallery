@@ -15,7 +15,7 @@ import java.util.Calendar;
  */
 public class Image {
 
-    private long mId;
+    private int mId;
     private long mTakenDate;
     private long mSize;
     private String mDisplayName;
@@ -26,8 +26,20 @@ public class Image {
     private long mBucketId;
     private String mBucketName;
 
+    public static String getPath(Cursor cursor) {
+        return cursor != null && !cursor.isClosed() ?
+                cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA)) :
+                null;
+    }
+
+    public static String getDisplayName(Cursor cursor) {
+        return cursor != null && !cursor.isClosed() ?
+                cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME)) :
+                null;
+    }
+
     public Image(Cursor cursor) {
-        mId = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media._ID));
+        mId = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media._ID));
         mTakenDate = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN));
         mSize = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.SIZE));
         mDisplayName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
@@ -39,7 +51,7 @@ public class Image {
         mBucketName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
     }
 
-    public long getId() {
+    public int getId() {
         return mId;
     }
 

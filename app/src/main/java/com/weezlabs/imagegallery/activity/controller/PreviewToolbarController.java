@@ -9,6 +9,7 @@ import com.weezlabs.imagegallery.R;
 
 
 public class PreviewToolbarController {
+    // TODO: put AppCompatActivity into WeakReference
     private AppCompatActivity mActivity;
     private Toolbar mToolbar;
 
@@ -26,12 +27,19 @@ public class PreviewToolbarController {
             mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             mActivity.getSupportActionBar().setHomeButtonEnabled(true);
             mActivity.getSupportActionBar().setShowHideAnimationEnabled(true);
+            mActivity.getSupportActionBar().setTitle("");
         }
     }
 
     public void destroy() {
         mActivity = null;
         mToolbar = null;
+    }
+
+    public void setTitle(String title) {
+        if (mActivity.getSupportActionBar() != null) {
+            mActivity.getSupportActionBar().setTitle(title);
+        }
     }
 
     public void setFullscreen(boolean isFullscreen) {

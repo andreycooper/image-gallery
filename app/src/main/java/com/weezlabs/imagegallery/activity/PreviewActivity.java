@@ -1,39 +1,59 @@
 package com.weezlabs.imagegallery.activity;
 
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.weezlabs.imagegallery.activity.controller.PreviewToolbarController;
 import com.weezlabs.imagegallery.R;
+import com.weezlabs.imagegallery.activity.controller.PreviewToolbarController;
+import com.weezlabs.imagegallery.adapter.ImagePagerAdapter;
+import com.weezlabs.imagegallery.tool.Events;
+import com.weezlabs.imagegallery.tool.ImageCursorProvider;
+import com.weezlabs.imagegallery.tool.ImageCursorReceiver;
+
+import de.greenrobot.event.EventBus;
 
 
-public class PreviewActivity extends AppCompatActivity {
+public class PreviewActivity extends AppCompatActivity implements ImageCursorReceiver {
+    public static final String EXTRA_IMAGE_POSITION = "com.weezlabs.imagegallery.extra.IMAGE_POSITION";
+    public static final String EXTRA_BUCKET_ID = "com.weezlabs.imagegallery.extra.BUCKET_ID";
+
+    public static final int INCORRECT_ID = -1;
 
     private boolean mIsFullscreen = false;
+
+    private int mImagePosition = 0;
     private PreviewToolbarController mToolbarController;
+    private ImagePagerAdapter mAdapter;
+    private ViewPager mPager;
+    private ImageCursorProvider mCursorProvider;
+    private long mBucketId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_preview);
+
+        mImagePosition = getIntent().getIntExtra(EXTRA_IMAGE_POSITION, 0);
+        mBucketId = getIntent().getLongExtra(EXTRA_BUCKET_ID, INCORRECT_ID);
+
+        mCursorProvider = new ImageCursorProvider(this, this);
+
+        mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), null);
+
+        mPager = (ViewPager) findViewById(R.id.pager);
+        mPager.setAdapter(mAdapter);
+        mPager.setCurrentItem(mImagePosition, false);
 
         mToolbarController = new PreviewToolbarController(this);
         mToolbarController.create();
 
-        ImageView imageView = (ImageView) findViewById(R.id.image_view);
-
-        Glide.with(this)
-                .load(R.mipmap.ic_launcher)
-                .centerCrop()
-                .into(imageView);
-
-        imageView.setOnClickListener(new View.OnClickListener() {
+        // TODO: implement fullscreen OnClickListener through interface
+        mPager.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mIsFullscreen = !mIsFullscreen;
@@ -41,6 +61,23 @@ public class PreviewActivity extends AppCompatActivity {
             }
         });
 
+        mCursorProvider.loadImagesCursor(mBucketId);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    public void onEvent(Events.ChangeTitleEvent event) {
+        mToolbarController.setTitle(event.getTitle());
     }
 
     @Override
@@ -65,7 +102,14 @@ public class PreviewActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         mToolbarController.destroy();
+        super.onDestroy();
     }
+
+    @Override
+    public void receiveImageCursor(Cursor cursor) {
+        mAdapter.changeCursor(cursor);
+        mPager.setCurrentItem(mImagePosition, false);
+    }
+
 }

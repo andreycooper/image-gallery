@@ -2,6 +2,7 @@ package com.weezlabs.imagegallery.fragment;
 
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -12,9 +13,11 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
+import com.weezlabs.imagegallery.activity.PreviewActivity;
 import com.weezlabs.imagegallery.adapter.FolderAdapter;
 import com.weezlabs.imagegallery.adapter.ImageAdapter;
 import com.weezlabs.imagegallery.model.Bucket;
+import com.weezlabs.imagegallery.model.Image;
 
 
 public abstract class BaseFragment extends BackHandledFragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -152,9 +155,12 @@ public abstract class BaseFragment extends BackHandledFragment implements Loader
 //                mBackHandlerInterface.setBackArrow();
             } else if (mListView.getAdapter() instanceof ImageAdapter) {
                 Log.i(LOG_TAG, "click in ImageAdapter, position: " + position + " id: " + id);
-                Toast.makeText(getActivity(), "click in ImageAdapter, position: "
-                        + position + " id: " + id, Toast.LENGTH_SHORT).show();
 
+                Image image = mImageAdapter.getImage(position);
+                Intent intent = new Intent(getActivity(), PreviewActivity.class);
+                intent.putExtra(PreviewActivity.EXTRA_IMAGE_POSITION, position);
+                intent.putExtra(PreviewActivity.EXTRA_BUCKET_ID, image.getBucketId());
+                getActivity().startActivity(intent);
             }
         }
     }

@@ -46,6 +46,10 @@ public class ImageAdapter extends CursorAdapter {
         loadImage(context, holder.mImage, image);
     }
 
+    public Image getImage(int clickedPosition){
+        return new Image((Cursor) getItem(clickedPosition));
+    }
+
     protected void loadImage(Context context, ImageView imageView, Image image) {
         Glide.with(context)
                 .load(image.getPath())
