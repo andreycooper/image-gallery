@@ -9,6 +9,7 @@ import android.widget.GridView;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.adapter.FolderAdapter;
 import com.weezlabs.imagegallery.adapter.ImageAdapter;
+import com.weezlabs.imagegallery.util.Utils;
 
 
 public class GridFragment extends BaseFragment {
@@ -32,6 +33,7 @@ public class GridFragment extends BaseFragment {
         }
         mFolderAdapter = new FolderAdapter(getActivity(), null, R.layout.item_folder_grid);
         mImageAdapter = new ImageAdapter(getActivity(), null, R.layout.item_image_grid);
+        mImageAdapter.setIsVisibleInfo(Utils.isVisibleInfo(getActivity()));
     }
 
     @Override

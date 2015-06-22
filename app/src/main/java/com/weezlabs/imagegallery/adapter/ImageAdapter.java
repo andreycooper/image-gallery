@@ -16,6 +16,15 @@ import com.weezlabs.imagegallery.model.Image;
 
 public class ImageAdapter extends CursorAdapter {
     private int mLayoutResource;
+    private boolean mIsVisibleInfo = true;
+
+    public boolean isVisibleInfo() {
+        return mIsVisibleInfo;
+    }
+
+    public void setIsVisibleInfo(boolean isVisibleInfo) {
+        mIsVisibleInfo = isVisibleInfo;
+    }
 
     public ImageAdapter(Context context, Cursor c, int layout) {
         super(context, c, true);
@@ -43,6 +52,8 @@ public class ImageAdapter extends CursorAdapter {
         holder.mImageDate.setText(imageDate);
         holder.mImageSize.setText(imageSize);
 
+        setInfoVisibility(holder, isVisibleInfo());
+
         loadImage(context, holder.mImage, image);
     }
 
@@ -53,18 +64,31 @@ public class ImageAdapter extends CursorAdapter {
     protected void loadImage(Context context, ImageView imageView, Image image) {
         Glide.with(context)
                 .load(image.getPath())
+                .placeholder(R.drawable.ic_image_placeholder_48dp)
                 .centerCrop()
                 .into(imageView);
     }
 
+    private void setInfoVisibility(ImageViewHolder holder, boolean isVisible) {
+        if (isVisible) {
+            holder.mImageName.setVisibility(View.VISIBLE);
+            holder.mInfoLayout.setVisibility(View.VISIBLE);
+        } else {
+            holder.mImageName.setVisibility(View.GONE);
+            holder.mInfoLayout.setVisibility(View.GONE);
+        }
+    }
+
     public static class ImageViewHolder {
         ImageView mImage;
+        View mInfoLayout;
         TextView mImageName;
         TextView mImageDate;
         TextView mImageSize;
 
         public ImageViewHolder(View view) {
             mImage = (ImageView) view.findViewById(R.id.image_view);
+            mInfoLayout = view.findViewById(R.id.info_layout);
             mImageName = (TextView) view.findViewById(R.id.image_name_text_view);
             mImageDate = (TextView) view.findViewById(R.id.image_date_text_view);
             mImageSize = (TextView) view.findViewById(R.id.image_size_text_view);

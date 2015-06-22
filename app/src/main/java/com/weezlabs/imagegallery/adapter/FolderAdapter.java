@@ -60,7 +60,7 @@ public class FolderAdapter extends CursorAdapter {
             holder.mFolderView.getImageViews()[i].setVisibility(View.VISIBLE);
             Glide.with(context)
                     .load(folderViewModel.getImagePaths().get(i))
-                    .thumbnail(0.3f)
+                    .placeholder(R.drawable.ic_image_placeholder_48dp)
                     .centerCrop()
                     .into(holder.mFolderView.getImageViews()[i]);
         }

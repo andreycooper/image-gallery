@@ -13,15 +13,16 @@ import static com.weezlabs.imagegallery.activity.BaseActivity.ViewMode;
 
 public final class Utils {
 
+    public static final int DEFAULT_VIEW_MODE = ViewMode.LIST_MODE.getMode();
+    private static final String VIEW_MODE = "view_mode";
+    private static final String IS_VISIBLE_INFO = "is_visible_info";
+
     public static final String IMAGE_TYPE_GIF = "image/gif";
     private static final String UTF_8 = "UTF-8";
 
     private Utils() {
         // prevent creation of instance
     }
-
-    public static final int DEFAULT_VIEW_MODE = ViewMode.LIST_MODE.getMode();
-    private static final String VIEW_MODE = "view_mode";
 
     public static void setViewMode(Context context, ViewMode viewMode) {
         SharedPreferences.Editor editor = PreferenceManager
@@ -65,5 +66,11 @@ public final class Utils {
     public static boolean isGifFile(String filePath) {
         String mimeType = getMimeType(filePath);
         return mimeType != null && mimeType.startsWith(IMAGE_TYPE_GIF);
+    }
+
+    public static boolean isVisibleInfo(Context context) {
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(context.getApplicationContext());
+        return prefs.getBoolean(IS_VISIBLE_INFO, false);
     }
 }

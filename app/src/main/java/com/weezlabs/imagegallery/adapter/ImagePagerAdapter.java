@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 
-import com.weezlabs.imagegallery.fragment.BasePreviewFragment;
+import com.weezlabs.imagegallery.fragment.preview.BasePreviewFragment;
 import com.weezlabs.imagegallery.model.Image;
 import com.weezlabs.imagegallery.tool.Events;
 

@@ -1,4 +1,4 @@
-package com.weezlabs.imagegallery.fragment;
+package com.weezlabs.imagegallery.fragment.preview;
 
 import android.view.View;
 import android.widget.ImageView;
@@ -11,7 +11,7 @@ public class PreviewGifFragment extends BasePreviewFragment {
 
     @Override
     protected void loadImageIntoView(View imageView) {
-        ImageView gifImageView = (ImageView) imageView;
+        final ImageView gifImageView = (ImageView) imageView;
 
         Glide.with(getActivity())
                 .load(mImagePath)

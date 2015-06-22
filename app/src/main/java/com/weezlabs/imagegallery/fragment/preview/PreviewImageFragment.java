@@ -1,4 +1,4 @@
-package com.weezlabs.imagegallery.fragment;
+package com.weezlabs.imagegallery.fragment.preview;
 
 
 import android.graphics.Bitmap;
@@ -20,8 +20,7 @@ public class PreviewImageFragment extends BasePreviewFragment {
 
     @Override
     protected void loadImageIntoView(View imageView) {
-        SubsamplingScaleImageView scaleImageView = (SubsamplingScaleImageView) imageView;
-        scaleImageView.setOrientation(SubsamplingScaleImageView.ORIENTATION_USE_EXIF);
+        final SubsamplingScaleImageView scaleImageView = (SubsamplingScaleImageView) imageView;
 
         Glide.with(getActivity())
                 .load(mImagePath)

@@ -18,12 +18,14 @@
     <dimen name="item_list_image_label_padding">2dp</dimen>
     <dimen name="item_list_image_info_label_text_size">12sp</dimen>
 
+    <dimen name="item_grid_spacing">1dp</dimen>
     <dimen name="item_grid_label_text_size">18sp</dimen>
     <dimen name="item_grid_label_text_padding">2dp</dimen>
 
     <dimen name="item_grid_image_info_label_padding">1dp</dimen>
     <dimen name="item_grid_image_info_label_text_size">12sp</dimen>
 
+    <dimen name="item_staggered_item_margin">1dp</dimen>
     <dimen name="item_staggered_label_text_size">18sp</dimen>
     <dimen name="item_staggered_label_text_padding">2dp</dimen>
 

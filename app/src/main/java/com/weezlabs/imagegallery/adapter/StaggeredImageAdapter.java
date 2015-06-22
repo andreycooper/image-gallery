@@ -6,6 +6,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.etsy.android.grid.util.DynamicHeightImageView;
+import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.model.Image;
 
 
@@ -21,6 +22,7 @@ public class StaggeredImageAdapter extends ImageAdapter {
         dynamicHeightImageView.setHeightRatio((double) image.getHeight() / (double) image.getWidth());
         Glide.with(context)
                 .load(image.getPath())
+                .placeholder(R.drawable.ic_image_placeholder_48dp)
                 .centerCrop()
                 .fitCenter()
                 .into(dynamicHeightImageView);

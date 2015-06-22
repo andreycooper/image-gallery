@@ -9,6 +9,7 @@ import com.etsy.android.grid.StaggeredGridView;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.adapter.FolderAdapter;
 import com.weezlabs.imagegallery.adapter.StaggeredImageAdapter;
+import com.weezlabs.imagegallery.util.Utils;
 
 
 public class StaggeredFragment extends BaseFragment {
@@ -32,6 +33,7 @@ public class StaggeredFragment extends BaseFragment {
         }
         mFolderAdapter = new FolderAdapter(getActivity(), null, R.layout.item_folder_staggered);
         mImageAdapter = new StaggeredImageAdapter(getActivity(), null, R.layout.item_image_staggered);
+        mImageAdapter.setIsVisibleInfo(Utils.isVisibleInfo(getActivity()));
     }
 
     @Override

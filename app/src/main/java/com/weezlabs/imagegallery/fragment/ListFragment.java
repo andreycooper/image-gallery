@@ -9,6 +9,7 @@ import android.widget.ListView;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.adapter.FolderAdapter;
 import com.weezlabs.imagegallery.adapter.ImageAdapter;
+import com.weezlabs.imagegallery.util.Utils;
 
 
 public class ListFragment extends BaseFragment {

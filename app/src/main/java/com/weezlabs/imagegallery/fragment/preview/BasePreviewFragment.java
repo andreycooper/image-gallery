@@ -1,4 +1,4 @@
-package com.weezlabs.imagegallery.fragment;
+package com.weezlabs.imagegallery.fragment.preview;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
