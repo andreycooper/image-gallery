@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 
-import com.weezlabs.imagegallery.fragment.PreviewFragment;
+import com.weezlabs.imagegallery.fragment.BasePreviewFragment;
 import com.weezlabs.imagegallery.model.Image;
 import com.weezlabs.imagegallery.tool.Events;
 
@@ -33,7 +33,7 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
         if (mCursor != null && mCursor.moveToPosition(position)) {
             imagePath = Image.getPath(mCursor);
         }
-        return PreviewFragment.newInstance(imagePath);
+        return BasePreviewFragment.newInstance(imagePath);
     }
 
     @Override

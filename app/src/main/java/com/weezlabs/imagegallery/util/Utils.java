@@ -3,11 +3,18 @@ package com.weezlabs.imagegallery.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.webkit.MimeTypeMap;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import static com.weezlabs.imagegallery.activity.BaseActivity.ViewMode;
 
 
 public final class Utils {
+
+    public static final String IMAGE_TYPE_GIF = "image/gif";
+    private static final String UTF_8 = "UTF-8";
 
     private Utils() {
         // prevent creation of instance
@@ -39,4 +46,24 @@ public final class Utils {
         }
     }
 
+    public static String getMimeType(String filePath) {
+        String type = null;
+        String encoded;
+        try {
+            encoded = URLEncoder.encode(filePath.toLowerCase(), UTF_8).replace("+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            encoded = filePath.toLowerCase();
+        }
+        String extension = MimeTypeMap.getFileExtensionFromUrl(encoded.toLowerCase());
+        if (extension != null) {
+            MimeTypeMap map = MimeTypeMap.getSingleton();
+            type = map.getMimeTypeFromExtension(extension);
+        }
+        return type;
+    }
+
+    public static boolean isGifFile(String filePath) {
+        String mimeType = getMimeType(filePath);
+        return mimeType != null && mimeType.startsWith(IMAGE_TYPE_GIF);
+    }
 }

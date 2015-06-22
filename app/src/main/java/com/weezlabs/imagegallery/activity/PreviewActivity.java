@@ -6,7 +6,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.activity.controller.PreviewToolbarController;
@@ -52,15 +51,6 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
         mToolbarController = new PreviewToolbarController(this);
         mToolbarController.create();
 
-        // TODO: implement fullscreen OnClickListener through interface
-        mPager.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mIsFullscreen = !mIsFullscreen;
-                mToolbarController.setFullscreen(mIsFullscreen);
-            }
-        });
-
         mCursorProvider.loadImagesCursor(mBucketId);
     }
 
@@ -74,10 +64,6 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
     protected void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
-    }
-
-    public void onEvent(Events.ChangeTitleEvent event) {
-        mToolbarController.setTitle(event.getTitle());
     }
 
     @Override
@@ -110,6 +96,17 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
     public void receiveImageCursor(Cursor cursor) {
         mAdapter.changeCursor(cursor);
         mPager.setCurrentItem(mImagePosition, false);
+    }
+
+    // EVENTS
+
+    public void onEvent(Events.ChangeTitleEvent event) {
+        mToolbarController.setTitle(event.getTitle());
+    }
+
+    public void onEvent(Events.ToolbarVisibilityEvent event) {
+        mIsFullscreen = !mIsFullscreen;
+        mToolbarController.setFullscreen(mIsFullscreen);
     }
 
 }
