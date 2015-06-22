@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
@@ -49,6 +50,13 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
                                 .withIcon(GoogleMaterial.Icon.gmd_view_quilt),
                         new DividerDrawerItem()
                 )
+                .withOnDrawerNavigationListener(new Drawer.OnDrawerNavigationListener() {
+                    @Override
+                    public boolean onNavigationClickListener(View view) {
+                        onBackPressed();
+                        return true;
+                    }
+                })
                 .withSavedInstance(savedInstanceState)
                 .build();
     }

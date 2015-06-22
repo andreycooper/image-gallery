@@ -25,6 +25,7 @@ public class StaggeredImageAdapter extends ImageAdapter {
                 .placeholder(R.drawable.ic_image_placeholder_48dp)
                 .centerCrop()
                 .fitCenter()
+                .crossFade()
                 .into(dynamicHeightImageView);
     }
 }

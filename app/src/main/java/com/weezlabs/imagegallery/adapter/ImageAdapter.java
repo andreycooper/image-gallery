@@ -66,6 +66,7 @@ public class ImageAdapter extends CursorAdapter {
                 .load(image.getPath())
                 .placeholder(R.drawable.ic_image_placeholder_48dp)
                 .centerCrop()
+                .crossFade()
                 .into(imageView);
     }
 

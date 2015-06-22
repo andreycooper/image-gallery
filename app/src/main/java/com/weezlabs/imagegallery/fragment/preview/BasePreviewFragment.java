@@ -21,6 +21,8 @@ public abstract class BasePreviewFragment extends Fragment {
 
     public static BasePreviewFragment newInstance(String imagePath) {
         BasePreviewFragment fragment;
+        // TODO: pass parcelable image to newInstance() and get mime type from MediaStore
+        // or pass second parameter with mime type
         if (Utils.isGifFile(imagePath)) {
             fragment = new PreviewGifFragment();
         } else {

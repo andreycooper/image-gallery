@@ -62,6 +62,7 @@ public class FolderAdapter extends CursorAdapter {
                     .load(folderViewModel.getImagePaths().get(i))
                     .placeholder(R.drawable.ic_image_placeholder_48dp)
                     .centerCrop()
+                    .crossFade()
                     .into(holder.mFolderView.getImageViews()[i]);
         }
         for (int i = folderViewModel.getImagePaths().size(); i < MAX_COUNT_IMAGES; i++) {

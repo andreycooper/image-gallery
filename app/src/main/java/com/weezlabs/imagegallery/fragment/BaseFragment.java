@@ -135,7 +135,7 @@ public abstract class BaseFragment extends BackHandledFragment implements Loader
             mListView.setAdapter(mFolderAdapter);
             mImageAdapter.changeCursor(null);
             mBackHandlerInterface.setTitle(getString(R.string.app_name));
-//            mBackHandlerInterface.setHamburgerIcon();
+            mBackHandlerInterface.setHamburgerIcon();
             return true;
         }
         return false;
@@ -154,7 +154,7 @@ public abstract class BaseFragment extends BackHandledFragment implements Loader
                 mListView.setAdapter(mImageAdapter);
                 mFolderAdapter.changeCursor(null);
                 mBackHandlerInterface.setTitle(bucket.getBucketName());
-//                mBackHandlerInterface.setBackArrow();
+                mBackHandlerInterface.setBackArrow();
             } else if (mListView.getAdapter() instanceof ImageAdapter) {
                 Log.i(LOG_TAG, "click in ImageAdapter, position: " + position + " id: " + id);
 
