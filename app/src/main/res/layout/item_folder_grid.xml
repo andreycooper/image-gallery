@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+    <com.weezlabs.imagegallery.widget.FolderView
+        android:id="@+id/folder_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <TextView
+        android:id="@+id/folder_name_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:background="@color/item_grid_label_background_color"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/item_grid_label_text_padding"
+        android:singleLine="true"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/item_grid_label_text_size"/>
+
+</FrameLayout>

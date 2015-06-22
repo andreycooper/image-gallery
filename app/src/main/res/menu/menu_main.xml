@@ -3,6 +3,11 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".MainActivity">
     <item
+        android:id="@+id/action_change_mode"
+        android:orderInCategory="10"
+        android:title="@string/action_mode_change"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"

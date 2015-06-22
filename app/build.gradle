@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.weezlabs.imagegallery"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -22,4 +22,13 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.github.bumptech.glide:glide:3.6.0'
+    compile 'de.greenrobot:eventbus:2.4.0'
+
+    // UI libs
+    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.1.4'
+    compile 'com.etsy.android.grid:library:1.0.5'
+    compile('com.mikepenz:materialdrawer:3.0.7@aar') {
+        transitive = true
+    }
 }

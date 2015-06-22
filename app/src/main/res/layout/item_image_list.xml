@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/item_list_padding">
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="@dimen/item_list_image_size"
+        android:layout_height="@dimen/item_list_image_size"
+        android:src="@mipmap/ic_launcher"/>
+
+    <TextView
+        android:id="@+id/image_name_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/image_date_text_view"
+        android:layout_marginLeft="@dimen/item_list_label_margin"
+        android:layout_toRightOf="@id/image_view"
+        android:padding="@dimen/item_list_label_padding"
+        android:singleLine="true"
+        android:text="@string/label_image_name_sample"
+        android:textSize="@dimen/item_list_label_text_size"/>
+
+    <!-- TODO: insert TextViews into LinearLayout -->
+    <LinearLayout
+        android:id="@+id/info_layout"
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/image_date_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/image_size_text_view"
+        android:layout_alignLeft="@id/image_name_text_view"
+        android:padding="@dimen/item_list_image_label_padding"
+        android:singleLine="true"
+        android:text="@string/label_image_date_sample"
+        android:textSize="@dimen/item_list_image_info_label_text_size"/>
+
+
+    <TextView
+        android:id="@+id/image_size_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/image_view"
+        android:layout_alignLeft="@id/image_name_text_view"
+        android:gravity="end"
+        android:padding="@dimen/item_list_image_label_padding"
+        android:singleLine="true"
+        android:text="@string/label_image_size_sample"
+        android:textSize="@dimen/item_list_image_info_label_text_size"/>
+
+</RelativeLayout>

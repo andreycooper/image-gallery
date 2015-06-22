@@ -1,5 +1,16 @@
 <resources>
-    <string name="app_name">ImageGallery</string>
+    <string name="app_name">Image Gallery</string>
     <string name="action_settings">Settings</string>
+    <string name="action_mode_change">Change View Mode</string>
+
+    <string name="label_folder_view_images_count">Total images: %1$d</string>
+    <string name="label_image_date">Date: %1$s</string>
+    <string name="label_image_size">Size: %1$s</string>
+    <string name="format_image_date">dd/MM/yyyy</string>
+
+    <string name="label_drawer_list">List</string>
+    <string name="label_drawer_grid">Grid</string>
+    <string name="label_drawer_staggered">Staggered</string>
+    <string name="title_activity_view">ViewActivity</string>
 
 </resources>
