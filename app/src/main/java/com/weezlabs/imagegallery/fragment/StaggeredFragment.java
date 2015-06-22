@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.etsy.android.grid.StaggeredGridView;
-import com.weezlabs.imagegallery.adapter.FolderAdapter;
 import com.weezlabs.imagegallery.R;
+import com.weezlabs.imagegallery.adapter.FolderAdapter;
 import com.weezlabs.imagegallery.adapter.StaggeredImageAdapter;
 
 

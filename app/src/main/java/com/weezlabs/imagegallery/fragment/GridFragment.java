@@ -6,9 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
+import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.adapter.FolderAdapter;
 import com.weezlabs.imagegallery.adapter.ImageAdapter;
-import com.weezlabs.imagegallery.R;
 
 
 public class GridFragment extends BaseFragment {

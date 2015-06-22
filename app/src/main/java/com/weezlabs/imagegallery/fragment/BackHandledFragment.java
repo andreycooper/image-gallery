@@ -6,8 +6,6 @@ import android.os.Bundle;
 public abstract class BackHandledFragment extends Fragment {
     protected BackHandlerInterface mBackHandlerInterface;
 
-//    public abstract String getTagText();
-
     public abstract boolean onBackPressed();
 
     @Override
@@ -35,6 +33,8 @@ public abstract class BackHandledFragment extends Fragment {
 
     public interface BackHandlerInterface {
         void setSelectedFragment(BackHandledFragment backHandledFragment);
+
+        void setTitle(String title);
 
         void setBackArrow();
 

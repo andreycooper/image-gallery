@@ -1,6 +1,5 @@
 package com.weezlabs.imagegallery.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -69,7 +68,6 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
 
         switch (id) {
             case R.id.action_settings:
-                startActivity(new Intent(this, PreviewActivity.class));
                 return true;
             case R.id.action_change_mode:
                 changeViewMode(item);
@@ -108,18 +106,23 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
     }
 
     @Override
+    public void setTitle(String title) {
+        mToolbar.setTitle(title);
+    }
+
+    @Override
     public void setBackArrow() {
-//        if (getSupportActionBar() != null) {
-//            mDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
-//            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        }
+        if (getSupportActionBar() != null) {
+            mDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
     public void setHamburgerIcon() {
-//        if (getSupportActionBar() != null) {
-//            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-//            mDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
-//        }
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            mDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+        }
     }
 }

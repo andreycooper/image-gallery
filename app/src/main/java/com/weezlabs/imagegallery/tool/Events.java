@@ -14,7 +14,7 @@ public class Events {
         }
     }
 
-    public static class ToolbarVisibilityEvent{
+    public static class ToolbarVisibilityEvent {
 
     }
 }

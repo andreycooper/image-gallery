@@ -11,8 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
+import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.activity.PreviewActivity;
 import com.weezlabs.imagegallery.adapter.FolderAdapter;
 import com.weezlabs.imagegallery.adapter.ImageAdapter;
@@ -134,6 +134,7 @@ public abstract class BaseFragment extends BackHandledFragment implements Loader
             loadFoldersCursor();
             mListView.setAdapter(mFolderAdapter);
             mImageAdapter.changeCursor(null);
+            mBackHandlerInterface.setTitle(getString(R.string.app_name));
 //            mBackHandlerInterface.setHamburgerIcon();
             return true;
         }
@@ -152,6 +153,7 @@ public abstract class BaseFragment extends BackHandledFragment implements Loader
                 loadImagesCursor(bucket.getBucketId());
                 mListView.setAdapter(mImageAdapter);
                 mFolderAdapter.changeCursor(null);
+                mBackHandlerInterface.setTitle(bucket.getBucketName());
 //                mBackHandlerInterface.setBackArrow();
             } else if (mListView.getAdapter() instanceof ImageAdapter) {
                 Log.i(LOG_TAG, "click in ImageAdapter, position: " + position + " id: " + id);
