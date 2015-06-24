@@ -5,12 +5,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
+import com.mikepenz.materialdrawer.accountswitcher.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SectionDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.fragment.BackHandledFragment;
 import com.weezlabs.imagegallery.fragment.BackHandledFragment.BackHandlerInterface;
@@ -18,6 +23,7 @@ import com.weezlabs.imagegallery.util.Utils;
 
 
 public class MainActivity extends BaseActivity implements BackHandlerInterface {
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private BackHandledFragment mBackHandledFragment;
     private Drawer mDrawer;
     private Toolbar mToolbar;
@@ -33,21 +39,39 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
         ViewMode viewMode = Utils.getViewMode(this);
         setupModeFragment(viewMode);
 
-        mDrawer = getDrawer(savedInstanceState);
+        AccountHeader accountHeader = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withSavedInstance(savedInstanceState)
+                .withTranslucentStatusBar(true)
+                .withHeaderBackground(R.drawable.drawer_header_background)
+                .build();
+        mDrawer = getDrawer(accountHeader, savedInstanceState);
+        mDrawer.setSelection(getDrawerSelectedMode(), false);
     }
 
-    private Drawer getDrawer(Bundle savedInstanceState) {
+    private Drawer getDrawer(AccountHeader accountHeader, Bundle savedInstanceState) {
         return new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(mToolbar)
+                .withSavedInstance(savedInstanceState)
                 .withActionBarDrawerToggleAnimated(true)
+                .withAccountHeader(accountHeader)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.label_drawer_list)
-                                .withIcon(GoogleMaterial.Icon.gmd_view_list),
-                        new PrimaryDrawerItem().withName(R.string.label_drawer_grid)
-                                .withIcon(GoogleMaterial.Icon.gmd_view_module),
-                        new PrimaryDrawerItem().withName(R.string.label_drawer_staggered)
-                                .withIcon(GoogleMaterial.Icon.gmd_view_quilt),
+                        new SectionDrawerItem()
+                                .withName(getString(R.string.label_drawer_section_view_mode))
+                                .setDivider(false),
+                        new PrimaryDrawerItem()
+                                .withName(R.string.label_drawer_list)
+                                .withIcon(GoogleMaterial.Icon.gmd_view_list)
+                                .withIdentifier(ViewMode.LIST_MODE.getMode()),
+                        new PrimaryDrawerItem()
+                                .withName(R.string.label_drawer_grid)
+                                .withIcon(GoogleMaterial.Icon.gmd_view_module)
+                                .withIdentifier(ViewMode.GRID_MODE.getMode()),
+                        new PrimaryDrawerItem()
+                                .withName(R.string.label_drawer_staggered)
+                                .withIcon(GoogleMaterial.Icon.gmd_view_quilt)
+                                .withIdentifier(ViewMode.STAGGERED_MODE.getMode()),
                         new DividerDrawerItem()
                 )
                 .withOnDrawerNavigationListener(new Drawer.OnDrawerNavigationListener() {
@@ -57,12 +81,39 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
                         return true;
                     }
                 })
-                .withSavedInstance(savedInstanceState)
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(AdapterView<?> adapterView, View view, int position, long l, IDrawerItem drawerItem) {
+                        if (drawerItem != null) {
+                            if (isViewModeDrawerItem(drawerItem)) {
+                                changeViewMode(drawerItem.getIdentifier());
+                                mDrawer.closeDrawer();
+                            }
+                        }
+                        return true;
+                    }
+                })
                 .build();
+    }
+
+    private boolean isViewModeDrawerItem(IDrawerItem drawerItem) {
+        return drawerItem.getIdentifier() >= ViewMode.LIST_MODE.getMode()
+                && drawerItem.getIdentifier() <= ViewMode.STAGGERED_MODE.getMode();
+    }
+
+    private int getDrawerSelectedMode() {
+        int viewMode = Utils.getViewMode(MainActivity.this).getMode();
+        for (int i = 0; i < mDrawer.getDrawerItems().size(); i++) {
+            if (viewMode == mDrawer.getDrawerItems().get(i).getIdentifier()) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        mMenu = menu;
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem item = menu.findItem(R.id.action_change_mode);
         setupModeIcon(item, Utils.getViewMode(this));
@@ -78,7 +129,8 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
             case R.id.action_settings:
                 return true;
             case R.id.action_change_mode:
-                changeViewMode(item);
+                swapViewMode(item);
+                mDrawer.setSelection(getDrawerSelectedMode(), false);
                 return true;
             case android.R.id.home:
                 onBackPressed();
@@ -94,7 +146,6 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
         outState = mDrawer.saveInstanceState(outState);
         super.onSaveInstanceState(outState);
     }
-
 
     @Override
     public void onBackPressed() {

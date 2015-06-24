@@ -12,5 +12,6 @@
     <string name="label_drawer_grid">Grid</string>
     <string name="label_drawer_staggered">Staggered</string>
     <string name="title_activity_view">ViewActivity</string>
+    <string name="label_drawer_section_view_mode">View Mode</string>
 
 </resources>
