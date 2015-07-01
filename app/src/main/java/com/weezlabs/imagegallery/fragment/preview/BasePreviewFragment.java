@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.weezlabs.imagegallery.R;
+import com.weezlabs.imagegallery.model.Image;
 import com.weezlabs.imagegallery.tool.Events;
 import com.weezlabs.imagegallery.util.Utils;
 
@@ -15,21 +16,19 @@ import de.greenrobot.event.EventBus;
 
 
 public abstract class BasePreviewFragment extends Fragment {
-    protected static final String IMAGE_PATH = "com.weezlabs.imagegallery.IMAGE_PATH";
+    protected static final String IMAGE = "com.weezlabs.imagegallery.IMAGE";
 
-    protected String mImagePath;
+    protected Image mImage;
 
-    public static BasePreviewFragment newInstance(String imagePath) {
+    public static BasePreviewFragment newInstance(Image image) {
         BasePreviewFragment fragment;
-        // TODO: pass parcelable image to newInstance() and get mime type from MediaStore
-        // or pass second parameter with mime type
-        if (Utils.isGifFile(imagePath)) {
+        if (image.getMimeType().equals(Utils.IMAGE_TYPE_GIF)) {
             fragment = new PreviewGifFragment();
         } else {
             fragment = new PreviewImageFragment();
         }
         Bundle args = new Bundle();
-        args.putString(IMAGE_PATH, imagePath);
+        args.putParcelable(IMAGE, image);
         fragment.setArguments(args);
         return fragment;
     }
@@ -38,7 +37,7 @@ public abstract class BasePreviewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mImagePath = getArguments().getString(IMAGE_PATH);
+            mImage = getArguments().getParcelable(IMAGE);
         }
     }
 

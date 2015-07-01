@@ -8,7 +8,7 @@
         android:id="@+id/image_view"
         android:layout_width="@dimen/item_list_image_size"
         android:layout_height="@dimen/item_list_image_size"
-        android:src="@mipmap/ic_launcher"/>
+        android:src="@mipmap/ic_gallery"/>
 
     <TextView
         android:id="@+id/image_name_text_view"

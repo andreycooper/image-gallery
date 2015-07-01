@@ -14,7 +14,7 @@ public class PreviewGifFragment extends BasePreviewFragment {
         final ImageView gifImageView = (ImageView) imageView;
 
         Glide.with(getActivity())
-                .load(mImagePath)
+                .load(mImage.getPath())
                 .into(gifImageView);
     }
 

@@ -56,16 +56,16 @@ public class FolderAdapter extends CursorAdapter {
     private void fillHolderViews(Context context, FolderViewHolder holder, String folderName,
                                  FolderViewModel folderViewModel) {
         holder.mFolderName.setText(folderName);
-        for (int i = 0; i < folderViewModel.getImagePaths().size(); i++) {
+        for (int i = 0; i < folderViewModel.getImages().size(); i++) {
             holder.mFolderView.getImageViews()[i].setVisibility(View.VISIBLE);
             Glide.with(context)
-                    .load(folderViewModel.getImagePaths().get(i))
+                    .load(folderViewModel.getImages().get(i).getPath())
                     .placeholder(R.drawable.ic_image_placeholder_48dp)
                     .centerCrop()
                     .crossFade()
                     .into(holder.mFolderView.getImageViews()[i]);
         }
-        for (int i = folderViewModel.getImagePaths().size(); i < MAX_COUNT_IMAGES; i++) {
+        for (int i = folderViewModel.getImages().size(); i < MAX_COUNT_IMAGES; i++) {
             holder.mFolderView.getImageViews()[i].setVisibility(View.GONE);
             holder.mFolderView.getImageViews()[i].setImageBitmap(null);
         }

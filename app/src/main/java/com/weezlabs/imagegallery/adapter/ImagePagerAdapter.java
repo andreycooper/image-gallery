@@ -29,11 +29,11 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        String imagePath = null;
+        Image image = null;
         if (mCursor != null && mCursor.moveToPosition(position)) {
-            imagePath = Image.getPath(mCursor);
+            image = new Image(mCursor);
         }
-        return BasePreviewFragment.newInstance(imagePath);
+        return BasePreviewFragment.newInstance(image);
     }
 
     @Override

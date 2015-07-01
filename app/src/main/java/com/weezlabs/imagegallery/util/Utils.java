@@ -3,6 +3,7 @@ package com.weezlabs.imagegallery.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import java.io.ByteArrayOutputStream;
@@ -68,7 +69,7 @@ public final class Utils {
 
     public static boolean isGifFile(String filePath) {
         String mimeType = getMimeType(filePath);
-        return mimeType != null && mimeType.startsWith(IMAGE_TYPE_GIF);
+        return !TextUtils.isEmpty(mimeType) && mimeType.startsWith(IMAGE_TYPE_GIF);
     }
 
     public static boolean isVisibleInfo(Context context) {
