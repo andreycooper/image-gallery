@@ -14,4 +14,7 @@
     <string name="title_activity_view">ViewActivity</string>
     <string name="label_drawer_section_view_mode">View Mode</string>
 
+    <string name="format_date_wo_year">EEEE, dd MMMM</string>
+    <string name="format_date_year">, yyyy</string>
+
 </resources>

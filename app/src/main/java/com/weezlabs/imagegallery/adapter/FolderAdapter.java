@@ -9,13 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.weezlabs.imagegallery.R;
+import com.weezlabs.imagegallery.adapter.viewholder.FolderViewHolder;
 import com.weezlabs.imagegallery.model.Bucket;
 import com.weezlabs.imagegallery.model.FolderViewModel;
-import com.weezlabs.imagegallery.widget.FolderView;
 
 import static com.weezlabs.imagegallery.model.FolderViewModel.MAX_COUNT_IMAGES;
 
@@ -55,22 +54,22 @@ public class FolderAdapter extends CursorAdapter {
 
     private void fillHolderViews(Context context, FolderViewHolder holder, String folderName,
                                  FolderViewModel folderViewModel) {
-        holder.mFolderName.setText(folderName);
+        holder.folderName.setText(folderName);
         for (int i = 0; i < folderViewModel.getImages().size(); i++) {
-            holder.mFolderView.getImageViews()[i].setVisibility(View.VISIBLE);
+            holder.folderView.getImageViews()[i].setVisibility(View.VISIBLE);
             Glide.with(context)
                     .load(folderViewModel.getImages().get(i).getPath())
                     .placeholder(R.drawable.ic_image_placeholder_48dp)
                     .centerCrop()
                     .crossFade()
-                    .into(holder.mFolderView.getImageViews()[i]);
+                    .into(holder.folderView.getImageViews()[i]);
         }
         for (int i = folderViewModel.getImages().size(); i < MAX_COUNT_IMAGES; i++) {
-            holder.mFolderView.getImageViews()[i].setVisibility(View.GONE);
-            holder.mFolderView.getImageViews()[i].setImageBitmap(null);
+            holder.folderView.getImageViews()[i].setVisibility(View.GONE);
+            holder.folderView.getImageViews()[i].setImageBitmap(null);
         }
 
-        holder.mFolderView.setCountText(context.getString(R.string.label_folder_view_images_count,
+        holder.folderView.setCountText(context.getString(R.string.label_folder_view_images_count,
                 folderViewModel.getImageCount()));
     }
 
@@ -80,7 +79,8 @@ public class FolderAdapter extends CursorAdapter {
             CursorLoader loader = new CursorLoader(context,
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     null, MediaStore.Images.Media.BUCKET_ID + "=?",
-                    new String[]{String.valueOf(bucketId)}, null);
+                    new String[]{String.valueOf(bucketId)},
+                    MediaStore.Images.Media.DATE_ADDED + " DESC");
             Cursor imagesCursor = loader.loadInBackground();
             folderViewModel = new FolderViewModel(imagesCursor);
             if (imagesCursor != null && !imagesCursor.isClosed()) {
@@ -91,13 +91,4 @@ public class FolderAdapter extends CursorAdapter {
         return folderViewModel;
     }
 
-    public static class FolderViewHolder {
-        FolderView mFolderView;
-        TextView mFolderName;
-
-        public FolderViewHolder(View view) {
-            mFolderView = (FolderView) view.findViewById(R.id.folder_view);
-            mFolderName = (TextView) view.findViewById(R.id.folder_name_text_view);
-        }
-    }
 }

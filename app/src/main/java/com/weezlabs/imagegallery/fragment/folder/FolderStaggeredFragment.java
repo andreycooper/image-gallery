@@ -1,5 +1,6 @@
-package com.weezlabs.imagegallery.fragment;
+package com.weezlabs.imagegallery.fragment.folder;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,32 +9,24 @@ import android.view.ViewGroup;
 import com.etsy.android.grid.StaggeredGridView;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.adapter.FolderAdapter;
-import com.weezlabs.imagegallery.adapter.StaggeredImageAdapter;
-import com.weezlabs.imagegallery.util.Utils;
+import com.weezlabs.imagegallery.fragment.image.ImageStaggeredFragment;
 
 
-public class StaggeredFragment extends BaseFragment {
+public class FolderStaggeredFragment extends BaseFolderFragment {
 
-    public static StaggeredFragment newInstance() {
-        StaggeredFragment fragment = new StaggeredFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
+    public static FolderStaggeredFragment newInstance() {
+        FolderStaggeredFragment fragment = new FolderStaggeredFragment();
         return fragment;
     }
 
-    public StaggeredFragment() {
+    public FolderStaggeredFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            // get parameters there if need
-        }
         mFolderAdapter = new FolderAdapter(getActivity(), null, R.layout.item_folder_staggered);
-        mImageAdapter = new StaggeredImageAdapter(getActivity(), null, R.layout.item_image_staggered);
-        mImageAdapter.setIsVisibleInfo(Utils.isVisibleInfo(getActivity()));
     }
 
     @Override
@@ -42,8 +35,13 @@ public class StaggeredFragment extends BaseFragment {
         View rootView = inflater.inflate(R.layout.fragment_staggered, container, false);
         mListView = (StaggeredGridView) rootView.findViewById(R.id.staggered_view);
         mListView.setAdapter(mFolderAdapter);
-        mListView.setOnItemClickListener(new OnGalleryItemClickListener());
+        mListView.setOnItemClickListener(new OnFolderItemClickListener());
         return rootView;
+    }
+
+    @Override
+    protected Fragment getImageFragment(long bucketId) {
+        return ImageStaggeredFragment.newInstance(bucketId);
     }
 
 }

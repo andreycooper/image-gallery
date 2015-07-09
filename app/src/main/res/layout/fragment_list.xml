@@ -6,7 +6,7 @@
              android:layout_marginLeft="@dimen/activity_vertical_margin"
              android:layout_marginRight="@dimen/activity_vertical_margin"
              android:layout_marginTop="@dimen/activity_horizontal_margin"
-             tools:context="com.weezlabs.imagegallery.fragment.ListFragment">
+             tools:context="com.weezlabs.imagegallery.fragment.folder.FolderListFragment">
 
     <ListView
         android:id="@+id/list_view"

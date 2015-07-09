@@ -6,14 +6,18 @@
              android:layout_marginLeft="@dimen/activity_vertical_margin"
              android:layout_marginRight="@dimen/activity_vertical_margin"
              android:layout_marginTop="@dimen/activity_horizontal_margin"
-             tools:context="com.weezlabs.imagegallery.fragment.folder.FolderStaggeredFragment">
+             tools:context="com.weezlabs.imagegallery.fragment.folder.FolderGridFragment">
 
-    <com.etsy.android.grid.StaggeredGridView
-        android:id="@+id/staggered_view"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <GridView
+        android:id="@+id/grid_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:column_count="@integer/item_staggered_columns_number"
-        app:item_margin="@dimen/item_staggered_item_margin"/>
+        android:gravity="center"
+        android:horizontalSpacing="@dimen/item_grid_spacing"
+        android:numColumns="@integer/item_grid_columns_number"
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="@dimen/item_grid_spacing"/>
 
 </FrameLayout>

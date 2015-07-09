@@ -3,7 +3,6 @@ package com.weezlabs.imagegallery.activity;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,9 +11,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.fragment.GridFragment;
-import com.weezlabs.imagegallery.fragment.ListFragment;
-import com.weezlabs.imagegallery.fragment.StaggeredFragment;
+import com.weezlabs.imagegallery.fragment.folder.FolderGridFragment;
+import com.weezlabs.imagegallery.fragment.folder.FolderListFragment;
+import com.weezlabs.imagegallery.fragment.folder.FolderStaggeredFragment;
 import com.weezlabs.imagegallery.util.Utils;
 
 
@@ -65,7 +64,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         outState.putString(EXTRA_ACCOUNT_NAME, mAccountName);
     }
 
-    protected void changeViewMode(int viewMode){
+    protected void changeViewMode(int viewMode) {
         switch (viewMode) {
             case 0:
                 changeViewMode(ViewMode.LIST_MODE);
@@ -112,16 +111,16 @@ public abstract class BaseActivity extends AppCompatActivity {
         Fragment fragment;
         switch (viewMode) {
             case LIST_MODE:
-                fragment = ListFragment.newInstance();
+                fragment = FolderListFragment.newInstance();
                 break;
             case GRID_MODE:
-                fragment = GridFragment.newInstance();
+                fragment = FolderGridFragment.newInstance();
                 break;
             case STAGGERED_MODE:
-                fragment = StaggeredFragment.newInstance();
+                fragment = FolderStaggeredFragment.newInstance();
                 break;
             default:
-                fragment = ListFragment.newInstance();
+                fragment = FolderListFragment.newInstance();
                 break;
         }
         replaceFragment(fragment);
@@ -147,8 +146,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void replaceFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();

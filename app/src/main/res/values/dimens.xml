@@ -31,4 +31,8 @@
 
     <dimen name="item_staggered_image_info_label_text_padding">2dp</dimen>
     <dimen name="item_staggered_image_info_label_text_size">12sp</dimen>
+
+    <dimen name="item_section_padding">12dp</dimen>
+    <dimen name="item_section_margin_left">16dp</dimen>
+    <dimen name="item_section_text_size">16sp</dimen>
 </resources>
