@@ -9,12 +9,21 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.MemoryCategory;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
+import com.squareup.leakcanary.LeakCanary;
+
+import timber.log.Timber;
 
 
 public class ImageGalleryApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
+
+        LeakCanary.install(this);
 
         Glide.get(this).setMemoryCategory(MemoryCategory.HIGH);
 

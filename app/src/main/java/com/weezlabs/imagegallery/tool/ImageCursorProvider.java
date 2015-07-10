@@ -53,7 +53,8 @@ public class ImageCursorProvider implements LoaderManager.LoaderCallbacks<Cursor
                         new CursorLoader(mActivityWeakReference.get(),
                                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                                 null, MediaStore.Images.Media.BUCKET_ID + "=?",
-                                new String[]{String.valueOf(bucketId)}, null) :
+                                new String[]{String.valueOf(bucketId)},
+                                MediaStore.Images.Media.DATE_ADDED + " DESC") :
                         null;
             default:
                 return null;

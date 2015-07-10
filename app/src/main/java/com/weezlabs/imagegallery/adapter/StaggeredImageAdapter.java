@@ -12,8 +12,9 @@ import com.weezlabs.imagegallery.model.Image;
 
 public class StaggeredImageAdapter extends ImageAdapter {
 
-    public StaggeredImageAdapter(Context context, Cursor c, int layout) {
-        super(context, c, layout);
+    public StaggeredImageAdapter(Context context, Cursor c) {
+        super(context, c, R.layout.item_image_staggered);
+        setIsVisibleInfo(false);
     }
 
     @Override

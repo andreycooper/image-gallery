@@ -3,8 +3,10 @@ package com.weezlabs.imagegallery.fragment;
 import android.app.Fragment;
 import android.os.Bundle;
 
+import timber.log.Timber;
+
 public abstract class BackHandledFragment extends Fragment {
-    protected BackHandlerInterface mBackHandlerInterface;
+    protected BackHandlerInterface mBackHandler;
 
     public abstract boolean onBackPressed();
 
@@ -14,7 +16,7 @@ public abstract class BackHandledFragment extends Fragment {
         if (!(getActivity() instanceof BackHandlerInterface)) {
             throw new ClassCastException("Hosting activity must implement BackHandlerInterface");
         } else {
-            mBackHandlerInterface = (BackHandlerInterface) getActivity();
+            mBackHandler = (BackHandlerInterface) getActivity();
         }
     }
 
@@ -22,13 +24,13 @@ public abstract class BackHandledFragment extends Fragment {
     public void onStart() {
         super.onStart();
         // Mark this fragment as the selected Fragment.
-        mBackHandlerInterface.setSelectedFragment(this);
+        mBackHandler.setSelectedFragment(this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mBackHandlerInterface = null;
+        mBackHandler = null;
     }
 
     public interface BackHandlerInterface {
