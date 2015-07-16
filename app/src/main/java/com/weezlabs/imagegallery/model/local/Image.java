@@ -1,4 +1,4 @@
-package com.weezlabs.imagegallery.model;
+package com.weezlabs.imagegallery.model.local;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -63,8 +63,8 @@ public class Image implements Parcelable {
         return mTakenDate;
     }
 
-    public String getTakenDate(Context context) {
-        return getDate(context, getTakenDate(), context.getString(R.string.format_image_date));
+    public String getReadableTakenDate(Context context) {
+        return getFormatedDate(context, getTakenDate(), context.getString(R.string.format_image_date));
     }
 
     public long getDateModified() {
@@ -130,7 +130,7 @@ public class Image implements Parcelable {
         return sb.toString();
     }
 
-    private String getDate(Context context, long milliSeconds, String dateFormat) {
+    private String getFormatedDate(Context context, long milliSeconds, String dateFormat) {
         // Create a DateFormatter object for displaying date in specified format.
         SimpleDateFormat formatter = new SimpleDateFormat(dateFormat,
                 context.getResources().getConfiguration().locale);

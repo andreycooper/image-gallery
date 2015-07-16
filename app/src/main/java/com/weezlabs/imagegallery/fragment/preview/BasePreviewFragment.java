@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.model.Image;
+import com.weezlabs.imagegallery.model.local.Image;
 import com.weezlabs.imagegallery.tool.Events;
 import com.weezlabs.imagegallery.util.Utils;
 

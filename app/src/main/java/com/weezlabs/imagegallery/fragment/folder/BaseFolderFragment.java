@@ -17,7 +17,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.adapter.FolderAdapter;
 import com.weezlabs.imagegallery.fragment.BackHandledFragment;
-import com.weezlabs.imagegallery.model.Bucket;
+import com.weezlabs.imagegallery.model.local.Bucket;
 
 
 public abstract class BaseFolderFragment extends BackHandledFragment

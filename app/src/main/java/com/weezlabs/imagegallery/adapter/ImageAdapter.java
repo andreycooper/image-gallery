@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.adapter.viewholder.ImageViewHolder;
-import com.weezlabs.imagegallery.model.Image;
+import com.weezlabs.imagegallery.model.local.Image;
 
 
 public class ImageAdapter extends CursorAdapter {
@@ -45,7 +45,7 @@ public class ImageAdapter extends CursorAdapter {
 
         Image image = new Image(cursor);
 
-        String imageDate = context.getString(R.string.label_image_date, image.getTakenDate(context));
+        String imageDate = context.getString(R.string.label_image_date, image.getReadableTakenDate(context));
         String imageSize = context.getString(R.string.label_image_size, image.getSize(context));
 
         holder.imageName.setText(image.getDisplayName());

@@ -1,4 +1,4 @@
-package com.weezlabs.imagegallery.model;
+package com.weezlabs.imagegallery.model.local;
 
 import android.database.Cursor;
 import android.provider.MediaStore;

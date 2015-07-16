@@ -1,11 +1,13 @@
 package com.weezlabs.imagegallery.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
@@ -19,6 +21,8 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.fragment.BackHandledFragment;
 import com.weezlabs.imagegallery.fragment.BackHandledFragment.BackHandlerInterface;
+import com.weezlabs.imagegallery.model.flickr.User;
+import com.weezlabs.imagegallery.util.FlickrUtils;
 import com.weezlabs.imagegallery.util.Utils;
 
 
@@ -127,6 +131,7 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
 
         switch (id) {
             case R.id.action_settings:
+                test();
                 return true;
             case R.id.action_change_mode:
                 swapViewMode(item);
@@ -137,6 +142,25 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void test() {
+        if (Utils.isOnline(this)) {
+            if (!FlickrUtils.isAuthenticated(getApplicationContext())) {
+                Intent intent = new Intent(this, FlickrLoginActivity.class);
+                startActivity(intent);
+            } else {
+                User user = FlickrUtils.restoreFlickrUser(getApplicationContext());
+                if (user != null) {
+                    Toast.makeText(this, "Flickr user: " + user.toString(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    getString(R.string.toast_internet_check),
+                    Toast.LENGTH_SHORT)
+                    .show();
         }
     }
 

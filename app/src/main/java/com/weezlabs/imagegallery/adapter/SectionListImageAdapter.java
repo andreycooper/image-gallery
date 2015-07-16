@@ -12,7 +12,7 @@ import com.twotoasters.sectioncursoradapter.adapter.SectionCursorAdapter;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.adapter.viewholder.ImageViewHolder;
 import com.weezlabs.imagegallery.adapter.viewholder.SectionViewHolder;
-import com.weezlabs.imagegallery.model.Image;
+import com.weezlabs.imagegallery.model.local.Image;
 import com.weezlabs.imagegallery.util.TextUtils;
 
 import java.text.SimpleDateFormat;
@@ -65,7 +65,7 @@ public class SectionListImageAdapter
         if (holder == null) return;
         Image image = new Image(cursor);
 
-        String imageDate = mContext.getString(R.string.label_image_date, image.getTakenDate(mContext));
+        String imageDate = mContext.getString(R.string.label_image_date, image.getReadableTakenDate(mContext));
         String imageSize = mContext.getString(R.string.label_image_size, image.getSize(mContext));
 
         holder.imageName.setText(image.getDisplayName());

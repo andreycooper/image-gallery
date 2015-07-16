@@ -14,7 +14,7 @@ import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.activity.PreviewActivity;
 import com.weezlabs.imagegallery.adapter.ImageAdapter;
 import com.weezlabs.imagegallery.adapter.StaggeredImageAdapter;
-import com.weezlabs.imagegallery.model.Image;
+import com.weezlabs.imagegallery.model.local.Image;
 
 import timber.log.Timber;
 

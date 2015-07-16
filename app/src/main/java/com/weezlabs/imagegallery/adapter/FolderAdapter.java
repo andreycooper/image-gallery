@@ -13,10 +13,10 @@ import android.widget.CursorAdapter;
 import com.bumptech.glide.Glide;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.adapter.viewholder.FolderViewHolder;
-import com.weezlabs.imagegallery.model.Bucket;
-import com.weezlabs.imagegallery.model.FolderViewModel;
+import com.weezlabs.imagegallery.model.local.Bucket;
+import com.weezlabs.imagegallery.model.local.FolderViewModel;
 
-import static com.weezlabs.imagegallery.model.FolderViewModel.MAX_COUNT_IMAGES;
+import static com.weezlabs.imagegallery.model.local.FolderViewModel.MAX_COUNT_IMAGES;
 
 
 public class FolderAdapter extends CursorAdapter {

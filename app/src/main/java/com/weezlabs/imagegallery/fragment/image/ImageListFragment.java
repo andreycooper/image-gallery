@@ -14,7 +14,7 @@ import com.twotoasters.sectioncursoradapter.adapter.SectionCursorAdapter;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.activity.PreviewActivity;
 import com.weezlabs.imagegallery.adapter.SectionListImageAdapter;
-import com.weezlabs.imagegallery.model.Image;
+import com.weezlabs.imagegallery.model.local.Image;
 
 import timber.log.Timber;
 

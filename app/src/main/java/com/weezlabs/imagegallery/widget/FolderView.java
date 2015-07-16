@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.weezlabs.imagegallery.R;
 
-import static com.weezlabs.imagegallery.model.FolderViewModel.MAX_COUNT_IMAGES;
+import static com.weezlabs.imagegallery.model.local.FolderViewModel.MAX_COUNT_IMAGES;
 
 
 public class FolderView extends RelativeLayout {

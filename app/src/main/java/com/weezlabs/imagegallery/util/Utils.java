@@ -2,6 +2,7 @@ package com.weezlabs.imagegallery.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
@@ -49,6 +50,13 @@ public final class Utils {
             default:
                 return ViewMode.LIST_MODE;
         }
+    }
+
+    public static boolean isOnline(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable()
+                && cm.getActiveNetworkInfo().isConnected();
     }
 
     public static String getMimeType(String filePath) {
