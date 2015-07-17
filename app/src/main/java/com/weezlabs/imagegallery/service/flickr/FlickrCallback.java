@@ -10,12 +10,12 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 
 
-public abstract class FlickrResponse<T> implements Callback<T> {
+public abstract class FlickrCallback<T> implements Callback<T> {
     public static final int UNAUTHORIZED_CODE = 401;
 
     private Context mContext;
 
-    public FlickrResponse(Context context) {
+    public FlickrCallback(Context context) {
         mContext = context.getApplicationContext();
     }
 

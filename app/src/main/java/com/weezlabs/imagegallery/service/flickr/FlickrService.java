@@ -43,6 +43,10 @@ public class FlickrService {
         Map<String, String> options = new HashMap<>();
         options.put("method", "flickr.photos.search");
         options.put("user_id", userId);
+
+        // maybe change to variable or constant
+        options.put("per_page", "500");
+
         options.put("format", "json");
         options.put("nojsoncallback", "1");
         mApi.getUserPhotos(options, callback);

@@ -103,6 +103,7 @@ public class RetrofitHttpOAuthProvider extends AbstractOAuthProvider {
 
         @Override
         public MediaType contentType() {
+            // TODO: NPE
             return MediaType.parse(mWrapped.mimeType());
         }
 

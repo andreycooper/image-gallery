@@ -2,7 +2,6 @@
 <resources>
     <string name="flickr_oauth_scheme">oauth</string>
     <string name="flickr_oauth_host">flickr</string>
-    <string name="flickr_oauth_path">auth-72157655285952070</string>
     <string name="flickr_oauth_callback_url">oauth://flickr</string>
     <string name="flickr_consumer_api_key">581e31f089bfa3385a34350abd6ce008</string>
     <string name="flickr_consumer_api_secret">5c7e6b96cbe73d4d</string>

@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2013 Patrik Åkerfeldt
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.weezlabs.imagegallery.service.oauth;
 
 import java.io.ByteArrayInputStream;
@@ -31,23 +16,23 @@ public class RetrofitHttpRequestAdapter implements HttpRequest {
 
     private static final String DEFAULT_CONTENT_TYPE = "application/json";
 
-    private Request request;
+    private Request mRequest;
 
-    private String contentType;
+    private String mContentType;
 
     public RetrofitHttpRequestAdapter(Request request) {
         this(request, request.getBody() != null ? request.getBody().mimeType() : DEFAULT_CONTENT_TYPE);
     }
 
     public RetrofitHttpRequestAdapter(Request request, String contentType) {
-        this.request = request;
-        this.contentType = contentType;
+        this.mRequest = request;
+        this.mContentType = contentType;
     }
 
     @Override
     public Map<String, String> getAllHeaders() {
         HashMap<String, String> headers = new HashMap<>();
-        for (Header header : request.getHeaders()) {
+        for (Header header : mRequest.getHeaders()) {
             headers.put(header.getName(), header.getValue());
         }
         return headers;
@@ -55,12 +40,12 @@ public class RetrofitHttpRequestAdapter implements HttpRequest {
 
     @Override
     public String getContentType() {
-        return contentType;
+        return mContentType;
     }
 
     @Override
     public String getHeader(String key) {
-        for (Header header : request.getHeaders()) {
+        for (Header header : mRequest.getHeaders()) {
             if (key.equals(header.getName())) {
                 return header.getValue();
             }
@@ -72,10 +57,10 @@ public class RetrofitHttpRequestAdapter implements HttpRequest {
     public InputStream getMessagePayload() throws IOException {
         final String contentType = getContentType();
         if (null != contentType && contentType.startsWith("application/x-www-form-urlencoded")) {
-            long contentLength = request.getBody().length();
+            long contentLength = mRequest.getBody().length();
             ByteArrayOutputStream output = new ByteArrayOutputStream(Long.valueOf(contentLength)
                     .intValue());
-            request.getBody().writeTo(output);
+            mRequest.getBody().writeTo(output);
             return new ByteArrayInputStream(output.toByteArray());
         }
 
@@ -85,32 +70,32 @@ public class RetrofitHttpRequestAdapter implements HttpRequest {
 
     @Override
     public String getMethod() {
-        return request.getMethod();
+        return mRequest.getMethod();
     }
 
     @Override
     public String getRequestUrl() {
-        return request.getUrl();
+        return mRequest.getUrl();
     }
 
     @Override
     public void setHeader(String key, String value) {
         ArrayList<Header> headers = new ArrayList<Header>();
-        headers.addAll(request.getHeaders());
+        headers.addAll(mRequest.getHeaders());
         headers.add(new Header(key, value));
-        Request copy = new Request(request.getMethod(), request.getUrl(), headers, request.getBody());
-        request = copy;
+        Request copy = new Request(mRequest.getMethod(), mRequest.getUrl(), headers, mRequest.getBody());
+        mRequest = copy;
     }
 
     @Override
     public void setRequestUrl(String url) {
-        Request copy = new Request(request.getMethod(), url, request.getHeaders(), request.getBody());
-        request = copy;
+        Request copy = new Request(mRequest.getMethod(), url, mRequest.getHeaders(), mRequest.getBody());
+        mRequest = copy;
     }
 
     @Override
     public Object unwrap() {
-        return request;
+        return mRequest;
     }
 
 }

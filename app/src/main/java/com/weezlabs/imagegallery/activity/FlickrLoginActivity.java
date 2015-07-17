@@ -15,7 +15,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.model.flickr.User;
-import com.weezlabs.imagegallery.service.flickr.FlickrResponse;
+import com.weezlabs.imagegallery.service.flickr.FlickrCallback;
 import com.weezlabs.imagegallery.service.flickr.FlickrService;
 import com.weezlabs.imagegallery.service.oauth.OAuthTask;
 import com.weezlabs.imagegallery.service.oauth.OnOAuthCallBackListener;
@@ -41,6 +41,15 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
     public static final String USER_AUTHORIZATION_URL = "https://www.flickr.com/services/oauth/authorize";
     public static final String REQUEST_TOKEN_URL = "https://www.flickr.com/services/oauth/request_token";
 
+    private static final String PERMS_READ = "&perms=read";
+    private static final String PERMS_WRITE = "&perms=write";
+    private static final String PERMS_DELETE = "&perms=delete";
+
+    private static final String JSON_USER_KEY = "user";
+    private static final String JSON_USER_ID_KEY = "id";
+    private static final String JSON_USERNAME_KEY = "username";
+    private static final String JSON_USERNAME_CONTENT_KEY = "_content";
+
     private WebView mWebView;
     private String mAuthUrl;
 
@@ -59,7 +68,11 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
         }
 
 
-        mWebView = new WebView(this);
+        // it's Ok to create WebView through App context for Flickr's login
+        // but it's crash when login to Twitter
+        mWebView = new WebView(getApplicationContext());
+        // need JavaScript enabled for Flickr's login page
+        mWebView.getSettings().setJavaScriptEnabled(true);
         RelativeLayout webViewLayout = (RelativeLayout) findViewById(R.id.webview_layout);
         webViewLayout.addView(mWebView);
 
@@ -100,7 +113,6 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
                 REQUEST_TOKEN_URL,
                 ACCESS_TOKEN_URL,
                 USER_AUTHORIZATION_URL);
-        mProvider.setOAuth10a(true);
 
 
         OAuthTask oAuthTask = new OAuthTask(this) {
@@ -109,7 +121,10 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
                 String oauthCallBackUrl = getString(R.string.flickr_oauth_callback_url);
                 try {
                     mAuthUrl = mProvider.retrieveRequestToken(mConsumer, oauthCallBackUrl);
-                    Timber.i("mAuthUrl: %s", mAuthUrl);
+                    // need append permission to 'https://www.flickr.com/services/oauth/authorize?oauth_token=TOKEN'
+                    // because Flickr throw error without it
+                    mAuthUrl += PERMS_DELETE;
+                    Timber.d("mAuthUrl: %s", mAuthUrl);
                 } catch (OAuthMessageSignerException e) {
                     showErrorToUser(e);
                     e.printStackTrace();
@@ -154,7 +169,6 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
                     FlickrUtils.setToken(getApplicationContext(), token);
                     FlickrUtils.setTokenSecret(getApplicationContext(), tokenSecret);
 
-
                 } catch (OAuthMessageSignerException e) {
                     showErrorToUser(e);
                     e.printStackTrace();
@@ -176,7 +190,7 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
                 super.onPostExecute(aVoid);
                 if (FlickrUtils.isAuthenticated(getApplicationContext())) {
                     FlickrService service = new FlickrService(getApplicationContext());
-                    service.loginUser(new FlickrResponse<Response>(getApplicationContext()) {
+                    service.loginUser(new FlickrCallback<Response>(getApplicationContext()) {
                         @Override
                         public void success(Response response, Response ignored) {
                             String jsonBody =
@@ -184,13 +198,13 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
                             JsonObject json = new GsonBuilder().create()
                                     .fromJson(jsonBody, JsonObject.class);
 
-                            String userId = json.get("user").getAsJsonObject()
-                                    .get("id").getAsString();
-                            String username = json.get("user").getAsJsonObject()
-                                    .get("username").getAsJsonObject()
-                                    .get("_content").getAsString();
+                            String userId = json.get(JSON_USER_KEY).getAsJsonObject()
+                                    .get(JSON_USER_ID_KEY).getAsString();
+                            String username = json.get(JSON_USER_KEY).getAsJsonObject()
+                                    .get(JSON_USERNAME_KEY).getAsJsonObject()
+                                    .get(JSON_USERNAME_CONTENT_KEY).getAsString();
                             User user = new User(userId, username);
-                            Timber.i("Flickr user: %s", user.toString());
+                            Timber.d("Flickr user: %s", user.toString());
                             FlickrUtils.saveUser(getApplicationContext(), user);
                         }
                     });
@@ -213,6 +227,7 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
             Uri uri = Uri.parse(url);
             String scheme = view.getContext().getString(R.string.flickr_oauth_scheme);
             if (uri.getScheme().equals(scheme)) {
+                // TODO: try to post event with Uri to prevent memory leak and subscribe activity
                 mCallBackListener.onOAuthCallback(uri);
                 return true;
             }
