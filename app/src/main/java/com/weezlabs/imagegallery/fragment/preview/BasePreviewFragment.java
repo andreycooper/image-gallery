@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.model.local.Image;
 import com.weezlabs.imagegallery.tool.Events;
-import com.weezlabs.imagegallery.util.Utils;
+import com.weezlabs.imagegallery.util.FileUtils;
 
 import de.greenrobot.event.EventBus;
 
@@ -22,7 +22,7 @@ public abstract class BasePreviewFragment extends Fragment {
 
     public static BasePreviewFragment newInstance(Image image) {
         BasePreviewFragment fragment;
-        if (image.getMimeType().equals(Utils.IMAGE_TYPE_GIF)) {
+        if (image.getMimeType().equals(FileUtils.IMAGE_TYPE_GIF)) {
             fragment = new PreviewGifFragment();
         } else {
             fragment = new PreviewImageFragment();
@@ -47,12 +47,7 @@ public abstract class BasePreviewFragment extends Fragment {
         View rootView = inflater.inflate(getLayoutId(), container, false);
         View imageView = rootView.findViewById(R.id.image_view);
 
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EventBus.getDefault().post(new Events.ToolbarVisibilityEvent());
-            }
-        });
+        imageView.setOnClickListener(v -> EventBus.getDefault().post(new Events.ToolbarVisibilityEvent()));
 
         loadImageIntoView(imageView);
 

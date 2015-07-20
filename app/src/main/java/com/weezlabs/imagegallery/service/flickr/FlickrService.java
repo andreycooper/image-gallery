@@ -5,10 +5,12 @@ import android.content.Context;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.service.oauth.RetrofitHttpOAuthConsumer;
 import com.weezlabs.imagegallery.service.oauth.SigningOkClient;
-import com.weezlabs.imagegallery.util.FlickrUtils;
+import com.weezlabs.imagegallery.storage.FlickrStorage;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -19,10 +21,19 @@ import retrofit.client.Response;
 public class FlickrService {
     public static final String ENDPOINT_URL = "https://api.flickr.com/services/rest/";
     private FlickrApi mApi;
+    private Context mAppContext;
+    private FlickrStorage mFlickrStorage;
 
-    public FlickrService(Context context) {
-        String token = FlickrUtils.getToken(context);
-        String tokenSecret = FlickrUtils.getTokenSecret(context);
+    @Inject
+    public FlickrService(Context context, FlickrStorage flickrStorage) {
+        mAppContext = context.getApplicationContext();
+        mFlickrStorage = flickrStorage;
+        init(mAppContext, flickrStorage);
+    }
+
+    private void init(Context context, FlickrStorage flickrStorage) {
+        String token = flickrStorage.getToken();
+        String tokenSecret = flickrStorage.getTokenSecret();
 
         RetrofitHttpOAuthConsumer oAuthConsumer =
                 new RetrofitHttpOAuthConsumer(context.getString(R.string.flickr_consumer_api_key),
@@ -43,16 +54,14 @@ public class FlickrService {
         Map<String, String> options = new HashMap<>();
         options.put("method", "flickr.photos.search");
         options.put("user_id", userId);
-
-        // maybe change to variable or constant
-        options.put("per_page", "500");
-
         options.put("format", "json");
         options.put("nojsoncallback", "1");
         mApi.getUserPhotos(options, callback);
     }
 
     public void loginUser(Callback<Response> callback) {
+        // needs for read correct token and secret from FlickrStorage
+        init(mAppContext, mFlickrStorage);
         Map<String, String> options = new HashMap<>();
         options.put("method", "flickr.test.login");
         options.put("format", "json");

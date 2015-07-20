@@ -2,9 +2,7 @@ package com.weezlabs.imagegallery.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
 import android.preference.PreferenceManager;
-import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import java.io.ByteArrayOutputStream;
@@ -13,50 +11,13 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import static com.weezlabs.imagegallery.activity.BaseActivity.ViewMode;
 
-
-public final class Utils {
-
-    public static final int DEFAULT_VIEW_MODE = ViewMode.LIST_MODE.getMode();
-    private static final String VIEW_MODE = "view_mode";
-    private static final String IS_VISIBLE_INFO = "is_visible_info";
-
+public final class FileUtils {
     public static final String IMAGE_TYPE_GIF = "image/gif";
+    private static final String IS_VISIBLE_INFO = "is_visible_info";
     private static final String UTF_8 = "UTF-8";
 
-    private Utils() {
-        // prevent creation of instance
-    }
-
-    public static void setViewMode(Context context, ViewMode viewMode) {
-        SharedPreferences.Editor editor = PreferenceManager
-                .getDefaultSharedPreferences(context.getApplicationContext()).edit();
-        editor.putInt(VIEW_MODE, viewMode.getMode());
-        editor.apply();
-    }
-
-    public static ViewMode getViewMode(Context context) {
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(context.getApplicationContext());
-        int mode = prefs.getInt(VIEW_MODE, DEFAULT_VIEW_MODE);
-        switch (mode) {
-            case 0:
-                return ViewMode.LIST_MODE;
-            case 1:
-                return ViewMode.GRID_MODE;
-            case 2:
-                return ViewMode.STAGGERED_MODE;
-            default:
-                return ViewMode.LIST_MODE;
-        }
-    }
-
-    public static boolean isOnline(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getApplicationContext()
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable()
-                && cm.getActiveNetworkInfo().isConnected();
+    private FileUtils() {
     }
 
     public static String getMimeType(String filePath) {
@@ -77,7 +38,7 @@ public final class Utils {
 
     public static boolean isGifFile(String filePath) {
         String mimeType = getMimeType(filePath);
-        return !TextUtils.isEmpty(mimeType) && mimeType.startsWith(IMAGE_TYPE_GIF);
+        return !android.text.TextUtils.isEmpty(mimeType) && mimeType.startsWith(IMAGE_TYPE_GIF);
     }
 
     public static boolean isVisibleInfo(Context context) {

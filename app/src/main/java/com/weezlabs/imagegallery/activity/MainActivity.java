@@ -5,10 +5,9 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Toast;
 
+import com.google.gson.GsonBuilder;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -21,9 +20,15 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.fragment.BackHandledFragment;
 import com.weezlabs.imagegallery.fragment.BackHandledFragment.BackHandlerInterface;
+import com.weezlabs.imagegallery.model.flickr.Photo;
+import com.weezlabs.imagegallery.model.flickr.PhotosResponse;
 import com.weezlabs.imagegallery.model.flickr.User;
-import com.weezlabs.imagegallery.util.FlickrUtils;
-import com.weezlabs.imagegallery.util.Utils;
+import com.weezlabs.imagegallery.service.flickr.FlickrCallback;
+import com.weezlabs.imagegallery.util.NetworkUtils;
+
+import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
+import timber.log.Timber;
 
 
 public class MainActivity extends BaseActivity implements BackHandlerInterface {
@@ -40,7 +45,7 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
 
-        ViewMode viewMode = Utils.getViewMode(this);
+        ViewMode viewMode = mViewModeStorage.getViewMode();
         setupModeFragment(viewMode);
 
         AccountHeader accountHeader = new AccountHeaderBuilder()
@@ -78,24 +83,18 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
                                 .withIdentifier(ViewMode.STAGGERED_MODE.getMode()),
                         new DividerDrawerItem()
                 )
-                .withOnDrawerNavigationListener(new Drawer.OnDrawerNavigationListener() {
-                    @Override
-                    public boolean onNavigationClickListener(View view) {
-                        onBackPressed();
-                        return true;
-                    }
+                .withOnDrawerNavigationListener(view -> {
+                    onBackPressed();
+                    return true;
                 })
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(AdapterView<?> adapterView, View view, int position, long l, IDrawerItem drawerItem) {
-                        if (drawerItem != null) {
-                            if (isViewModeDrawerItem(drawerItem)) {
-                                changeViewMode(drawerItem.getIdentifier());
-                                mDrawer.closeDrawer();
-                            }
+                .withOnDrawerItemClickListener((adapterView, view, position, l, drawerItem) -> {
+                    if (drawerItem != null) {
+                        if (isViewModeDrawerItem(drawerItem)) {
+                            changeViewMode(drawerItem.getIdentifier());
+                            mDrawer.closeDrawer();
                         }
-                        return true;
                     }
+                    return true;
                 })
                 .build();
     }
@@ -106,7 +105,7 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
     }
 
     private int getDrawerSelectedMode() {
-        int viewMode = Utils.getViewMode(MainActivity.this).getMode();
+        int viewMode = mViewModeStorage.getViewMode().getMode();
         for (int i = 0; i < mDrawer.getDrawerItems().size(); i++) {
             if (viewMode == mDrawer.getDrawerItems().get(i).getIdentifier()) {
                 return i;
@@ -120,7 +119,7 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
         mMenu = menu;
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem item = menu.findItem(R.id.action_change_mode);
-        setupModeIcon(item, Utils.getViewMode(this));
+        setupModeIcon(item, mViewModeStorage.getViewMode());
         return true;
 
     }
@@ -130,6 +129,8 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
         int id = item.getItemId();
 
         switch (id) {
+            case R.id.action_test:
+                return true;
             case R.id.action_settings:
                 test();
                 return true;
@@ -146,14 +147,27 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
     }
 
     private void test() {
-        if (Utils.isOnline(this)) {
-            if (!FlickrUtils.isAuthenticated(getApplicationContext())) {
+        if (NetworkUtils.isOnline(this)) {
+            if (!mFlickrStorage.isAuthenticated()) {
                 Intent intent = new Intent(this, FlickrLoginActivity.class);
                 startActivity(intent);
             } else {
-                User user = FlickrUtils.restoreFlickrUser(getApplicationContext());
+                User user = mFlickrStorage.restoreFlickrUser();
                 if (user != null) {
                     Toast.makeText(this, "Flickr user: " + user.toString(), Toast.LENGTH_SHORT).show();
+                    mFlickrService.getUserPhotos(user.getFlickrId(),
+                            new FlickrCallback<Response>(MainActivity.this, mFlickrStorage) {
+                                @Override
+                                public void success(Response response, Response ignored) {
+                                    String jsonBody =
+                                            new String(((TypedByteArray) response.getBody()).getBytes());
+                                    PhotosResponse photosResponse = new GsonBuilder().create()
+                                            .fromJson(jsonBody, PhotosResponse.class);
+                                    for (Photo photo : photosResponse.getPhotos().getPhotoList()) {
+                                        Timber.i(photo.toString());
+                                    }
+                                }
+                            });
                 }
             }
         } else {

@@ -37,27 +37,17 @@ public abstract class OAuthTask extends AsyncTask<Void, Void, Void> {
     }
 
     protected void showErrorToUser(final OAuthException e) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(mContext,
-                        mContext.getString(R.string.toast_error_login, e.getMessage()),
-                        Toast.LENGTH_SHORT)
-                        .show();
-            }
-        });
+        runOnUiThread(() -> Toast.makeText(mContext,
+                mContext.getString(R.string.toast_error_login, e.getMessage()),
+                Toast.LENGTH_SHORT)
+                .show());
     }
 
     protected void showErrorToUser(final Exception e) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(mContext,
-                        mContext.getString(R.string.toast_error_login, e.getMessage()),
-                        Toast.LENGTH_SHORT)
-                        .show();
-            }
-        });
+        runOnUiThread(() -> Toast.makeText(mContext,
+                mContext.getString(R.string.toast_error_login, e.getMessage()),
+                Toast.LENGTH_SHORT)
+                .show());
     }
 
     private void runOnUiThread(Runnable runnable) {
