@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="flickr_endpoint_url">https://api.flickr.com/services/rest/</string>
     <string name="flickr_oauth_scheme">oauth</string>
     <string name="flickr_oauth_host">flickr</string>
     <string name="flickr_oauth_callback_url">oauth://flickr</string>

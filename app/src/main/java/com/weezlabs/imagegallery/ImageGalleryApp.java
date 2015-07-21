@@ -12,8 +12,9 @@ import com.bumptech.glide.MemoryCategory;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.squareup.leakcanary.LeakCanary;
 import com.weezlabs.imagegallery.dagger.AppComponent;
-import com.weezlabs.imagegallery.dagger.module.AppModule;
 import com.weezlabs.imagegallery.dagger.DaggerAppComponent;
+import com.weezlabs.imagegallery.dagger.module.NetworkModule;
+import com.weezlabs.imagegallery.dagger.module.StorageModule;
 
 import timber.log.Timber;
 
@@ -30,7 +31,8 @@ public class ImageGalleryApp extends Application {
         }
 
         mAppComponent = DaggerAppComponent.builder()
-                .appModule(new AppModule(this))
+                .storageModule(new StorageModule(this))
+                .networkModule(new NetworkModule())
                 .build();
 
         LeakCanary.install(this);

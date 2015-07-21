@@ -11,7 +11,7 @@ import com.weezlabs.imagegallery.storage.ViewModeStorage;
 import dagger.Module;
 import dagger.Provides;
 
-@Module(includes = {NetworkModule.class})
+@Module
 public class StorageModule {
 
     private Context mAppContext;
