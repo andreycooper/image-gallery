@@ -1,7 +1,19 @@
-<RelativeLayout
+<LinearLayout
     android:id="@+id/webview_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.weezlabs.imagegallery.activity.FlickrLoginActivity"/>
+    android:orientation="vertical"
+    tools:context="com.weezlabs.imagegallery.activity.FlickrLoginActivity">
+
+    <ProgressBar
+        android:id="@+id/webview_progress_horizontal"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="@integer/webview_progress_max"
+        android:minHeight="@dimen/webview_progress_min_height"
+        android:progressDrawable="@drawable/progress_drawable_blue"
+        android:visibility="gone"/>
+</LinearLayout>

@@ -1,5 +1,6 @@
 package com.weezlabs.imagegallery.activity;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -7,9 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -38,7 +42,7 @@ import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 import timber.log.Timber;
 
-public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCallBackListener {
+public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCallBackListener, OnPageLoadListener {
     private final static String LOG_TAG = FlickrLoginActivity.class.getSimpleName();
 
     public static final String ACCESS_TOKEN_URL = "https://www.flickr.com/services/oauth/access_token";
@@ -64,6 +68,7 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
     FlickrStorage mFlickrStorage;
     @Inject
     Lazy<FlickrService> mServiceLazy;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,10 +89,17 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
         mWebView = new WebView(getApplicationContext());
         // need JavaScript enabled for Flickr's login page
         mWebView.getSettings().setJavaScriptEnabled(true);
-        RelativeLayout webViewLayout = (RelativeLayout) findViewById(R.id.webview_layout);
+        LinearLayout webViewLayout = (LinearLayout) findViewById(R.id.webview_layout);
+        mProgressBar = (ProgressBar) findViewById(R.id.webview_progress_horizontal);
         webViewLayout.addView(mWebView);
 
-        WebViewClient webViewClient = new OAuthWebViewClient(this);
+        mWebView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                mProgressBar.setProgress(newProgress);
+            }
+        });
+        WebViewClient webViewClient = new OAuthWebViewClient(this, this);
         mWebView.setWebViewClient(webViewClient);
 
         initFlickr();
@@ -227,11 +239,38 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
         oAuthTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    @Override
+    public void onPageStarted() {
+        mProgressBar.setVisibility(View.VISIBLE);
+        mProgressBar.setProgress(0);
+    }
+
+    @Override
+    public void onPageFinished() {
+        mProgressBar.setProgress(getResources().getInteger(R.integer.webview_progress_max));
+        mProgressBar.setVisibility(View.GONE);
+    }
+
     private static class OAuthWebViewClient extends WebViewClient {
         OnOAuthCallBackListener mCallBackListener;
+        OnPageLoadListener mPageLoadListener;
 
-        public OAuthWebViewClient(OnOAuthCallBackListener listener) {
+        public OAuthWebViewClient(OnOAuthCallBackListener listener,
+                                  OnPageLoadListener pageLoadListener) {
             mCallBackListener = listener;
+            mPageLoadListener = pageLoadListener;
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+            mPageLoadListener.onPageStarted();
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            mPageLoadListener.onPageFinished();
         }
 
         @Override
