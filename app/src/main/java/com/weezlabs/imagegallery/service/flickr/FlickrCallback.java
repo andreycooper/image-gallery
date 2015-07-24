@@ -13,8 +13,8 @@ import retrofit.RetrofitError;
 public abstract class FlickrCallback<T> implements Callback<T> {
     public static final int UNAUTHORIZED_CODE = 401;
 
-    private Context mContext;
-    private FlickrStorage mFlickrStorage;
+    protected Context mContext;
+    protected FlickrStorage mFlickrStorage;
 
     public FlickrCallback(Context context, FlickrStorage flickrStorage) {
         mContext = context.getApplicationContext();

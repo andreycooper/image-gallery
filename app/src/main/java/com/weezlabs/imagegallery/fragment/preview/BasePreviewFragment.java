@@ -8,7 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.model.local.Image;
+import com.weezlabs.imagegallery.model.Image;
+import com.weezlabs.imagegallery.model.flickr.Photo;
+import com.weezlabs.imagegallery.model.local.LocalImage;
 import com.weezlabs.imagegallery.tool.Events;
 import com.weezlabs.imagegallery.util.FileUtils;
 
@@ -28,7 +30,12 @@ public abstract class BasePreviewFragment extends Fragment {
             fragment = new PreviewImageFragment();
         }
         Bundle args = new Bundle();
-        args.putParcelable(IMAGE, image);
+        // TODO: maybe refactor this ugly code :(
+        if (image instanceof LocalImage) {
+            args.putParcelable(IMAGE, (LocalImage) image);
+        } else if (image instanceof Photo) {
+            args.putParcelable(IMAGE, (Photo) image);
+        }
         fragment.setArguments(args);
         return fragment;
     }

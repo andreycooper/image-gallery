@@ -14,6 +14,7 @@ import com.squareup.leakcanary.LeakCanary;
 import com.weezlabs.imagegallery.dagger.AppComponent;
 import com.weezlabs.imagegallery.dagger.DaggerAppComponent;
 import com.weezlabs.imagegallery.dagger.module.NetworkModule;
+import com.weezlabs.imagegallery.dagger.module.ServiceModule;
 import com.weezlabs.imagegallery.dagger.module.StorageModule;
 
 import timber.log.Timber;
@@ -33,6 +34,7 @@ public class ImageGalleryApp extends Application {
         mAppComponent = DaggerAppComponent.builder()
                 .storageModule(new StorageModule(this))
                 .networkModule(new NetworkModule())
+                .serviceModule(new ServiceModule())
                 .build();
 
         LeakCanary.install(this);

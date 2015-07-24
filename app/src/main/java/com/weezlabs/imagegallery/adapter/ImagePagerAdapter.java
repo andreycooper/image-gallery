@@ -8,7 +8,7 @@ import android.text.TextUtils;
 import android.view.ViewGroup;
 
 import com.weezlabs.imagegallery.fragment.preview.BasePreviewFragment;
-import com.weezlabs.imagegallery.model.local.Image;
+import com.weezlabs.imagegallery.model.local.LocalImage;
 import com.weezlabs.imagegallery.tool.Events;
 
 import de.greenrobot.event.EventBus;
@@ -29,11 +29,11 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        Image image = null;
+        LocalImage localImage = null;
         if (mCursor != null && mCursor.moveToPosition(position)) {
-            image = new Image(mCursor);
+            localImage = new LocalImage(mCursor);
         }
-        return BasePreviewFragment.newInstance(image);
+        return BasePreviewFragment.newInstance(localImage);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
         super.setPrimaryItem(container, position, object);
         String imageName = null;
         if (mCursor != null && mCursor.moveToPosition(position)) {
-            imageName = Image.getDisplayName(mCursor);
+            imageName = LocalImage.getDisplayName(mCursor);
         }
         if (!TextUtils.isEmpty(imageName)) {
             EventBus.getDefault().post(new Events.ChangeTitleEvent(imageName));

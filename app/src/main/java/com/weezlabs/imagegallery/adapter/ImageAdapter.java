@@ -11,7 +11,8 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.adapter.viewholder.ImageViewHolder;
-import com.weezlabs.imagegallery.model.local.Image;
+import com.weezlabs.imagegallery.model.Image;
+import com.weezlabs.imagegallery.model.local.LocalImage;
 
 
 public class ImageAdapter extends CursorAdapter {
@@ -43,22 +44,22 @@ public class ImageAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         ImageViewHolder holder = (ImageViewHolder) view.getTag();
 
-        Image image = new Image(cursor);
+        LocalImage localImage = new LocalImage(cursor);
 
-        String imageDate = context.getString(R.string.label_image_date, image.getReadableTakenDate(context));
-        String imageSize = context.getString(R.string.label_image_size, image.getSize(context));
+        String imageDate = context.getString(R.string.label_image_date, localImage.getReadableTakenDate(context));
+        String imageSize = context.getString(R.string.label_image_size, localImage.getSize(context));
 
-        holder.imageName.setText(image.getDisplayName());
+        holder.imageName.setText(localImage.getDisplayName());
         holder.imageDate.setText(imageDate);
         holder.imageSize.setText(imageSize);
 
         setInfoVisibility(holder, isVisibleInfo());
 
-        loadImage(context, holder.image, image);
+        loadImage(context, holder.image, localImage);
     }
 
-    public Image getImage(int clickedPosition) {
-        return new Image((Cursor) getItem(clickedPosition));
+    public LocalImage getImage(int clickedPosition) {
+        return new LocalImage((Cursor) getItem(clickedPosition));
     }
 
     protected void loadImage(Context context, ImageView imageView, Image image) {

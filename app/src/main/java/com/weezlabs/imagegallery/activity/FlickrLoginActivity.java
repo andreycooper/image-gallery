@@ -15,12 +15,10 @@ import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.path.android.jobqueue.JobManager;
 import com.weezlabs.imagegallery.ImageGalleryApp;
 import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.model.flickr.User;
-import com.weezlabs.imagegallery.service.flickr.FlickrCallback;
+import com.weezlabs.imagegallery.job.LoginFlickrUserJob;
 import com.weezlabs.imagegallery.service.flickr.FlickrService;
 import com.weezlabs.imagegallery.service.oauth.OAuthTask;
 import com.weezlabs.imagegallery.service.oauth.OnOAuthCallBackListener;
@@ -38,8 +36,6 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
-import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
 import timber.log.Timber;
 
 public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCallBackListener, OnPageLoadListener {
@@ -53,11 +49,6 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
     private static final String PERMS_WRITE = "&perms=write";
     private static final String PERMS_DELETE = "&perms=delete";
 
-    private static final String JSON_USER_KEY = "user";
-    private static final String JSON_USER_ID_KEY = "id";
-    private static final String JSON_USERNAME_KEY = "username";
-    private static final String JSON_USERNAME_CONTENT_KEY = "_content";
-
     private WebView mWebView;
     private String mAuthUrl;
 
@@ -68,6 +59,9 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
     FlickrStorage mFlickrStorage;
     @Inject
     Lazy<FlickrService> mServiceLazy;
+    @Inject
+    Lazy<JobManager> mJobManagerLazy;
+
     private ProgressBar mProgressBar;
 
     @Override
@@ -146,7 +140,7 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
                     mAuthUrl = mProvider.retrieveRequestToken(mConsumer, oauthCallBackUrl);
                     // need append permission to 'https://www.flickr.com/services/oauth/authorize?oauth_token=TOKEN'
                     // because Flickr throw error without it
-                    mAuthUrl += PERMS_DELETE;
+                    mAuthUrl += PERMS_READ;
                     Timber.d("mAuthUrl: %s", mAuthUrl);
                 } catch (OAuthMessageSignerException e) {
                     showErrorToUser(e);
@@ -213,25 +207,8 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
                 super.onPostExecute(aVoid);
                 if (mFlickrStorage.isAuthenticated()) {
                     FlickrService service = mServiceLazy.get();
-                    service.loginUser(new FlickrCallback<Response>(getApplicationContext(),
-                            mFlickrStorage) {
-                        @Override
-                        public void success(Response response, Response ignored) {
-                            String jsonBody =
-                                    new String(((TypedByteArray) response.getBody()).getBytes());
-                            JsonObject json = new GsonBuilder().create()
-                                    .fromJson(jsonBody, JsonObject.class);
-
-                            String userId = json.get(JSON_USER_KEY).getAsJsonObject()
-                                    .get(JSON_USER_ID_KEY).getAsString();
-                            String username = json.get(JSON_USER_KEY).getAsJsonObject()
-                                    .get(JSON_USERNAME_KEY).getAsJsonObject()
-                                    .get(JSON_USERNAME_CONTENT_KEY).getAsString();
-                            User user = new User(userId, username);
-                            Timber.d("Flickr user: %s", user.toString());
-                            mFlickrStorage.saveUser(user);
-                        }
-                    });
+                    JobManager jobManager = mJobManagerLazy.get();
+                    jobManager.addJobInBackground(new LoginFlickrUserJob(mFlickrStorage, service));
                 }
                 finish();
             }
@@ -278,11 +255,11 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
             Uri uri = Uri.parse(url);
             String scheme = view.getContext().getString(R.string.flickr_oauth_scheme);
             if (uri.getScheme().equals(scheme)) {
-                // TODO: try to post event with Uri to prevent memory leak and subscribe activity
                 mCallBackListener.onOAuthCallback(uri);
                 return true;
             }
             return super.shouldOverrideUrlLoading(view, url);
         }
     }
+
 }

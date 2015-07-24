@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="json_value_ok">ok</string>
+    <string name="json_value_fail">fail</string>
+</resources>

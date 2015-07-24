@@ -8,12 +8,13 @@ import android.provider.MediaStore;
 import android.text.format.Formatter;
 
 import com.weezlabs.imagegallery.R;
+import com.weezlabs.imagegallery.model.Image;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 
-public class Image implements Parcelable {
+public class LocalImage implements Parcelable, Image {
 
     private int mId;
     private long mTakenDate;
@@ -40,7 +41,7 @@ public class Image implements Parcelable {
                 null;
     }
 
-    public Image(Cursor cursor) {
+    public LocalImage(Cursor cursor) {
         mId = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media._ID));
         mTakenDate = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN));
         mDateModified = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED));
@@ -83,10 +84,17 @@ public class Image implements Parcelable {
         return mDisplayName;
     }
 
+    @Override
     public String getPath() {
         return mPath;
     }
 
+    @Override
+    public String getOriginalPath() {
+        return mPath;
+    }
+
+    @Override
     public String getMimeType() {
         return mMimeType;
     }
@@ -95,10 +103,12 @@ public class Image implements Parcelable {
         return mOrientation;
     }
 
+    @Override
     public int getWidth() {
         return mWidth;
     }
 
+    @Override
     public int getHeight() {
         return mHeight;
     }
@@ -113,7 +123,7 @@ public class Image implements Parcelable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Image{");
+        final StringBuilder sb = new StringBuilder("LocalImage{");
         sb.append("mId=").append(mId);
         sb.append(", mTakenDate=").append(mTakenDate);
         sb.append(", mDateModified=").append(mDateModified);
@@ -162,7 +172,7 @@ public class Image implements Parcelable {
         dest.writeString(this.mBucketName);
     }
 
-    protected Image(Parcel in) {
+    protected LocalImage(Parcel in) {
         this.mId = in.readInt();
         this.mTakenDate = in.readLong();
         this.mDateModified = in.readLong();
@@ -177,13 +187,13 @@ public class Image implements Parcelable {
         this.mBucketName = in.readString();
     }
 
-    public static final Parcelable.Creator<Image> CREATOR = new Parcelable.Creator<Image>() {
-        public Image createFromParcel(Parcel source) {
-            return new Image(source);
+    public static final Parcelable.Creator<LocalImage> CREATOR = new Parcelable.Creator<LocalImage>() {
+        public LocalImage createFromParcel(Parcel source) {
+            return new LocalImage(source);
         }
 
-        public Image[] newArray(int size) {
-            return new Image[size];
+        public LocalImage[] newArray(int size) {
+            return new LocalImage[size];
         }
     };
 }

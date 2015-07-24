@@ -7,7 +7,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.google.gson.GsonBuilder;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -20,15 +19,10 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.fragment.BackHandledFragment;
 import com.weezlabs.imagegallery.fragment.BackHandledFragment.BackHandlerInterface;
-import com.weezlabs.imagegallery.model.flickr.Photo;
-import com.weezlabs.imagegallery.model.flickr.PhotosResponse;
+import com.weezlabs.imagegallery.job.FetchFlickrPhotosJob;
+import com.weezlabs.imagegallery.job.LoginFlickrUserJob;
 import com.weezlabs.imagegallery.model.flickr.User;
-import com.weezlabs.imagegallery.service.flickr.FlickrCallback;
 import com.weezlabs.imagegallery.util.NetworkUtils;
-
-import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
-import timber.log.Timber;
 
 
 public class MainActivity extends BaseActivity implements BackHandlerInterface {
@@ -154,20 +148,9 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
             } else {
                 User user = mFlickrStorage.restoreFlickrUser();
                 if (user != null) {
-                    Toast.makeText(this, "Flickr user: " + user.toString(), Toast.LENGTH_SHORT).show();
-                    mFlickrService.getUserPhotos(user.getFlickrId(),
-                            new FlickrCallback<Response>(MainActivity.this, mFlickrStorage) {
-                                @Override
-                                public void success(Response response, Response ignored) {
-                                    String jsonBody =
-                                            new String(((TypedByteArray) response.getBody()).getBytes());
-                                    PhotosResponse photosResponse = new GsonBuilder().create()
-                                            .fromJson(jsonBody, PhotosResponse.class);
-                                    for (Photo photo : photosResponse.getPhotos().getPhotoList()) {
-                                        Timber.i(photo.toString());
-                                    }
-                                }
-                            });
+                    mJobManager.addJobInBackground(new FetchFlickrPhotosJob(mFlickrStorage, mFlickrService));
+                } else {
+                    mJobManager.addJobInBackground(new LoginFlickrUserJob(mFlickrStorage, mFlickrService));
                 }
             }
         } else {

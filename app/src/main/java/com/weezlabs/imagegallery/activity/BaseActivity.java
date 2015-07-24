@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.path.android.jobqueue.JobManager;
 import com.weezlabs.imagegallery.ImageGalleryApp;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.fragment.folder.FolderGridFragment;
@@ -28,6 +29,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     FlickrStorage mFlickrStorage;
     @Inject
     FlickrService mFlickrService;
+    @Inject
+    JobManager mJobManager;
 
 
     @Override

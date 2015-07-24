@@ -12,15 +12,15 @@ public class FolderViewModel {
 
     public static final int MAX_COUNT_IMAGES = 4;
 
-    private List<Image> mImages;
+    private List<LocalImage> mLocalImages;
     private int mImageCount;
 
     public FolderViewModel(Cursor cursor) {
-        mImages = new ArrayList<>();
+        mLocalImages = new ArrayList<>();
         int i = 0;
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                mImages.add(new Image(cursor));
+                mLocalImages.add(new LocalImage(cursor));
                 i++;
             } while (i < MAX_COUNT_IMAGES && cursor.moveToNext());
             mImageCount = cursor.getCount();
@@ -34,7 +34,7 @@ public class FolderViewModel {
         return mImageCount;
     }
 
-    public List<Image> getImages() {
-        return mImages;
+    public List<LocalImage> getLocalImages() {
+        return mLocalImages;
     }
 }

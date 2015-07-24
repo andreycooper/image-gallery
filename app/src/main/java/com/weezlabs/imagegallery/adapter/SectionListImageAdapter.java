@@ -12,7 +12,7 @@ import com.twotoasters.sectioncursoradapter.adapter.SectionCursorAdapter;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.adapter.viewholder.ImageViewHolder;
 import com.weezlabs.imagegallery.adapter.viewholder.SectionViewHolder;
-import com.weezlabs.imagegallery.model.local.Image;
+import com.weezlabs.imagegallery.model.local.LocalImage;
 import com.weezlabs.imagegallery.util.TextUtils;
 
 import java.text.SimpleDateFormat;
@@ -63,27 +63,27 @@ public class SectionListImageAdapter
 
     protected void bindItemViewHolder(ImageViewHolder holder, Cursor cursor, ViewGroup viewGroup) {
         if (holder == null) return;
-        Image image = new Image(cursor);
+        LocalImage localImage = new LocalImage(cursor);
 
-        String imageDate = mContext.getString(R.string.label_image_date, image.getReadableTakenDate(mContext));
-        String imageSize = mContext.getString(R.string.label_image_size, image.getSize(mContext));
+        String imageDate = mContext.getString(R.string.label_image_date, localImage.getReadableTakenDate(mContext));
+        String imageSize = mContext.getString(R.string.label_image_size, localImage.getSize(mContext));
 
-        holder.imageName.setText(image.getDisplayName());
+        holder.imageName.setText(localImage.getDisplayName());
         holder.imageDate.setText(imageDate);
         holder.imageSize.setText(imageSize);
 
         setInfoVisibility(holder);
 
-        loadImage(mContext, holder.image, image);
+        loadImage(mContext, holder.image, localImage);
     }
 
-    public Image getImage(int clickedPosition) {
-        return new Image((Cursor) getItem(clickedPosition));
+    public LocalImage getImage(int clickedPosition) {
+        return new LocalImage((Cursor) getItem(clickedPosition));
     }
 
-    protected void loadImage(Context context, ImageView imageView, Image image) {
+    protected void loadImage(Context context, ImageView imageView, LocalImage localImage) {
         Glide.with(context)
-                .load(image.getPath())
+                .load(localImage.getPath())
                 .placeholder(R.drawable.ic_image_placeholder_48dp)
                 .centerCrop()
                 .crossFade()

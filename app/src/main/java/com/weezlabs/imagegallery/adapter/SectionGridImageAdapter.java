@@ -84,7 +84,6 @@ public class SectionGridImageAdapter extends ImageAdapter
         for (char ch : header.toCharArray()) {
             id += ch;
         }
-        Timber.i("id for $s is: %s", header, id);
         return id;
     }
 }

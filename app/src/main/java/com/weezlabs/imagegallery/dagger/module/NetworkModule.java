@@ -60,9 +60,10 @@ public class NetworkModule {
 
     @PerActivity
     @Provides
-    public FlickrService provideFlickrService(FlickrStorage flickrStorage,
+    public FlickrService provideFlickrService(Context context,
+                                              FlickrStorage flickrStorage,
                                               RetrofitHttpOAuthConsumer oAuthConsumer,
                                               FlickrApi api) {
-        return new FlickrService(flickrStorage, oAuthConsumer, api);
+        return new FlickrService(context, flickrStorage, oAuthConsumer, api);
     }
 }

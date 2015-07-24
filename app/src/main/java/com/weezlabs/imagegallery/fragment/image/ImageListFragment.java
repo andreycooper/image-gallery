@@ -14,7 +14,7 @@ import com.twotoasters.sectioncursoradapter.adapter.SectionCursorAdapter;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.activity.PreviewActivity;
 import com.weezlabs.imagegallery.adapter.SectionListImageAdapter;
-import com.weezlabs.imagegallery.model.local.Image;
+import com.weezlabs.imagegallery.model.local.LocalImage;
 
 import timber.log.Timber;
 
@@ -61,10 +61,10 @@ public class ImageListFragment extends BaseImageFragment {
             Timber.d("Section: %s", sectionObject.toString());
         } else if (cursorPosition != SectionCursorAdapter.NO_CURSOR_POSITION) {
             // Handle the cursor item being clicked on.
-            Image image = adapter.getImage(position);
+            LocalImage localImage = adapter.getImage(position);
             Intent intent = new Intent(getActivity(), PreviewActivity.class);
             intent.putExtra(PreviewActivity.EXTRA_IMAGE_POSITION, cursorPosition);
-            intent.putExtra(PreviewActivity.EXTRA_BUCKET_ID, image.getBucketId());
+            intent.putExtra(PreviewActivity.EXTRA_BUCKET_ID, localImage.getBucketId());
             getActivity().startActivity(intent);
         }
         return null;

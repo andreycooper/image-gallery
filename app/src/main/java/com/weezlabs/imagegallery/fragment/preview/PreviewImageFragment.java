@@ -23,7 +23,7 @@ public class PreviewImageFragment extends BasePreviewFragment {
         final SubsamplingScaleImageView scaleImageView = (SubsamplingScaleImageView) imageView;
 
         Glide.with(getActivity())
-                .load(mImage.getPath())
+                .load(mImage.getOriginalPath())
                 .asBitmap()
                 .into(new ViewTarget<SubsamplingScaleImageView, Bitmap>(scaleImageView) {
                     @Override

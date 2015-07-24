@@ -13,7 +13,8 @@ import java.net.URLEncoder;
 
 
 public final class FileUtils {
-    public static final String IMAGE_TYPE_GIF = "image/gif";
+    public static final String IMAGE_TYPE = "image/";
+    public static final String IMAGE_TYPE_GIF = IMAGE_TYPE + "gif";
     private static final String IS_VISIBLE_INFO = "is_visible_info";
     private static final String UTF_8 = "UTF-8";
 
