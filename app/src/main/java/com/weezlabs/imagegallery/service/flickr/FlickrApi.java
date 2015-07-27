@@ -10,6 +10,6 @@ import retrofit.http.QueryMap;
 
 public interface FlickrApi {
     @GET("/")
-    JsonObject executeFlickrRequest(@QueryMap Map<String, String> options);
+    JsonObject executeFlickrRequest(@QueryMap Map<String, String> parameters);
 
 }

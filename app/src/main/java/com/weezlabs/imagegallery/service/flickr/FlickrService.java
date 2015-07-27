@@ -1,6 +1,7 @@
 package com.weezlabs.imagegallery.service.flickr;
 
 import android.content.Context;
+import android.support.v4.util.ArrayMap;
 
 import com.google.gson.JsonObject;
 import com.weezlabs.imagegallery.R;
@@ -9,7 +10,6 @@ import com.weezlabs.imagegallery.model.flickr.User;
 import com.weezlabs.imagegallery.service.oauth.RetrofitHttpOAuthConsumer;
 import com.weezlabs.imagegallery.storage.FlickrStorage;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -21,7 +21,7 @@ public class FlickrService {
     private FlickrStorage mFlickrStorage;
     private RetrofitHttpOAuthConsumer mOAuthConsumer;
     private FlickrApi mApi;
-    private Map<String, String> mJsonParams;
+    private ArrayMap<String, String> mJsonParams;
 
     @Inject
     public FlickrService(Context context, FlickrStorage flickrStorage,
@@ -30,7 +30,7 @@ public class FlickrService {
         mFlickrStorage = flickrStorage;
         mOAuthConsumer = OAuthConsumer;
         mApi = api;
-        mJsonParams = new HashMap<>();
+        mJsonParams = new ArrayMap<>();
         mJsonParams.put(context.getString(R.string.request_key_format),
                 context.getString(R.string.request_value_json));
         mJsonParams.put(context.getString(R.string.request_key_no_json_callback),
@@ -96,12 +96,12 @@ public class FlickrService {
         return parseRawResponse(mApi.executeFlickrRequest(params));
     }
 
-    private HashMap<String, String> getParamsWithMethod(int methodId) {
+    private ArrayMap<String, String> getParamsWithMethod(int methodId) {
         return getParamsWithMethod(getString(methodId));
     }
 
-    private HashMap<String, String> getParamsWithMethod(String method) {
-        HashMap<String, String> params = new HashMap<>(mJsonParams);
+    private ArrayMap<String, String> getParamsWithMethod(String method) {
+        ArrayMap<String, String> params = new ArrayMap<>(mJsonParams);
         params.put(getString(R.string.request_key_method), method);
         return params;
     }
