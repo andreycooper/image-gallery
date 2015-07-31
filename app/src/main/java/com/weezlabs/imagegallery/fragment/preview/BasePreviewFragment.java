@@ -9,16 +9,16 @@ import android.view.ViewGroup;
 
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.model.Image;
-import com.weezlabs.imagegallery.model.flickr.Photo;
-import com.weezlabs.imagegallery.model.local.LocalImage;
 import com.weezlabs.imagegallery.tool.Events;
 import com.weezlabs.imagegallery.util.FileUtils;
+import com.weezlabs.imagegallery.util.ImageFactory;
 
 import de.greenrobot.event.EventBus;
 
+import static com.weezlabs.imagegallery.util.ImageFactory.IMAGE;
+
 
 public abstract class BasePreviewFragment extends Fragment {
-    protected static final String IMAGE = "com.weezlabs.imagegallery.IMAGE";
 
     protected Image mImage;
 
@@ -29,13 +29,7 @@ public abstract class BasePreviewFragment extends Fragment {
         } else {
             fragment = new PreviewImageFragment();
         }
-        Bundle args = new Bundle();
-        // TODO: maybe refactor this ugly code :(
-        if (image instanceof LocalImage) {
-            args.putParcelable(IMAGE, (LocalImage) image);
-        } else if (image instanceof Photo) {
-            args.putParcelable(IMAGE, (Photo) image);
-        }
+        Bundle args = ImageFactory.buildFragmentArguments(image);
         fragment.setArguments(args);
         return fragment;
     }

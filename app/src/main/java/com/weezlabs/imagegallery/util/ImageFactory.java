@@ -2,6 +2,7 @@ package com.weezlabs.imagegallery.util;
 
 
 import android.database.Cursor;
+import android.os.Bundle;
 import android.provider.MediaStore;
 
 import com.weezlabs.imagegallery.model.Image;
@@ -9,6 +10,8 @@ import com.weezlabs.imagegallery.model.flickr.Photo;
 import com.weezlabs.imagegallery.model.local.LocalImage;
 
 public final class ImageFactory {
+
+    public static final String IMAGE = "com.weezlabs.imagegallery.IMAGE";
 
     private ImageFactory() {
 
@@ -32,5 +35,15 @@ public final class ImageFactory {
             }
         }
         return title;
+    }
+
+    public static Bundle buildFragmentArguments(Image image){
+        Bundle args = new Bundle();
+        if (image instanceof LocalImage) {
+            args.putParcelable(IMAGE, (LocalImage) image);
+        } else if (image instanceof Photo) {
+            args.putParcelable(IMAGE, (Photo) image);
+        }
+        return args;
     }
 }
