@@ -72,6 +72,7 @@ public class LocalImage implements Parcelable, Image {
         return mDateModified;
     }
 
+    @Override
     public long getSize() {
         return mSize;
     }
@@ -109,10 +110,16 @@ public class LocalImage implements Parcelable, Image {
     }
 
     @Override
+    public String getTitle() {
+        return getDisplayName();
+    }
+
+    @Override
     public int getHeight() {
         return mHeight;
     }
 
+    @Override
     public long getBucketId() {
         return mBucketId;
     }

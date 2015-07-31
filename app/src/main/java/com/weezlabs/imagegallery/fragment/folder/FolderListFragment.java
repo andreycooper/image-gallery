@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.adapter.FolderAdapter;
+import com.weezlabs.imagegallery.view.adapter.FolderAdapter;
 import com.weezlabs.imagegallery.fragment.image.ImageListFragment;
 
 
@@ -39,11 +39,6 @@ public class FolderListFragment extends BaseFolderFragment {
         mListView.setAdapter(mFolderAdapter);
         mListView.setOnItemClickListener(new OnFolderItemClickListener());
         return rootView;
-    }
-
-    @Override
-    protected Fragment getImageFragment(long bucketId) {
-        return ImageListFragment.newInstance(bucketId);
     }
 
 }

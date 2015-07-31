@@ -12,9 +12,9 @@ import android.widget.AdapterView;
 import com.etsy.android.grid.StaggeredGridView;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.activity.PreviewActivity;
-import com.weezlabs.imagegallery.adapter.ImageAdapter;
-import com.weezlabs.imagegallery.adapter.StaggeredImageAdapter;
-import com.weezlabs.imagegallery.model.local.LocalImage;
+import com.weezlabs.imagegallery.model.Image;
+import com.weezlabs.imagegallery.view.adapter.ImageAdapter;
+import com.weezlabs.imagegallery.view.adapter.StaggeredImageAdapter;
 
 import timber.log.Timber;
 
@@ -25,7 +25,7 @@ public class ImageStaggeredFragment extends BaseImageFragment {
     public static ImageStaggeredFragment newInstance(long bucketId) {
         ImageStaggeredFragment fragment = new ImageStaggeredFragment();
         Bundle args = new Bundle();
-        args.putLong(FOLDER_ID, bucketId);
+        args.putLong(BUCKET_ID, bucketId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -53,10 +53,10 @@ public class ImageStaggeredFragment extends BaseImageFragment {
     protected Intent getPreviewIntent(AdapterView<?> parent, View view, int position, long id) {
         Timber.d("click in ImageAdapter, position: %s, id: %s", position, id);
 
-        LocalImage localImage = ((ImageAdapter) mImageAdapter).getImage(position);
+        Image image = ((ImageAdapter) mImageAdapter).getImage(position);
         Intent intent = new Intent(getActivity(), PreviewActivity.class);
         intent.putExtra(PreviewActivity.EXTRA_IMAGE_POSITION, position);
-        intent.putExtra(PreviewActivity.EXTRA_BUCKET_ID, localImage.getBucketId());
+        intent.putExtra(PreviewActivity.EXTRA_BUCKET_ID, image.getBucketId());
         return intent;
     }
 }

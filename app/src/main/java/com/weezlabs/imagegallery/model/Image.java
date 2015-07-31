@@ -6,9 +6,17 @@ public interface Image {
 
     int getWidth();
 
+    String getTitle();
+
     String getPath();
 
     String getOriginalPath();
 
     String getMimeType();
+
+    long getBucketId();
+
+    long getTakenDate();
+
+    long getSize();
 }

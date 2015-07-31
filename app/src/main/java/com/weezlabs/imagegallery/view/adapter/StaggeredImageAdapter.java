@@ -1,4 +1,4 @@
-package com.weezlabs.imagegallery.adapter;
+package com.weezlabs.imagegallery.view.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,7 +8,6 @@ import com.bumptech.glide.Glide;
 import com.etsy.android.grid.util.DynamicHeightImageView;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.model.Image;
-import com.weezlabs.imagegallery.model.local.LocalImage;
 
 
 public class StaggeredImageAdapter extends ImageAdapter {

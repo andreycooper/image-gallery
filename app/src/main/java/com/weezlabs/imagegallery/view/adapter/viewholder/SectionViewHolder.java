@@ -1,4 +1,4 @@
-package com.weezlabs.imagegallery.adapter.viewholder;
+package com.weezlabs.imagegallery.view.adapter.viewholder;
 
 
 import android.view.View;

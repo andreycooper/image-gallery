@@ -1,11 +1,11 @@
-package com.weezlabs.imagegallery.adapter.viewholder;
+package com.weezlabs.imagegallery.view.adapter.viewholder;
 
 import android.view.View;
 import android.widget.TextView;
 
 import com.twotoasters.sectioncursoradapter.adapter.viewholder.ViewHolder;
 import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.widget.FolderView;
+import com.weezlabs.imagegallery.view.widget.FolderView;
 
 
 public class FolderViewHolder extends ViewHolder {

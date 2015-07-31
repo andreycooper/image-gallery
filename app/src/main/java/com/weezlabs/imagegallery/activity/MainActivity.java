@@ -17,17 +17,14 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.fragment.BackHandledFragment;
-import com.weezlabs.imagegallery.fragment.BackHandledFragment.BackHandlerInterface;
 import com.weezlabs.imagegallery.job.FetchFlickrPhotosJob;
 import com.weezlabs.imagegallery.job.LoginFlickrUserJob;
 import com.weezlabs.imagegallery.model.flickr.User;
 import com.weezlabs.imagegallery.util.NetworkUtils;
 
 
-public class MainActivity extends BaseActivity implements BackHandlerInterface {
+public class MainActivity extends BaseActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
-    private BackHandledFragment mBackHandledFragment;
     private Drawer mDrawer;
     private Toolbar mToolbar;
 
@@ -39,9 +36,6 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
 
-        ViewMode viewMode = mViewModeStorage.getViewMode();
-        setupModeFragment(viewMode);
-
         AccountHeader accountHeader = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withSavedInstance(savedInstanceState)
@@ -49,7 +43,6 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
                 .withHeaderBackground(R.drawable.drawer_header_background)
                 .build();
         mDrawer = getDrawer(accountHeader, savedInstanceState);
-        mDrawer.setSelection(getDrawerSelectedMode(), false);
     }
 
     private Drawer getDrawer(AccountHeader accountHeader, Bundle savedInstanceState) {
@@ -109,10 +102,24 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        // TODO: create abstract method setupUi() in base activity
+        // show correct fragment also correct states of drawer and menu
+        ViewMode viewMode = mViewModeStorage.getViewMode();
+        setupModeFragment(viewMode);
+        if (mMenu != null) {
+            MenuItem item = mMenu.findItem(R.id.action_change_mode);
+            setupModeIcon(item, mViewModeStorage.getViewMode());
+        }
+        mDrawer.setSelection(getDrawerSelectedMode(), false);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         mMenu = menu;
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        MenuItem item = menu.findItem(R.id.action_change_mode);
+        getMenuInflater().inflate(R.menu.menu_main, mMenu);
+        MenuItem item = mMenu.findItem(R.id.action_change_mode);
         setupModeIcon(item, mViewModeStorage.getViewMode());
         return true;
 
@@ -173,36 +180,8 @@ public class MainActivity extends BaseActivity implements BackHandlerInterface {
         if (mDrawer.isDrawerOpen()) {
             mDrawer.closeDrawer();
         } else {
-            if (mBackHandledFragment == null || !mBackHandledFragment.onBackPressed()) {
-                // Selected fragment did not consume the back press event.
-                super.onBackPressed();
-            }
+            super.onBackPressed();
         }
     }
 
-    @Override
-    public void setSelectedFragment(BackHandledFragment selectedFragment) {
-        this.mBackHandledFragment = selectedFragment;
-    }
-
-    @Override
-    public void setTitle(String title) {
-        mToolbar.setTitle(title);
-    }
-
-    @Override
-    public void setBackArrow() {
-        if (getSupportActionBar() != null) {
-            mDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
-    @Override
-    public void setHamburgerIcon() {
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            mDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
-        }
-    }
 }

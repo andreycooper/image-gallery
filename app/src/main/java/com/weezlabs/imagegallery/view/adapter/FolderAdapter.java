@@ -1,4 +1,4 @@
-package com.weezlabs.imagegallery.adapter;
+package com.weezlabs.imagegallery.view.adapter;
 
 import android.content.Context;
 import android.content.CursorLoader;
@@ -12,9 +12,9 @@ import android.widget.CursorAdapter;
 
 import com.bumptech.glide.Glide;
 import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.adapter.viewholder.FolderViewHolder;
 import com.weezlabs.imagegallery.model.local.Bucket;
 import com.weezlabs.imagegallery.model.local.FolderViewModel;
+import com.weezlabs.imagegallery.view.adapter.viewholder.FolderViewHolder;
 
 import static com.weezlabs.imagegallery.model.local.FolderViewModel.MAX_COUNT_IMAGES;
 
@@ -43,8 +43,8 @@ public class FolderAdapter extends CursorAdapter {
         FolderViewHolder holder = (FolderViewHolder) view.getTag();
 
         Bucket bucket = new Bucket(cursor);
-        FolderViewModel folderViewModel = getFolderViewModel(context, bucket.getBucketId());
-        fillHolderViews(context, holder, bucket.getBucketName(), folderViewModel);
+        FolderViewModel folderViewModel = getFolderViewModel(context.getApplicationContext(), bucket.getBucketId());
+        fillHolderViews(context.getApplicationContext(), holder, bucket.getBucketName(), folderViewModel);
 
     }
 

@@ -8,6 +8,9 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
+import com.weezlabs.imagegallery.db.FlickrContentProvider;
+import com.weezlabs.imagegallery.model.flickr.Photo;
+
 import java.lang.ref.WeakReference;
 
 
@@ -49,6 +52,11 @@ public class ImageCursorProvider implements LoaderManager.LoaderCallbacks<Cursor
         }
         switch (id) {
             case IMAGES_LOADER:
+                if (bucketId == Photo.FLICKR_BUCKET_ID) {
+                    return new CursorLoader(mActivityWeakReference.get(),
+                            FlickrContentProvider.PHOTOS_CONTENT_URI,
+                            null, null, null, null);
+                }
                 return bucketId != INCORRECT_ID ?
                         new CursorLoader(mActivityWeakReference.get(),
                                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,

@@ -21,7 +21,7 @@ public class FlickrService {
     private FlickrStorage mFlickrStorage;
     private RetrofitHttpOAuthConsumer mOAuthConsumer;
     private FlickrApi mApi;
-    private ArrayMap<String, String> mJsonParams;
+    private final ArrayMap<String, String> mJsonParams;
 
     @Inject
     public FlickrService(Context context, FlickrStorage flickrStorage,
@@ -56,7 +56,7 @@ public class FlickrService {
 
     public JsonObject getUserInfo(String userId) throws FlickrException {
         Map<String, String> params = getParamsWithMethod(R.string.request_value_method_get_user_info);
-        params.put(getString(R.string.request_keY_user_id), userId);
+        params.put(getString(R.string.request_key_user_id), userId);
         return parseRawResponse(mApi.executeFlickrRequest(params));
     }
 
@@ -72,7 +72,7 @@ public class FlickrService {
 
     public JsonObject getUserPhotos(String userId) throws FlickrException {
         Map<String, String> params = getParamsWithMethod(R.string.request_value_method_get_user_photos);
-        params.put(getString(R.string.request_keY_user_id), userId);
+        params.put(getString(R.string.request_key_user_id), userId);
         return parseRawResponse(mApi.executeFlickrRequest(params));
     }
 
@@ -101,6 +101,7 @@ public class FlickrService {
     }
 
     private ArrayMap<String, String> getParamsWithMethod(String method) {
+        // TODO: avoid creation of new Map
         ArrayMap<String, String> params = new ArrayMap<>(mJsonParams);
         params.put(getString(R.string.request_key_method), method);
         return params;

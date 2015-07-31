@@ -1,6 +1,6 @@
 package com.weezlabs.imagegallery.fragment.image;
 
-import android.app.FragmentManager;
+import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -13,17 +13,17 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 
-import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.fragment.BackHandledFragment;
+import com.weezlabs.imagegallery.db.FlickrContentProvider;
+import com.weezlabs.imagegallery.model.flickr.Photo;
 
 
-public abstract class BaseImageFragment extends BackHandledFragment
+public abstract class BaseImageFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final int IMAGES_LOADER = 335;
     public static final long INCORRECT_ID = -1;
 
-    public static final String FOLDER_ID = "com.weezlabs.imagegallery.extra.FOLDER_ID";
+    public static final String BUCKET_ID = "com.weezlabs.imagegallery.extra.BUCKET_ID";
 
     protected CursorAdapter mImageAdapter;
     protected AbsListView mListView;
@@ -38,16 +38,16 @@ public abstract class BaseImageFragment extends BackHandledFragment
         loader.forceLoad();
     }
 
-    private void loadImagesCursor(long folderId) {
+    private void loadImagesCursor(long bucketId) {
         Bundle args = new Bundle();
-        args.putLong(FOLDER_ID, folderId);
+        args.putLong(BUCKET_ID, bucketId);
         loadCursor(IMAGES_LOADER, args);
     }
 
     protected void loadImages() {
         Bundle args = getArguments();
         if (args != null) {
-            long bucketId = args.getLong(FOLDER_ID, INCORRECT_ID);
+            long bucketId = args.getLong(BUCKET_ID, INCORRECT_ID);
             if (bucketId != INCORRECT_ID) {
                 loadImagesCursor(bucketId);
             }
@@ -70,32 +70,28 @@ public abstract class BaseImageFragment extends BackHandledFragment
     }
 
     @Override
-    public boolean onBackPressed() {
-        FragmentManager fm = getFragmentManager();
-        if (fm.getBackStackEntryCount() > 0) {
-            fm.popBackStack();
-        }
-        mBackHandler.setTitle(getString(R.string.app_name));
-        mBackHandler.setHamburgerIcon();
-        return true;
-    }
-
-    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        long folderId = INCORRECT_ID;
+        long bucketId = INCORRECT_ID;
         if (args != null) {
-            folderId = args.getLong(FOLDER_ID, INCORRECT_ID);
+            bucketId = args.getLong(BUCKET_ID, INCORRECT_ID);
         }
-        if (id == IMAGES_LOADER) {
-            return folderId != INCORRECT_ID ?
-                    new CursorLoader(getActivity(),
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                            null, MediaStore.Images.Media.BUCKET_ID + "=?",
-                            new String[]{String.valueOf(folderId)},
-                            MediaStore.Images.Media.DATE_ADDED + " DESC")
-                    : null;
+        switch (id) {
+            case IMAGES_LOADER:
+                if (bucketId == Photo.FLICKR_BUCKET_ID) {
+                    return new CursorLoader(getActivity(),
+                            FlickrContentProvider.PHOTOS_CONTENT_URI,
+                            null, null, null, null);
+                }
+                return bucketId != INCORRECT_ID ?
+                        new CursorLoader(getActivity(),
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                null, MediaStore.Images.Media.BUCKET_ID + "=?",
+                                new String[]{String.valueOf(bucketId)},
+                                MediaStore.Images.Media.DATE_ADDED + " DESC")
+                        : null;
+            default:
+                return null;
         }
-        return null;
     }
 
     @Override

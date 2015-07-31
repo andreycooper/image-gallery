@@ -1,9 +1,9 @@
 package com.weezlabs.imagegallery.fragment.folder;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -14,18 +14,18 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 
-import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.adapter.FolderAdapter;
-import com.weezlabs.imagegallery.fragment.BackHandledFragment;
+import com.weezlabs.imagegallery.activity.FolderDetailActivity;
 import com.weezlabs.imagegallery.model.local.Bucket;
+import com.weezlabs.imagegallery.view.adapter.FolderAdapter;
 
 
-public abstract class BaseFolderFragment extends BackHandledFragment
+public abstract class BaseFolderFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = OnFolderItemClickListener.class.getSimpleName();
 
     public static final int FOLDERS_LOADER = 113;
+    public static final String EXTRA_BUCKET = "com.weezlabs.imagegallery.extra.BUCKET";
 
     protected FolderAdapter mFolderAdapter;
     protected AbsListView mListView;
@@ -61,11 +61,6 @@ public abstract class BaseFolderFragment extends BackHandledFragment
     }
 
     @Override
-    public boolean onBackPressed() {
-        return false;
-    }
-
-    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (id == FOLDERS_LOADER) {
             return new CursorLoader(getActivity(),
@@ -93,7 +88,11 @@ public abstract class BaseFolderFragment extends BackHandledFragment
         }
     }
 
-    protected abstract Fragment getImageFragment(long bucketId);
+    protected Intent getFolderDetailIntent(Bucket bucket) {
+        Intent intent = new Intent(getActivity(), FolderDetailActivity.class);
+        intent.putExtra(EXTRA_BUCKET, bucket);
+        return intent;
+    }
 
     protected class OnFolderItemClickListener implements OnItemClickListener {
 
@@ -102,14 +101,8 @@ public abstract class BaseFolderFragment extends BackHandledFragment
             Log.i(LOG_TAG, "click in FolderAdapter, position: " + position + " id: " + id);
 
             Bucket bucket = mFolderAdapter.getBucket(position);
+            startActivity(getFolderDetailIntent(bucket));
 
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, getImageFragment(bucket.getBucketId()));
-            transaction.addToBackStack(null);
-            transaction.commit();
-
-            mBackHandler.setTitle(bucket.getBucketName());
-            mBackHandler.setBackArrow();
         }
     }
 

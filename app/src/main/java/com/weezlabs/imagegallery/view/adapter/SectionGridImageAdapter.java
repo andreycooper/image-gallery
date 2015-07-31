@@ -1,4 +1,4 @@
-package com.weezlabs.imagegallery.adapter;
+package com.weezlabs.imagegallery.view.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersSimpleAdapter;
 import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.adapter.viewholder.SectionViewHolder;
+import com.weezlabs.imagegallery.view.adapter.viewholder.SectionViewHolder;
 import com.weezlabs.imagegallery.util.TextUtils;
 
 import java.text.SimpleDateFormat;

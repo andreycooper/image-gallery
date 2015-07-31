@@ -1,4 +1,4 @@
-package com.weezlabs.imagegallery.adapter;
+package com.weezlabs.imagegallery.view.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -10,9 +10,10 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.adapter.viewholder.ImageViewHolder;
 import com.weezlabs.imagegallery.model.Image;
-import com.weezlabs.imagegallery.model.local.LocalImage;
+import com.weezlabs.imagegallery.util.ImageFactory;
+import com.weezlabs.imagegallery.util.TextUtils;
+import com.weezlabs.imagegallery.view.adapter.viewholder.ImageViewHolder;
 
 
 public class ImageAdapter extends CursorAdapter {
@@ -44,22 +45,25 @@ public class ImageAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         ImageViewHolder holder = (ImageViewHolder) view.getTag();
 
-        LocalImage localImage = new LocalImage(cursor);
+        Image image = ImageFactory.buildImage(cursor);
 
-        String imageDate = context.getString(R.string.label_image_date, localImage.getReadableTakenDate(context));
-        String imageSize = context.getString(R.string.label_image_size, localImage.getSize(context));
+        String imageDate = context.getString(R.string.label_image_date,
+                TextUtils.getReadableDate(context, image.getTakenDate()));
+        String imageSize = context.getString(R.string.label_image_size,
+                TextUtils.getReadableFileSize(context, image.getSize()));
 
-        holder.imageName.setText(localImage.getDisplayName());
+
+        holder.imageName.setText(image.getTitle());
         holder.imageDate.setText(imageDate);
         holder.imageSize.setText(imageSize);
 
         setInfoVisibility(holder, isVisibleInfo());
 
-        loadImage(context, holder.image, localImage);
+        loadImage(context.getApplicationContext(), holder.image, image);
     }
 
-    public LocalImage getImage(int clickedPosition) {
-        return new LocalImage((Cursor) getItem(clickedPosition));
+    public Image getImage(int clickedPosition) {
+        return ImageFactory.buildImage((Cursor) getItem(clickedPosition));
     }
 
     protected void loadImage(Context context, ImageView imageView, Image image) {

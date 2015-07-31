@@ -21,5 +21,8 @@
     <string name="toast_error_login">Error: %1$s</string>
     <string name="toast_internet_check">Check internet connection!</string>
     <string name="toast_flickr_failure">Error: %1$s</string>
+    <string name="title_activity_folder_detail">Folder Details</string>
+
+    <string name="flickr_time_format">"yyyy-MM-dd HH:mm:ss"</string>
 
 </resources>

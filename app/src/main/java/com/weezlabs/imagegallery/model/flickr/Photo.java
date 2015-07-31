@@ -1,5 +1,7 @@
 package com.weezlabs.imagegallery.model.flickr;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -11,6 +13,52 @@ import com.weezlabs.imagegallery.util.FileUtils;
 
 
 public class Photo implements Parcelable, Image {
+
+    public static final long FLICKR_BUCKET_ID = -993;
+    public static final String TABLE = "flickr_photos";
+    public static final String ID = "_id";
+    public static final String FLICKR_ID = "flickr_id";
+    public static final String OWNER = "owner";
+    public static final String SECRET = "secret";
+    public static final String SERVER = "server";
+    public static final String FARM = "farm";
+    public static final String TITLE = "title";
+    public static final String PUBLIC = "is_public";
+    public static final String FRIEND = "is_friend";
+    public static final String FAMILY = "is_family";
+    public static final String ROTATION = "rotation";
+    public static final String ORIGINAL_SECRET = "original_secret";
+    public static final String ORIGINAL_FORMAT = "original_format";
+    public static final String TAKEN_DATE = "taken_date";
+    public static final String LAST_UPDATE = "last_update";
+    public static final String WIDTH = "width";
+    public static final String HEIGHT = "height";
+
+    public static final String[] PROJECTION_ALL = {
+            getTableColumn(ID),
+            getTableColumn(FLICKR_ID),
+            getTableColumn(OWNER),
+            getTableColumn(SECRET),
+            getTableColumn(SERVER),
+            getTableColumn(FARM),
+            getTableColumn(TITLE),
+            getTableColumn(PUBLIC),
+            getTableColumn(FRIEND),
+            getTableColumn(FAMILY),
+            getTableColumn(ROTATION),
+            getTableColumn(ORIGINAL_SECRET),
+            getTableColumn(ORIGINAL_FORMAT),
+            getTableColumn(TAKEN_DATE),
+            getTableColumn(LAST_UPDATE),
+            getTableColumn(WIDTH),
+            getTableColumn(HEIGHT)
+    };
+
+    public static String getTableColumn(String column) {
+        return TABLE + "." + column;
+    }
+
+    private long mId;
 
     @Expose
     @SerializedName("id")
@@ -43,12 +91,49 @@ public class Photo implements Parcelable, Image {
     private int mRotation;
     private String mOriginalSecret;
     private String mOriginalFormat;
-    private String mTakenDate;
+    private long mTakenDate;
+    private long mLastUpdate;
 
     private int mWidth;
     private int mHeight;
 
     public Photo() {
+    }
+
+    public Photo(Cursor cursor) {
+        mId = cursor.getLong(cursor.getColumnIndex(ID));
+        mFlickrId = cursor.getLong(cursor.getColumnIndex(FLICKR_ID));
+        mOwner = cursor.getString(cursor.getColumnIndex(OWNER));
+        mSecret = cursor.getString(cursor.getColumnIndex(SECRET));
+        mServerId = cursor.getInt(cursor.getColumnIndex(SERVER));
+        mFarmId = cursor.getInt(cursor.getColumnIndex(FARM));
+        mTitle = cursor.getString(cursor.getColumnIndex(TITLE));
+        mIsPublic = cursor.getInt(cursor.getColumnIndex(PUBLIC));
+        mIsFriend = cursor.getInt(cursor.getColumnIndex(FRIEND));
+        mIsFamily = cursor.getInt(cursor.getColumnIndex(FAMILY));
+        mRotation = cursor.getInt(cursor.getColumnIndex(ROTATION));
+        mOriginalSecret = cursor.getString(cursor.getColumnIndex(ORIGINAL_SECRET));
+        mOriginalFormat = cursor.getString(cursor.getColumnIndex(ORIGINAL_FORMAT));
+        mTakenDate = cursor.getLong(cursor.getColumnIndex(TAKEN_DATE));
+        mLastUpdate = cursor.getLong(cursor.getColumnIndex(LAST_UPDATE));
+        mWidth = cursor.getInt(cursor.getColumnIndex(WIDTH));
+        mHeight = cursor.getInt(cursor.getColumnIndex(HEIGHT));
+    }
+
+    public long getId() {
+        return mId;
+    }
+
+    public void setId(long id) {
+        mId = id;
+    }
+
+    public void setWidth(int width) {
+        mWidth = width;
+    }
+
+    public void setHeight(int height) {
+        mHeight = height;
     }
 
     public long getFlickrId() {
@@ -89,10 +174,6 @@ public class Photo implements Parcelable, Image {
 
     public void setFarmId(int farmId) {
         mFarmId = farmId;
-    }
-
-    public String getTitle() {
-        return mTitle;
     }
 
     public void setTitle(String title) {
@@ -147,12 +228,21 @@ public class Photo implements Parcelable, Image {
         mOriginalFormat = originalFormat;
     }
 
-    public String getTakenDate() {
-        return mTakenDate;
+    public void setTakenDate(long takenDate) {
+        mTakenDate = takenDate;
     }
 
-    public void setTakenDate(String takenDate) {
-        mTakenDate = takenDate;
+    public long getLastUpdate() {
+        return mLastUpdate;
+    }
+
+    public void setLastUpdate(long lastUpdate) {
+        mLastUpdate = lastUpdate;
+    }
+
+    @Override
+    public String getTitle() {
+        return mTitle;
     }
 
     @Override
@@ -163,6 +253,12 @@ public class Photo implements Parcelable, Image {
     @Override
     public int getWidth() {
         return mWidth;
+    }
+
+
+    @Override
+    public long getTakenDate() {
+        return mTakenDate;
     }
 
     @Override
@@ -181,23 +277,13 @@ public class Photo implements Parcelable, Image {
     }
 
     @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Photo{");
-        sb.append("mFlickrId=").append(mFlickrId);
-        sb.append(", mOwner='").append(mOwner).append('\'');
-        sb.append(", mSecret='").append(mSecret).append('\'');
-        sb.append(", mServerId=").append(mServerId);
-        sb.append(", mFarmId=").append(mFarmId);
-        sb.append(", mTitle='").append(mTitle).append('\'');
-        sb.append(", mIsPublic=").append(mIsPublic);
-        sb.append(", mIsFriend=").append(mIsFriend);
-        sb.append(", mIsFamily=").append(mIsFamily);
-        sb.append(", mRotation=").append(mRotation);
-        sb.append(", mOriginalSecret='").append(mOriginalSecret).append('\'');
-        sb.append(", mOriginalFormat='").append(mOriginalFormat).append('\'');
-        sb.append(", mTakenDate='").append(mTakenDate).append('\'');
-        sb.append('}');
-        return sb.toString();
+    public long getBucketId() {
+        return FLICKR_BUCKET_ID;
+    }
+
+    @Override
+    public long getSize() {
+        return 0;
     }
 
     @Override
@@ -222,6 +308,29 @@ public class Photo implements Parcelable, Image {
     }
 
     @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Photo{");
+        sb.append("mFlickrId=").append(mFlickrId);
+        sb.append(", mOwner='").append(mOwner).append('\'');
+        sb.append(", mSecret='").append(mSecret).append('\'');
+        sb.append(", mServerId=").append(mServerId);
+        sb.append(", mFarmId=").append(mFarmId);
+        sb.append(", mTitle='").append(mTitle).append('\'');
+        sb.append(", mIsPublic=").append(mIsPublic);
+        sb.append(", mIsFriend=").append(mIsFriend);
+        sb.append(", mIsFamily=").append(mIsFamily);
+        sb.append(", mRotation=").append(mRotation);
+        sb.append(", mOriginalSecret='").append(mOriginalSecret).append('\'');
+        sb.append(", mOriginalFormat='").append(mOriginalFormat).append('\'');
+        sb.append(", mTakenDate=").append(mTakenDate);
+        sb.append(", mLastUpdate=").append(mLastUpdate);
+        sb.append(", mWidth=").append(mWidth);
+        sb.append(", mHeight=").append(mHeight);
+        sb.append('}');
+        return sb.toString();
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }
@@ -240,7 +349,8 @@ public class Photo implements Parcelable, Image {
         dest.writeInt(this.mRotation);
         dest.writeString(this.mOriginalSecret);
         dest.writeString(this.mOriginalFormat);
-        dest.writeString(this.mTakenDate);
+        dest.writeLong(this.mTakenDate);
+        dest.writeLong(this.mLastUpdate);
         dest.writeInt(this.mWidth);
         dest.writeInt(this.mHeight);
     }
@@ -258,12 +368,13 @@ public class Photo implements Parcelable, Image {
         this.mRotation = in.readInt();
         this.mOriginalSecret = in.readString();
         this.mOriginalFormat = in.readString();
-        this.mTakenDate = in.readString();
+        this.mTakenDate = in.readLong();
+        this.mLastUpdate = in.readLong();
         this.mWidth = in.readInt();
         this.mHeight = in.readInt();
     }
 
-    public static final Parcelable.Creator<Photo> CREATOR = new Parcelable.Creator<Photo>() {
+    public static final Creator<Photo> CREATOR = new Creator<Photo>() {
         public Photo createFromParcel(Parcel source) {
             return new Photo(source);
         }
@@ -272,5 +383,103 @@ public class Photo implements Parcelable, Image {
             return new Photo[size];
         }
     };
+
+    public static final class ContentBuilder {
+        private final ContentValues mValues = new ContentValues();
+
+        public ContentBuilder id(long id) {
+            mValues.put(ID, id);
+            return this;
+        }
+
+        public ContentBuilder flickrId(long flickrId) {
+            mValues.put(FLICKR_ID, flickrId);
+            return this;
+        }
+
+        public ContentBuilder owner(String owner) {
+            mValues.put(OWNER, owner);
+            return this;
+        }
+
+        public ContentBuilder secret(String secret) {
+            mValues.put(SECRET, secret);
+            return this;
+        }
+
+        public ContentBuilder server(int serverId) {
+            mValues.put(SERVER, serverId);
+            return this;
+        }
+
+        public ContentBuilder farm(int farmId) {
+            mValues.put(FARM, farmId);
+            return this;
+        }
+
+        public ContentBuilder title(String title) {
+            mValues.put(TITLE, title);
+            return this;
+        }
+
+        public ContentBuilder isPublic(int isPublic) {
+            mValues.put(PUBLIC, isPublic);
+            return this;
+        }
+
+        public ContentBuilder isFriend(int isFriend) {
+            mValues.put(FRIEND, isFriend);
+            return this;
+        }
+
+        public ContentBuilder isFamily(int isFamily) {
+            mValues.put(FAMILY, isFamily);
+            return this;
+        }
+
+        public ContentBuilder rotation(int rotation) {
+            mValues.put(ROTATION, rotation);
+            return this;
+        }
+
+        public ContentBuilder originalSecret(String originalSecret) {
+            mValues.put(ORIGINAL_SECRET, originalSecret);
+            return this;
+        }
+
+        public ContentBuilder originalFormat(String originalFormat) {
+            mValues.put(ORIGINAL_FORMAT, originalFormat);
+            return this;
+        }
+
+        public ContentBuilder takenDate(long takenDate) {
+            mValues.put(TAKEN_DATE, takenDate);
+            return this;
+        }
+
+        public ContentBuilder lastUpdate(long lastUpdate) {
+            mValues.put(LAST_UPDATE, lastUpdate);
+            return this;
+        }
+
+        public ContentBuilder width(int width) {
+            mValues.put(WIDTH, width);
+            return this;
+        }
+
+        public ContentBuilder height(int height) {
+            mValues.put(HEIGHT, height);
+            return this;
+        }
+
+        public ContentBuilder clear(){
+            mValues.clear();
+            return this;
+        }
+
+        public ContentValues build() {
+            return mValues;
+        }
+    }
 
 }

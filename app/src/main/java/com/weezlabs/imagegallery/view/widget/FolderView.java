@@ -1,4 +1,4 @@
-package com.weezlabs.imagegallery.widget;
+package com.weezlabs.imagegallery.view.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;

@@ -3,7 +3,7 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent">
 
-    <com.weezlabs.imagegallery.widget.FolderView
+    <com.weezlabs.imagegallery.view.widget.FolderView
         android:id="@+id/folder_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

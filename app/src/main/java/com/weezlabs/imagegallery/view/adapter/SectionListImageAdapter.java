@@ -1,4 +1,4 @@
-package com.weezlabs.imagegallery.adapter;
+package com.weezlabs.imagegallery.view.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -10,10 +10,12 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.twotoasters.sectioncursoradapter.adapter.SectionCursorAdapter;
 import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.adapter.viewholder.ImageViewHolder;
-import com.weezlabs.imagegallery.adapter.viewholder.SectionViewHolder;
-import com.weezlabs.imagegallery.model.local.LocalImage;
+import com.weezlabs.imagegallery.model.Image;
+import com.weezlabs.imagegallery.model.flickr.Photo;
+import com.weezlabs.imagegallery.util.ImageFactory;
 import com.weezlabs.imagegallery.util.TextUtils;
+import com.weezlabs.imagegallery.view.adapter.viewholder.ImageViewHolder;
+import com.weezlabs.imagegallery.view.adapter.viewholder.SectionViewHolder;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -29,7 +31,12 @@ public class SectionListImageAdapter
 
     @Override
     protected String getSectionFromCursor(Cursor cursor) throws IllegalStateException {
-        long time = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN));
+        long time;
+        if (cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN) == -1) {
+            time = cursor.getLong(cursor.getColumnIndex(Photo.TAKEN_DATE));
+        } else {
+            time = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN));
+        }
         String dateFormat = mContext.getString(R.string.format_date_wo_year);
 
         // Create a calendar object that will convert the date and time value in milliseconds to date.
@@ -63,27 +70,29 @@ public class SectionListImageAdapter
 
     protected void bindItemViewHolder(ImageViewHolder holder, Cursor cursor, ViewGroup viewGroup) {
         if (holder == null) return;
-        LocalImage localImage = new LocalImage(cursor);
+        Image image = ImageFactory.buildImage(cursor);
 
-        String imageDate = mContext.getString(R.string.label_image_date, localImage.getReadableTakenDate(mContext));
-        String imageSize = mContext.getString(R.string.label_image_size, localImage.getSize(mContext));
+        String imageDate = mContext.getString(R.string.label_image_date,
+                TextUtils.getReadableDate(mContext, image.getTakenDate()));
+        String imageSize = mContext.getString(R.string.label_image_size,
+                TextUtils.getReadableFileSize(mContext, image.getSize()));
 
-        holder.imageName.setText(localImage.getDisplayName());
+        holder.imageName.setText(image.getTitle());
         holder.imageDate.setText(imageDate);
         holder.imageSize.setText(imageSize);
 
         setInfoVisibility(holder);
 
-        loadImage(mContext, holder.image, localImage);
+        loadImage(mContext, holder.image, image);
     }
 
-    public LocalImage getImage(int clickedPosition) {
-        return new LocalImage((Cursor) getItem(clickedPosition));
+    public Image getImage(int clickedPosition) {
+        return ImageFactory.buildImage((Cursor) getItem(clickedPosition));
     }
 
-    protected void loadImage(Context context, ImageView imageView, LocalImage localImage) {
+    protected void loadImage(Context context, ImageView imageView, Image image) {
         Glide.with(context)
-                .load(localImage.getPath())
+                .load(image.getPath())
                 .placeholder(R.drawable.ic_image_placeholder_48dp)
                 .centerCrop()
                 .crossFade()

@@ -13,6 +13,7 @@
     <string name="json_key_original_format">originalformat</string>
     <string name="json_key_dates">dates</string>
     <string name="json_key_taken_date">taken</string>
+    <string name="json_key_last_update">lastupdate</string>
 
     <string name="json_key_user">user</string>
     <string name="json_key_id">id</string>

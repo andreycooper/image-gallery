@@ -9,7 +9,7 @@ import android.view.MenuItem;
 
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.activity.controller.PreviewToolbarController;
-import com.weezlabs.imagegallery.adapter.ImagePagerAdapter;
+import com.weezlabs.imagegallery.view.adapter.ImagePagerAdapter;
 import com.weezlabs.imagegallery.tool.Events;
 import com.weezlabs.imagegallery.tool.ImageCursorProvider;
 import com.weezlabs.imagegallery.tool.ImageCursorReceiver;
@@ -52,6 +52,21 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
         mToolbarController.create();
 
         mCursorProvider.loadImagesCursor(mBucketId);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(EXTRA_IMAGE_POSITION, mPager.getCurrentItem());
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        int currentPosition = savedInstanceState.getInt(EXTRA_IMAGE_POSITION, -1);
+        if (currentPosition != -1) {
+            mImagePosition = currentPosition;
+        }
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override

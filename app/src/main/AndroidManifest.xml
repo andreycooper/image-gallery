@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    package="com.weezlabs.imagegallery"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest package="com.weezlabs.imagegallery"
+          xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -42,6 +41,18 @@
                     android:scheme="@string/flickr_oauth_scheme"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activity.FolderDetailActivity"
+            android:label="@string/title_activity_folder_detail"
+            android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar.TranslucentStatus">
+        </activity>
+
+        <provider
+            android:name=".db.FlickrContentProvider"
+            android:authorities="com.weezlabs.imagegallery.flickr.provider"
+            android:enabled="true"
+            android:exported="false">
+        </provider>
     </application>
 
 </manifest>
