@@ -24,4 +24,11 @@
     <string name="json_key_icon_farm">iconfarm</string>
     <string name="json_key_person">person</string>
 
+    <string name="json_key_sizes">sizes</string>
+    <string name="json_key_size">size</string>
+    <string name="json_key_size_label">label</string>
+    <string name="json_key_size_width">width</string>
+    <string name="json_key_size_height">height</string>
+
+
 </resources>

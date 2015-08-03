@@ -115,10 +115,12 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
 
     // EVENTS
 
+    @SuppressWarnings("unused")
     public void onEvent(Events.ChangeTitleEvent event) {
         mToolbarController.setTitle(event.getTitle());
     }
 
+    @SuppressWarnings("unused")
     public void onEvent(Events.ToolbarVisibilityEvent event) {
         mIsFullscreen = !mIsFullscreen;
         mToolbarController.setFullscreen(mIsFullscreen);

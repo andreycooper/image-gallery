@@ -9,8 +9,9 @@ import android.view.ViewGroup;
 
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersSimpleAdapter;
 import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.view.adapter.viewholder.SectionViewHolder;
+import com.weezlabs.imagegallery.model.flickr.Photo;
 import com.weezlabs.imagegallery.util.TextUtils;
+import com.weezlabs.imagegallery.view.adapter.viewholder.SectionViewHolder;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -59,7 +60,12 @@ public class SectionGridImageAdapter extends ImageAdapter
     private String getSectionHeaderFromCursor(Cursor cursor, int position)
             throws IllegalStateException {
         if (cursor != null && !cursor.isClosed() && cursor.moveToPosition(position)) {
-            long time = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN));
+            long time;
+            if (cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN) == -1) {
+                time = cursor.getLong(cursor.getColumnIndex(Photo.TAKEN_DATE));
+            } else {
+                time = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN));
+            }
             String dateFormat = mContext.getString(R.string.format_date_wo_year);
 
             // Create a calendar object that will convert the date and time value in milliseconds to date.

@@ -14,9 +14,9 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class ServiceModule {
+public class JobModule {
 
-    @PerActivity
+    @Singleton
     @Provides
     public JobManager provideJobManager(Context context) {
         Configuration configuration = new Configuration.Builder(context)

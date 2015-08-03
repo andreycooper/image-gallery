@@ -44,7 +44,7 @@
         <activity
             android:name=".activity.FolderDetailActivity"
             android:label="@string/title_activity_folder_detail"
-            android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar.TranslucentStatus">
+            android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar">
         </activity>
 
         <provider

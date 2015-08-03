@@ -8,6 +8,8 @@ import com.weezlabs.imagegallery.dagger.scope.PerActivity;
 import com.weezlabs.imagegallery.storage.FlickrStorage;
 import com.weezlabs.imagegallery.storage.ViewModeStorage;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -21,26 +23,26 @@ public class StorageModule {
     }
 
     @Provides
-    @PerActivity
+    @Singleton
     public Context provideAppContext() {
         return mAppContext;
     }
 
     @Provides
-    @PerActivity
+    @Singleton
     public SharedPreferences providePreferences() {
         return PreferenceManager
                 .getDefaultSharedPreferences(mAppContext);
     }
 
     @Provides
-    @PerActivity
+    @Singleton
     public ViewModeStorage provideViewModeStorage(SharedPreferences preferences) {
         return new ViewModeStorage(preferences);
     }
 
     @Provides
-    @PerActivity
+    @Singleton
     public FlickrStorage provideFlickrStorage(SharedPreferences preferences) {
         return new FlickrStorage(preferences);
     }

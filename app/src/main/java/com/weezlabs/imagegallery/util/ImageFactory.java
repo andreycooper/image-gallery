@@ -1,12 +1,15 @@
 package com.weezlabs.imagegallery.util;
 
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
+import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.model.Image;
 import com.weezlabs.imagegallery.model.flickr.Photo;
+import com.weezlabs.imagegallery.model.local.Bucket;
 import com.weezlabs.imagegallery.model.local.LocalImage;
 
 public final class ImageFactory {
@@ -37,7 +40,7 @@ public final class ImageFactory {
         return title;
     }
 
-    public static Bundle buildFragmentArguments(Image image){
+    public static Bundle buildFragmentArguments(Image image) {
         Bundle args = new Bundle();
         if (image instanceof LocalImage) {
             args.putParcelable(IMAGE, (LocalImage) image);
@@ -45,5 +48,10 @@ public final class ImageFactory {
             args.putParcelable(IMAGE, (Photo) image);
         }
         return args;
+    }
+
+    public static Bucket buildFlickrBucket(Context context) {
+        return new Bucket(Bucket.FLICKR_BUCKET_ID,
+                context.getApplicationContext().getString(R.string.flickr_bucket_name));
     }
 }

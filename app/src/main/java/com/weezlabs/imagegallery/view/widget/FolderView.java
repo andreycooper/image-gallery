@@ -13,7 +13,6 @@ import static com.weezlabs.imagegallery.model.local.FolderViewModel.MAX_COUNT_IM
 
 
 public class FolderView extends RelativeLayout {
-    private static final String LOG_TAG = FolderView.class.getSimpleName();
 
     private ImageView[] mImageViews = new ImageView[MAX_COUNT_IMAGES];
     private TextView mCountTextView;

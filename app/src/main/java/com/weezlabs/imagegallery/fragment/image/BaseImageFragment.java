@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 
 import com.weezlabs.imagegallery.db.FlickrContentProvider;
 import com.weezlabs.imagegallery.model.flickr.Photo;
+import com.weezlabs.imagegallery.model.local.Bucket;
 
 
 public abstract class BaseImageFragment extends Fragment
@@ -77,10 +78,10 @@ public abstract class BaseImageFragment extends Fragment
         }
         switch (id) {
             case IMAGES_LOADER:
-                if (bucketId == Photo.FLICKR_BUCKET_ID) {
+                if (bucketId == Bucket.FLICKR_BUCKET_ID) {
                     return new CursorLoader(getActivity(),
                             FlickrContentProvider.PHOTOS_CONTENT_URI,
-                            null, null, null, null);
+                            null, null, null, Photo.TAKEN_DATE + " ASC");
                 }
                 return bucketId != INCORRECT_ID ?
                         new CursorLoader(getActivity(),

@@ -24,5 +24,6 @@
     <string name="title_activity_folder_detail">Folder Details</string>
 
     <string name="flickr_time_format">"yyyy-MM-dd HH:mm:ss"</string>
+    <string name="flickr_bucket_name">Flickr Photos</string>
 
 </resources>

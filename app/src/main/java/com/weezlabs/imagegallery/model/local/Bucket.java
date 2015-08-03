@@ -8,12 +8,19 @@ import android.provider.MediaStore;
 
 public class Bucket implements Parcelable {
 
+    public static final long FLICKR_BUCKET_ID = -993;
+
     private long mBucketId;
     private String mBucketName;
 
     public Bucket(Cursor cursor) {
         mBucketId = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID));
         mBucketName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
+    }
+
+    public Bucket(long bucketId, String bucketName) {
+        mBucketId = bucketId;
+        mBucketName = bucketName;
     }
 
     public long getBucketId() {

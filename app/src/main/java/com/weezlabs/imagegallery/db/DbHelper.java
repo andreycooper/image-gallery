@@ -9,7 +9,7 @@ import com.weezlabs.imagegallery.model.flickr.Photo;
 
 public class DbHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "flickr_photos_db";
+    private static final String DATABASE_NAME = "flickr_photos.db";
     private static final int DATABASE_VERSION = 1;
 
     private static final String CREATE_FLICKR_PHOTOS_TABLE = "" +

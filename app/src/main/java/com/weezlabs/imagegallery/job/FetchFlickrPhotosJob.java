@@ -2,14 +2,15 @@ package com.weezlabs.imagegallery.job;
 
 
 import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.util.Log;
 
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.path.android.jobqueue.Params;
 import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.db.FlickrContentProvider;
 import com.weezlabs.imagegallery.model.flickr.Photo;
 import com.weezlabs.imagegallery.model.flickr.Photos;
 import com.weezlabs.imagegallery.model.flickr.User;
@@ -19,8 +20,13 @@ import com.weezlabs.imagegallery.storage.FlickrStorage;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.weezlabs.imagegallery.db.FlickrContentProvider.AUTHORITY;
+import static com.weezlabs.imagegallery.db.FlickrContentProvider.PHOTOS_CONTENT_URI;
+import static com.weezlabs.imagegallery.db.FlickrContentProvider.PHOTOS_DELETE_CONTENT_URI;
 
 public class FetchFlickrPhotosJob extends BaseFlickrJob {
     private static final AtomicInteger sJobCounter = new AtomicInteger(0);
@@ -51,22 +57,32 @@ public class FetchFlickrPhotosJob extends BaseFlickrJob {
 
         User user = getFlickrStorage().restoreFlickrUser();
         if (user != null) {
+            ContentResolver resolver = getApplicationContext().getContentResolver();
+            resolver.delete(PHOTOS_DELETE_CONTENT_URI, null, null);
+
             JsonObject photosJson = getFlickrService().getUserPhotos()
                     .getAsJsonObject(getString(R.string.json_key_photos));
             Photos photos = new GsonBuilder().create().fromJson(photosJson, Photos.class);
             // TODO: check "page" and "pages"!
-            ArrayList<ContentProviderOperation> operations = getInsertPhotoOperationList(photos);
-            getApplicationContext().getContentResolver()
-                    .applyBatch(FlickrContentProvider.AUTHORITY, operations);
+
+            ArrayList<ContentProviderOperation> operationList = getInsertPhotoOperationList(photos);
+            resolver.applyBatch(AUTHORITY, operationList);
+
             Log.i(LOG_TAG, "save in db is done");
+            List<Photo> photoList = new ArrayList<>();
             for (Photo photo : photos.getPhotoList()) {
                 JsonObject photoInfoJson = getFlickrService().getPhotoInfo(photo)
                         .getAsJsonObject(getString(R.string.json_key_photo));
                 photo = parsePhotoInfo(photo, photoInfoJson);
-                Log.i(LOG_TAG, photo.toString());
-                Log.i(LOG_TAG, FlickrStorage.getPhotoUrl(photo));
-                Log.i(LOG_TAG, FlickrStorage.getOriginalPhotoUrl(photo));
+                JsonObject photoSizesJson = getFlickrService().getPhotoSizes(photo)
+                        .getAsJsonObject(getString(R.string.json_key_sizes));
+                photo = parsePhotoSize(photo, photoSizesJson);
+                photoList.add(photo);
             }
+
+            operationList = getUpdatePhotoOperationList(photoList);
+            resolver.applyBatch(AUTHORITY, operationList);
+            Log.i(LOG_TAG, "update in db is done");
         } else {
 
         }
@@ -90,9 +106,50 @@ public class FetchFlickrPhotosJob extends BaseFlickrJob {
                     .isFamily(photo.getIsFamily())
                     .build();
             operations.add(ContentProviderOperation
-                    .newInsert(FlickrContentProvider.PHOTOS_CONTENT_URI).withValues(values).build());
+                    .newInsert(PHOTOS_CONTENT_URI).withValues(values).build());
         }
         return operations;
+    }
+
+    private ArrayList<ContentProviderOperation> getUpdatePhotoOperationList(List<Photo> photoList) {
+        ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+        ContentValues values = new ContentValues();
+        Photo.ContentBuilder builder = new Photo.ContentBuilder();
+        for (Photo photo : photoList) {
+            values.clear();
+            values = builder.clear()
+                    .rotation(photo.getRotation())
+                    .originalSecret(photo.getOriginalSecret())
+                    .originalFormat(photo.getOriginalFormat())
+                    .takenDate(photo.getTakenDate())
+                    .lastUpdate(photo.getLastUpdate())
+                    .width(photo.getWidth())
+                    .height(photo.getHeight())
+                    .build();
+            operations.add(ContentProviderOperation.
+                    newUpdate(PHOTOS_CONTENT_URI)
+                    .withSelection(Photo.FLICKR_ID + "=?",
+                            new String[]{String.valueOf(photo.getFlickrId())})
+                    .withValues(values)
+                    .build());
+        }
+        return operations;
+    }
+
+    private Photo parsePhotoSize(Photo photo, JsonObject photoSizesJson) {
+        JsonArray jsonArray = photoSizesJson.getAsJsonArray(getString(R.string.json_key_size));
+        JsonObject size;
+        String label;
+        for (int i = jsonArray.size() - 1; i >= 0; i++) {
+            size = jsonArray.get(i).getAsJsonObject();
+            label = size.get(getString(R.string.json_key_size_label)).getAsString();
+            if (label.equals(getString(R.string.json_value_size_original))) {
+                photo.setWidth(size.get(getString(R.string.json_key_size_width)).getAsInt());
+                photo.setHeight(size.get(getString(R.string.json_key_size_height)).getAsInt());
+                break;
+            }
+        }
+        return photo;
     }
 
     private Photo parsePhotoInfo(Photo photo, JsonObject photoInfoJson) {

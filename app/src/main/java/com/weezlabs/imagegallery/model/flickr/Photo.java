@@ -8,13 +8,13 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.weezlabs.imagegallery.model.Image;
+import com.weezlabs.imagegallery.model.local.Bucket;
 import com.weezlabs.imagegallery.storage.FlickrStorage;
 import com.weezlabs.imagegallery.util.FileUtils;
 
 
 public class Photo implements Parcelable, Image {
 
-    public static final long FLICKR_BUCKET_ID = -993;
     public static final String TABLE = "flickr_photos";
     public static final String ID = "_id";
     public static final String FLICKR_ID = "flickr_id";
@@ -278,7 +278,7 @@ public class Photo implements Parcelable, Image {
 
     @Override
     public long getBucketId() {
-        return FLICKR_BUCKET_ID;
+        return Bucket.FLICKR_BUCKET_ID;
     }
 
     @Override

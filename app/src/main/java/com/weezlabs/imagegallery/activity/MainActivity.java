@@ -17,9 +17,11 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.weezlabs.imagegallery.R;
+import com.weezlabs.imagegallery.fragment.folder.BaseFolderFragment;
 import com.weezlabs.imagegallery.job.FetchFlickrPhotosJob;
 import com.weezlabs.imagegallery.job.LoginFlickrUserJob;
 import com.weezlabs.imagegallery.model.flickr.User;
+import com.weezlabs.imagegallery.util.ImageFactory;
 import com.weezlabs.imagegallery.util.NetworkUtils;
 
 
@@ -131,9 +133,9 @@ public class MainActivity extends BaseActivity {
 
         switch (id) {
             case R.id.action_test:
+                test();
                 return true;
             case R.id.action_settings:
-                test();
                 return true;
             case R.id.action_change_mode:
                 swapViewMode(item);
@@ -156,6 +158,9 @@ public class MainActivity extends BaseActivity {
                 User user = mFlickrStorage.restoreFlickrUser();
                 if (user != null) {
                     mJobManager.addJobInBackground(new FetchFlickrPhotosJob(mFlickrStorage, mFlickrService));
+                    Intent intent = new Intent(this, FolderDetailActivity.class);
+                    intent.putExtra(BaseFolderFragment.EXTRA_BUCKET, ImageFactory.buildFlickrBucket(this));
+                    startActivity(intent);
                 } else {
                     mJobManager.addJobInBackground(new LoginFlickrUserJob(mFlickrStorage, mFlickrService));
                 }

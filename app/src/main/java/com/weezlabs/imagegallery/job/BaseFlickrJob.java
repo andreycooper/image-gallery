@@ -37,9 +37,11 @@ public abstract class BaseFlickrJob extends Job {
     protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount, int maxRunCount) {
         if (throwable instanceof RetrofitError) {
             RetrofitError error = (RetrofitError) throwable;
-            Toast.makeText(getApplicationContext(), getApplicationContext()
+            Toast.makeText(getApplicationContext(),
+                    getApplicationContext()
                     .getString(R.string.toast_flickr_failure,
-                            error.getResponse().getReason()), Toast.LENGTH_SHORT).show();
+                            error.getResponse().getReason()),
+                    Toast.LENGTH_SHORT).show();
             if (error.getResponse().getStatus() == UNAUTHORIZED_CODE) {
                 mFlickrStorage.resetOAuth();
             }

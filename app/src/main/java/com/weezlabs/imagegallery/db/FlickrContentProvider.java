@@ -24,8 +24,6 @@ public class FlickrContentProvider extends ContentProvider {
     private static final int PHOTO_ID = 11;
     private static final int PHOTOS_DELETE = 13;
 
-    public static final long INCORRECT_ID = -1;
-
     public static final Uri BASE_CONTENT_URI = Uri.parse(SCHEME + AUTHORITY);
     public static final Uri PHOTOS_CONTENT_URI = BASE_CONTENT_URI.buildUpon()
             .appendPath(PHOTOS_PATH).build();
