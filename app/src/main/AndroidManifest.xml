@@ -4,8 +4,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:name=".ImageGalleryApp"
@@ -13,7 +13,6 @@
         android:icon="@mipmap/ic_gallery"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/app_name"
@@ -29,6 +28,36 @@
             android:label="@string/title_activity_view"
             android:theme="@style/ViewTheme">
         </activity>
+        <activity
+            android:name=".activity.FlickrLoginActivity"
+            android:label="@string/title_activity_flickr_login">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data
+                    android:host="@string/flickr_oauth_host"
+                    android:scheme="@string/flickr_oauth_scheme"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.FolderDetailActivity"
+            android:label="@string/title_activity_folder_detail"
+            android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar">
+        </activity>
+
+        <provider
+            android:name=".db.FlickrContentProvider"
+            android:authorities="com.weezlabs.imagegallery.flickr.provider"
+            android:enabled="true"
+            android:exported="false">
+        </provider>
+
+        <meta-data
+            android:name="com.weezlabs.imagegallery.tool.GlideConfiguration"
+            android:value="GlideModule"/>
     </application>
 
 </manifest>

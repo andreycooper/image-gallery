@@ -13,8 +13,8 @@ import android.widget.ListView;
 import com.twotoasters.sectioncursoradapter.adapter.SectionCursorAdapter;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.activity.PreviewActivity;
-import com.weezlabs.imagegallery.adapter.SectionListImageAdapter;
 import com.weezlabs.imagegallery.model.Image;
+import com.weezlabs.imagegallery.view.adapter.SectionListImageAdapter;
 
 import timber.log.Timber;
 
@@ -25,7 +25,7 @@ public class ImageListFragment extends BaseImageFragment {
     public static ImageListFragment newInstance(long bucketId) {
         ImageListFragment fragment = new ImageListFragment();
         Bundle args = new Bundle();
-        args.putLong(FOLDER_ID, bucketId);
+        args.putLong(BUCKET_ID, bucketId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -34,7 +34,7 @@ public class ImageListFragment extends BaseImageFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Timber.tag(LOG_TAG);
-        mImageAdapter = new SectionListImageAdapter(getActivity(), null);
+        mImageAdapter = new SectionListImageAdapter(getActivity().getApplicationContext(), null);
         loadImages();
     }
 

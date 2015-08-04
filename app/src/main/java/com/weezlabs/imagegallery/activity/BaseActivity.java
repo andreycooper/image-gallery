@@ -2,20 +2,42 @@ package com.weezlabs.imagegallery.activity;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.path.android.jobqueue.JobManager;
+import com.weezlabs.imagegallery.ImageGalleryApp;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.fragment.folder.FolderGridFragment;
 import com.weezlabs.imagegallery.fragment.folder.FolderListFragment;
 import com.weezlabs.imagegallery.fragment.folder.FolderStaggeredFragment;
-import com.weezlabs.imagegallery.util.Utils;
+import com.weezlabs.imagegallery.service.flickr.FlickrService;
+import com.weezlabs.imagegallery.storage.FlickrStorage;
+import com.weezlabs.imagegallery.storage.ViewModeStorage;
+
+import javax.inject.Inject;
 
 
 public abstract class BaseActivity extends AppCompatActivity {
 
     protected Menu mMenu;
+    @Inject
+    ViewModeStorage mViewModeStorage;
+    @Inject
+    FlickrStorage mFlickrStorage;
+    @Inject
+    FlickrService mFlickrService;
+    @Inject
+    JobManager mJobManager;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ImageGalleryApp.get(this).getAppComponent().inject(this);
+    }
 
     protected void changeViewMode(int viewMode) {
         switch (viewMode) {
@@ -34,14 +56,14 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void changeViewMode(ViewMode viewMode) {
-        Utils.setViewMode(this, viewMode);
+        mViewModeStorage.setViewMode(viewMode);
         setupModeFragment(viewMode);
         setupModeIcon(mMenu.findItem(R.id.action_change_mode), viewMode);
     }
 
     protected void swapViewMode(MenuItem item) {
         ViewMode viewMode;
-        switch (Utils.getViewMode(this)) {
+        switch (mViewModeStorage.getViewMode()) {
             case LIST_MODE:
                 viewMode = ViewMode.GRID_MODE;
                 break;
@@ -55,7 +77,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 viewMode = ViewMode.LIST_MODE;
                 break;
         }
-        Utils.setViewMode(this, viewMode);
+        mViewModeStorage.setViewMode(viewMode);
         setupModeFragment(viewMode);
         setupModeIcon(item, viewMode);
     }

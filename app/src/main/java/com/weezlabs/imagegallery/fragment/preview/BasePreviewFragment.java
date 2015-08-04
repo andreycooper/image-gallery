@@ -10,25 +10,26 @@ import android.view.ViewGroup;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.model.Image;
 import com.weezlabs.imagegallery.tool.Events;
-import com.weezlabs.imagegallery.util.Utils;
+import com.weezlabs.imagegallery.util.FileUtils;
+import com.weezlabs.imagegallery.util.ImageFactory;
 
 import de.greenrobot.event.EventBus;
 
+import static com.weezlabs.imagegallery.util.ImageFactory.IMAGE;
+
 
 public abstract class BasePreviewFragment extends Fragment {
-    protected static final String IMAGE = "com.weezlabs.imagegallery.IMAGE";
 
     protected Image mImage;
 
     public static BasePreviewFragment newInstance(Image image) {
         BasePreviewFragment fragment;
-        if (image.getMimeType().equals(Utils.IMAGE_TYPE_GIF)) {
+        if (image.getMimeType().equals(FileUtils.IMAGE_TYPE_GIF)) {
             fragment = new PreviewGifFragment();
         } else {
             fragment = new PreviewImageFragment();
         }
-        Bundle args = new Bundle();
-        args.putParcelable(IMAGE, image);
+        Bundle args = ImageFactory.buildFragmentArguments(image);
         fragment.setArguments(args);
         return fragment;
     }
@@ -36,6 +37,7 @@ public abstract class BasePreviewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         if (getArguments() != null) {
             mImage = getArguments().getParcelable(IMAGE);
         }
@@ -47,12 +49,7 @@ public abstract class BasePreviewFragment extends Fragment {
         View rootView = inflater.inflate(getLayoutId(), container, false);
         View imageView = rootView.findViewById(R.id.image_view);
 
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EventBus.getDefault().post(new Events.ToolbarVisibilityEvent());
-            }
-        });
+        imageView.setOnClickListener(v -> EventBus.getDefault().post(new Events.ToolbarVisibilityEvent()));
 
         loadImageIntoView(imageView);
 

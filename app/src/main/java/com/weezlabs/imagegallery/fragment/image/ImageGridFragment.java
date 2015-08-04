@@ -12,9 +12,9 @@ import android.widget.AdapterView;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.activity.PreviewActivity;
-import com.weezlabs.imagegallery.adapter.ImageAdapter;
-import com.weezlabs.imagegallery.adapter.SectionGridImageAdapter;
 import com.weezlabs.imagegallery.model.Image;
+import com.weezlabs.imagegallery.view.adapter.ImageAdapter;
+import com.weezlabs.imagegallery.view.adapter.SectionGridImageAdapter;
 
 import timber.log.Timber;
 
@@ -25,7 +25,7 @@ public class ImageGridFragment extends BaseImageFragment {
     public static ImageGridFragment newInstance(long bucketId) {
         ImageGridFragment fragment = new ImageGridFragment();
         Bundle args = new Bundle();
-        args.putLong(FOLDER_ID, bucketId);
+        args.putLong(BUCKET_ID, bucketId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -34,7 +34,7 @@ public class ImageGridFragment extends BaseImageFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Timber.tag(LOG_TAG);
-        mImageAdapter = new SectionGridImageAdapter(getActivity(), null);
+        mImageAdapter = new SectionGridImageAdapter(getActivity().getApplicationContext(), null);
         loadImages();
     }
 

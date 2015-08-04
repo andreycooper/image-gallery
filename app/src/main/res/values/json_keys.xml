@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="json_key_content">_content</string>
+
+    <string name="json_key_stat">stat</string>
+    <string name="json_key_message">message</string>
+
+    <string name="json_key_photos">photos</string>
+    <string name="json_key_photo">photo</string>
+    <string name="json_key_rotation">rotation</string>
+    <string name="json_key_original_secret">originalsecret</string>
+    <string name="json_key_original_format">originalformat</string>
+    <string name="json_key_dates">dates</string>
+    <string name="json_key_taken_date">taken</string>
+    <string name="json_key_last_update">lastupdate</string>
+
+    <string name="json_key_user">user</string>
+    <string name="json_key_id">id</string>
+    <string name="json_key_username">username</string>
+    <string name="json_key_nsid">nsid</string>
+    <string name="json_key_real_name">realname</string>
+    <string name="json_key_icon_server">iconserver</string>
+    <string name="json_key_icon_farm">iconfarm</string>
+    <string name="json_key_person">person</string>
+
+    <string name="json_key_sizes">sizes</string>
+    <string name="json_key_size">size</string>
+    <string name="json_key_size_label">label</string>
+    <string name="json_key_size_width">width</string>
+    <string name="json_key_size_height">height</string>
+
+
+</resources>

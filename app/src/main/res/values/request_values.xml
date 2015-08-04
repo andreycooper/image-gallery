@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="request_value_json">json</string>
+    <string name="request_value_no_json_callback">1</string>
+
+    <string name="request_value_method_login">flickr.test.login</string>
+    <string name="request_value_method_get_user_info">flickr.people.getInfo</string>
+    <string name="request_value_method_get_user_photos">flickr.people.getPhotos</string>
+    <string name="request_value_method_get_photo_sizes">flickr.photos.getSizes</string>
+    <string name="request_value_method_get_photo_info">flickr.photos.getInfo</string>
+</resources>

@@ -1,6 +1,5 @@
 package com.weezlabs.imagegallery.fragment.folder;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,8 +7,7 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 
 import com.weezlabs.imagegallery.R;
-import com.weezlabs.imagegallery.adapter.FolderAdapter;
-import com.weezlabs.imagegallery.fragment.image.ImageGridFragment;
+import com.weezlabs.imagegallery.view.adapter.FolderAdapter;
 
 
 public class FolderGridFragment extends BaseFolderFragment {
@@ -37,11 +35,6 @@ public class FolderGridFragment extends BaseFolderFragment {
         mListView.setAdapter(mFolderAdapter);
         mListView.setOnItemClickListener(new OnFolderItemClickListener());
         return rootView;
-    }
-
-    @Override
-    protected Fragment getImageFragment(long bucketId) {
-        return ImageGridFragment.newInstance(bucketId);
     }
 
 }

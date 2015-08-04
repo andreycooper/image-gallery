@@ -12,9 +12,9 @@ import android.widget.AdapterView;
 import com.etsy.android.grid.StaggeredGridView;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.activity.PreviewActivity;
-import com.weezlabs.imagegallery.adapter.ImageAdapter;
-import com.weezlabs.imagegallery.adapter.StaggeredImageAdapter;
 import com.weezlabs.imagegallery.model.Image;
+import com.weezlabs.imagegallery.view.adapter.ImageAdapter;
+import com.weezlabs.imagegallery.view.adapter.StaggeredImageAdapter;
 
 import timber.log.Timber;
 
@@ -25,7 +25,7 @@ public class ImageStaggeredFragment extends BaseImageFragment {
     public static ImageStaggeredFragment newInstance(long bucketId) {
         ImageStaggeredFragment fragment = new ImageStaggeredFragment();
         Bundle args = new Bundle();
-        args.putLong(FOLDER_ID, bucketId);
+        args.putLong(BUCKET_ID, bucketId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -34,7 +34,7 @@ public class ImageStaggeredFragment extends BaseImageFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Timber.tag(LOG_TAG);
-        mImageAdapter = new StaggeredImageAdapter(getActivity(), null);
+        mImageAdapter = new StaggeredImageAdapter(getActivity().getApplicationContext(), null);
         loadImages();
     }
 

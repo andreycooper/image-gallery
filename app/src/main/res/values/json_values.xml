@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="json_value_ok">ok</string>
+    <string name="json_value_fail">fail</string>
+    <string name="json_value_size_medium">Medium</string>
+    <string name="json_value_size_original">Original</string>
+</resources>
