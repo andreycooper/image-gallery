@@ -34,7 +34,7 @@ public class ImageListFragment extends BaseImageFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Timber.tag(LOG_TAG);
-        mImageAdapter = new SectionListImageAdapter(getActivity(), null);
+        mImageAdapter = new SectionListImageAdapter(getActivity().getApplicationContext(), null);
         loadImages();
     }
 

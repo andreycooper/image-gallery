@@ -34,7 +34,7 @@ public class ImageGridFragment extends BaseImageFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Timber.tag(LOG_TAG);
-        mImageAdapter = new SectionGridImageAdapter(getActivity(), null);
+        mImageAdapter = new SectionGridImageAdapter(getActivity().getApplicationContext(), null);
         loadImages();
     }
 

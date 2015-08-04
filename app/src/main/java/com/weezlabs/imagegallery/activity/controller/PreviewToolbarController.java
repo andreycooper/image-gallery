@@ -7,38 +7,41 @@ import android.view.View;
 
 import com.weezlabs.imagegallery.R;
 
+import java.lang.ref.WeakReference;
+
 
 public class PreviewToolbarController {
-    // TODO: put AppCompatActivity into WeakReference
-    private AppCompatActivity mActivity;
+    private final WeakReference<AppCompatActivity> mActivityWeakReference;
     private Toolbar mToolbar;
 
     public PreviewToolbarController(AppCompatActivity activity) {
-        mActivity = activity;
+        mActivityWeakReference = new WeakReference<>(activity);
     }
 
     public void create() {
+        AppCompatActivity activity = getActivity();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            mToolbar = (Toolbar) mActivity.findViewById(R.id.toolbar);
-            mActivity.setSupportActionBar(mToolbar);
+            mToolbar = (Toolbar) activity.findViewById(R.id.toolbar);
+            activity.setSupportActionBar(mToolbar);
         }
 
-        if (mActivity.getSupportActionBar() != null) {
-            mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            mActivity.getSupportActionBar().setHomeButtonEnabled(true);
-            mActivity.getSupportActionBar().setShowHideAnimationEnabled(true);
-            mActivity.getSupportActionBar().setTitle("");
+        if (activity.getSupportActionBar() != null) {
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            activity.getSupportActionBar().setHomeButtonEnabled(true);
+            activity.getSupportActionBar().setShowHideAnimationEnabled(true);
+            activity.getSupportActionBar().setTitle("");
         }
     }
 
     public void destroy() {
-        mActivity = null;
+        mActivityWeakReference.clear();
         mToolbar = null;
     }
 
     public void setTitle(String title) {
-        if (mActivity.getSupportActionBar() != null) {
-            mActivity.getSupportActionBar().setTitle(title);
+        AppCompatActivity activity = getActivity();
+        if (activity.getSupportActionBar() != null) {
+            activity.getSupportActionBar().setTitle(title);
         }
     }
 
@@ -51,8 +54,9 @@ public class PreviewToolbarController {
     }
 
     private void setFullscreenMode() {
-        if (mActivity.getSupportActionBar() != null) {
-            mActivity.getSupportActionBar().hide();
+        AppCompatActivity activity = getActivity();
+        if (activity.getSupportActionBar() != null) {
+            activity.getSupportActionBar().hide();
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             hideStatusBar();
@@ -60,8 +64,8 @@ public class PreviewToolbarController {
     }
 
     private void setWindowMode() {
-        if (mActivity.getSupportActionBar() != null) {
-            mActivity.getSupportActionBar().show();
+        if (getActivity().getSupportActionBar() != null) {
+            getActivity().getSupportActionBar().show();
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             showStatusBar();
@@ -69,14 +73,18 @@ public class PreviewToolbarController {
     }
 
     private void hideStatusBar() {
-        View decorView = mActivity.getWindow().getDecorView();
+        View decorView = getActivity().getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
     }
 
     private void showStatusBar() {
-        View decorView = mActivity.getWindow().getDecorView();
+        View decorView = getActivity().getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
         decorView.setSystemUiVisibility(uiOptions);
+    }
+
+    private AppCompatActivity getActivity() {
+        return mActivityWeakReference.get();
     }
 }

@@ -1,7 +1,10 @@
 package com.weezlabs.imagegallery.activity;
 
+import android.app.LoaderManager;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -9,6 +12,7 @@ import android.view.MenuItem;
 
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.activity.controller.PreviewToolbarController;
+import com.weezlabs.imagegallery.tool.LoaderManagerProvider;
 import com.weezlabs.imagegallery.view.adapter.ImagePagerAdapter;
 import com.weezlabs.imagegallery.tool.Events;
 import com.weezlabs.imagegallery.tool.ImageCursorProvider;
@@ -17,7 +21,8 @@ import com.weezlabs.imagegallery.tool.ImageCursorReceiver;
 import de.greenrobot.event.EventBus;
 
 
-public class PreviewActivity extends AppCompatActivity implements ImageCursorReceiver {
+public class PreviewActivity extends AppCompatActivity implements ImageCursorReceiver,
+        LoaderManagerProvider {
     public static final String EXTRA_IMAGE_POSITION = "com.weezlabs.imagegallery.extra.IMAGE_POSITION";
     public static final String EXTRA_BUCKET_ID = "com.weezlabs.imagegallery.extra.BUCKET_ID";
 
@@ -30,7 +35,6 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
     private ImagePagerAdapter mAdapter;
     private ViewPager mPager;
     private ImageCursorProvider mCursorProvider;
-    private long mBucketId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +42,7 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
         setContentView(R.layout.activity_preview);
 
         mImagePosition = getIntent().getIntExtra(EXTRA_IMAGE_POSITION, 0);
-        mBucketId = getIntent().getLongExtra(EXTRA_BUCKET_ID, INCORRECT_ID);
+        long bucketId = getIntent().getLongExtra(EXTRA_BUCKET_ID, INCORRECT_ID);
 
         mCursorProvider = new ImageCursorProvider(this, this);
 
@@ -51,7 +55,7 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
         mToolbarController = new PreviewToolbarController(this);
         mToolbarController.create();
 
-        mCursorProvider.loadImagesCursor(mBucketId);
+        mCursorProvider.loadImagesCursor(bucketId);
     }
 
     @Override
@@ -61,7 +65,7 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         int currentPosition = savedInstanceState.getInt(EXTRA_IMAGE_POSITION, -1);
         if (currentPosition != -1) {
             mImagePosition = currentPosition;
@@ -94,8 +98,6 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
         if (id == android.R.id.home) {
             onBackPressed();
             return true;
-        } else if (id == R.id.action_settings) {
-            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -104,6 +106,7 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
     @Override
     protected void onDestroy() {
         mToolbarController.destroy();
+        mCursorProvider.onDestroy();
         super.onDestroy();
     }
 
@@ -111,6 +114,16 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
     public void receiveImageCursor(Cursor cursor) {
         mAdapter.changeCursor(cursor);
         mPager.setCurrentItem(mImagePosition, false);
+    }
+
+    @Override
+    public LoaderManager provideLoaderManager() {
+        return getLoaderManager();
+    }
+
+    @Override
+    public Context provideContext() {
+        return this;
     }
 
     // EVENTS

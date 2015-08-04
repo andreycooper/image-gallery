@@ -4,7 +4,9 @@ package com.weezlabs.imagegallery.job;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.util.Log;
+import android.content.OperationApplicationException;
+import android.database.Cursor;
+import android.os.RemoteException;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -14,6 +16,7 @@ import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.model.flickr.Photo;
 import com.weezlabs.imagegallery.model.flickr.Photos;
 import com.weezlabs.imagegallery.model.flickr.User;
+import com.weezlabs.imagegallery.service.flickr.FlickrException;
 import com.weezlabs.imagegallery.service.flickr.FlickrService;
 import com.weezlabs.imagegallery.storage.FlickrStorage;
 
@@ -26,7 +29,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.weezlabs.imagegallery.db.FlickrContentProvider.AUTHORITY;
 import static com.weezlabs.imagegallery.db.FlickrContentProvider.PHOTOS_CONTENT_URI;
-import static com.weezlabs.imagegallery.db.FlickrContentProvider.PHOTOS_DELETE_CONTENT_URI;
 
 public class FetchFlickrPhotosJob extends BaseFlickrJob {
     private static final AtomicInteger sJobCounter = new AtomicInteger(0);
@@ -40,7 +42,6 @@ public class FetchFlickrPhotosJob extends BaseFlickrJob {
         super(new Params(Priority.MID).requireNetwork().groupBy(GROUP_ID), flickrStorage, flickrService);
         mJobId = sJobCounter.incrementAndGet();
     }
-
 
     @Override
     public void onAdded() {
@@ -58,82 +59,111 @@ public class FetchFlickrPhotosJob extends BaseFlickrJob {
         User user = getFlickrStorage().restoreFlickrUser();
         if (user != null) {
             ContentResolver resolver = getApplicationContext().getContentResolver();
-            resolver.delete(PHOTOS_DELETE_CONTENT_URI, null, null);
+            List<Photo> photoList = new ArrayList<>();
 
+            Cursor cursor = resolver.query(PHOTOS_CONTENT_URI, new String[]{Photo.FLICKR_ID},
+                    null, null, null);
+            List<Long> localFlickrIdList = getFlickrIdList(cursor);
+            List<Long> idsToRemoveFromDB = new ArrayList<>();
+            idsToRemoveFromDB.addAll(localFlickrIdList);
+
+            // TODO: check "page" and "pages" and add to photoList!
             JsonObject photosJson = getFlickrService().getUserPhotos()
                     .getAsJsonObject(getString(R.string.json_key_photos));
             Photos photos = new GsonBuilder().create().fromJson(photosJson, Photos.class);
-            // TODO: check "page" and "pages"!
+            photoList.addAll(photos.getPhotoList());
 
-            ArrayList<ContentProviderOperation> operationList = getInsertPhotoOperationList(photos);
-            resolver.applyBatch(AUTHORITY, operationList);
+            List<Long> remoteFlickrIdList = getFlickrIdList(photoList);
+            List<Long> idsToAddIntoDb = new ArrayList<>();
+            idsToAddIntoDb.addAll(remoteFlickrIdList);
 
-            Log.i(LOG_TAG, "save in db is done");
-            List<Photo> photoList = new ArrayList<>();
-            for (Photo photo : photos.getPhotoList()) {
+            idsToRemoveFromDB.removeAll(remoteFlickrIdList);
+            idsToAddIntoDb.removeAll(localFlickrIdList);
+
+            clearDb(idsToRemoveFromDB);
+            fillDb(photoList, idsToAddIntoDb);
+
+        } else {
+
+        }
+        // TODO: send FetchCompletedEvent
+    }
+
+    private void fillDb(List<Photo> photoList, List<Long> idsToAddIntoDb)
+            throws FlickrException, RemoteException, OperationApplicationException {
+        ContentResolver resolver = getApplicationContext().getContentResolver();
+        ArrayList<ContentProviderOperation> operationList = new ArrayList<>();
+        for (Photo photo : photoList) {
+            if (idsToAddIntoDb.contains(photo.getFlickrId())) {
                 JsonObject photoInfoJson = getFlickrService().getPhotoInfo(photo)
                         .getAsJsonObject(getString(R.string.json_key_photo));
                 photo = parsePhotoInfo(photo, photoInfoJson);
                 JsonObject photoSizesJson = getFlickrService().getPhotoSizes(photo)
                         .getAsJsonObject(getString(R.string.json_key_sizes));
                 photo = parsePhotoSize(photo, photoSizesJson);
-                photoList.add(photo);
+                operationList.add(getInsertPhotoOperation(photo));
             }
-
-            operationList = getUpdatePhotoOperationList(photoList);
+        }
+        if (!operationList.isEmpty()) {
             resolver.applyBatch(AUTHORITY, operationList);
-            Log.i(LOG_TAG, "update in db is done");
-        } else {
-
         }
     }
 
-    private ArrayList<ContentProviderOperation> getInsertPhotoOperationList(Photos photos) {
-        ArrayList<ContentProviderOperation> operations = new ArrayList<>();
-        ContentValues values = new ContentValues();
-        Photo.ContentBuilder builder = new Photo.ContentBuilder();
-        for (Photo photo : photos.getPhotoList()) {
-            values.clear();
-            values = builder.clear()
-                    .flickrId(photo.getFlickrId())
-                    .owner(photo.getOwner())
-                    .secret(photo.getSecret())
-                    .server(photo.getServerId())
-                    .farm(photo.getFarmId())
-                    .title(photo.getTitle())
-                    .isPublic(photo.getIsPublic())
-                    .isFriend(photo.getIsFriend())
-                    .isFamily(photo.getIsFamily())
-                    .build();
-            operations.add(ContentProviderOperation
-                    .newInsert(PHOTOS_CONTENT_URI).withValues(values).build());
-        }
-        return operations;
-    }
-
-    private ArrayList<ContentProviderOperation> getUpdatePhotoOperationList(List<Photo> photoList) {
-        ArrayList<ContentProviderOperation> operations = new ArrayList<>();
-        ContentValues values = new ContentValues();
-        Photo.ContentBuilder builder = new Photo.ContentBuilder();
-        for (Photo photo : photoList) {
-            values.clear();
-            values = builder.clear()
-                    .rotation(photo.getRotation())
-                    .originalSecret(photo.getOriginalSecret())
-                    .originalFormat(photo.getOriginalFormat())
-                    .takenDate(photo.getTakenDate())
-                    .lastUpdate(photo.getLastUpdate())
-                    .width(photo.getWidth())
-                    .height(photo.getHeight())
-                    .build();
-            operations.add(ContentProviderOperation.
-                    newUpdate(PHOTOS_CONTENT_URI)
-                    .withSelection(Photo.FLICKR_ID + "=?",
-                            new String[]{String.valueOf(photo.getFlickrId())})
-                    .withValues(values)
+    private void clearDb(List<Long> idsToRemoveFromDB) throws RemoteException, OperationApplicationException {
+        ContentResolver resolver = getApplicationContext().getContentResolver();
+        ArrayList<ContentProviderOperation> operationList = new ArrayList<>();
+        for (Long id : idsToRemoveFromDB) {
+            operationList.add(ContentProviderOperation.newDelete(PHOTOS_CONTENT_URI)
+                    .withSelection(Photo.FLICKR_ID + "=?", new String[]{String.valueOf(id)})
                     .build());
         }
-        return operations;
+        if (!operationList.isEmpty()) {
+            resolver.applyBatch(AUTHORITY, operationList);
+        }
+    }
+
+    private List<Long> getFlickrIdList(Cursor photoCursor) {
+        List<Long> idList = new ArrayList<>();
+        if (photoCursor != null && photoCursor.moveToFirst()) {
+            do {
+                idList.add(photoCursor.getLong(photoCursor.getColumnIndex(Photo.FLICKR_ID)));
+            } while (photoCursor.moveToNext());
+        }
+        if (photoCursor != null && !photoCursor.isClosed()) {
+            photoCursor.close();
+        }
+        return idList;
+    }
+
+    private List<Long> getFlickrIdList(List<Photo> photoList) {
+        List<Long> idList = new ArrayList<>();
+        for (Photo photo : photoList) {
+            idList.add(photo.getFlickrId());
+        }
+        return idList;
+    }
+
+    private ContentProviderOperation getInsertPhotoOperation(Photo photo) {
+        ContentValues values = new Photo.ContentBuilder()
+                .flickrId(photo.getFlickrId())
+                .owner(photo.getOwner())
+                .secret(photo.getSecret())
+                .server(photo.getServerId())
+                .farm(photo.getFarmId())
+                .title(photo.getTitle())
+                .isPublic(photo.getIsPublic())
+                .isFriend(photo.getIsFriend())
+                .isFamily(photo.getIsFamily())
+                .rotation(photo.getRotation())
+                .originalSecret(photo.getOriginalSecret())
+                .originalFormat(photo.getOriginalFormat())
+                .takenDate(photo.getTakenDate())
+                .lastUpdate(photo.getLastUpdate())
+                .width(photo.getWidth())
+                .height(photo.getHeight())
+                .build();
+        return ContentProviderOperation
+                .newInsert(PHOTOS_CONTENT_URI).withValues(values).build();
     }
 
     private Photo parsePhotoSize(Photo photo, JsonObject photoSizesJson) {

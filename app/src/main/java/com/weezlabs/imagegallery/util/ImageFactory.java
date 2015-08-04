@@ -15,13 +15,14 @@ import com.weezlabs.imagegallery.model.local.LocalImage;
 public final class ImageFactory {
 
     public static final String IMAGE = "com.weezlabs.imagegallery.IMAGE";
+    public static final int INCORRECT_INDEX = -1;
 
     private ImageFactory() {
 
     }
 
     public static Image buildImage(Cursor cursor) {
-        if (cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID) == -1) {
+        if (cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID) == INCORRECT_INDEX) {
             return new Photo(cursor);
         } else {
             return new LocalImage(cursor);
@@ -31,7 +32,7 @@ public final class ImageFactory {
     public static String getImageTitle(Cursor cursor) {
         String title = null;
         if (cursor != null && !cursor.isClosed()) {
-            if (cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME) == -1) {
+            if (cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME) == INCORRECT_INDEX) {
                 title = cursor.getString(cursor.getColumnIndex(Photo.TITLE));
             } else {
                 title = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));

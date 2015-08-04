@@ -34,7 +34,7 @@ public class ImageStaggeredFragment extends BaseImageFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Timber.tag(LOG_TAG);
-        mImageAdapter = new StaggeredImageAdapter(getActivity(), null);
+        mImageAdapter = new StaggeredImageAdapter(getActivity().getApplicationContext(), null);
         loadImages();
     }
 
