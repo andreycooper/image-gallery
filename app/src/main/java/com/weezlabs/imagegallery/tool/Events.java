@@ -1,7 +1,10 @@
 package com.weezlabs.imagegallery.tool;
 
 
-public class Events {
+public final class Events {
+    private Events() {
+    }
+
     public static class ChangeTitleEvent {
         private final String mTitle;
 
@@ -14,7 +17,15 @@ public class Events {
         }
     }
 
-    public static class ToolbarVisibilityEvent {
+    public static final class ToolbarVisibilityEvent {
+
+    }
+
+    public static final class UserLogonEvent {
+
+    }
+
+    public static final class LoadFlickrPhotosEvent {
 
     }
 }

@@ -25,7 +25,7 @@
         </activity>
         <activity
             android:name=".activity.PreviewActivity"
-            android:label="@string/title_activity_view"
+            android:label="@string/title_activity_preview"
             android:theme="@style/ViewTheme">
         </activity>
         <activity

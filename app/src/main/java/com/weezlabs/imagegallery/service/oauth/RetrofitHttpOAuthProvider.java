@@ -48,14 +48,12 @@ public class RetrofitHttpOAuthProvider extends AbstractOAuthProvider {
 
     private retrofit.client.Response buildRetrofitResponse(Response okResponse) {
         TypedInput inputBody = new ResponseBodyWrapper(okResponse.body());
-        retrofit.client.Response response =
-                new retrofit.client.Response(
-                        okResponse.request().urlString(),
-                        okResponse.code(),
-                        okResponse.message(),
-                        getHeaders(okResponse.headers()),
-                        inputBody);
-        return response;
+        return new retrofit.client.Response(
+                okResponse.request().urlString(),
+                okResponse.code(),
+                okResponse.message(),
+                getHeaders(okResponse.headers()),
+                inputBody);
     }
 
     private com.squareup.okhttp.Request buildOkHttpRequest(retrofit.client.Request request) {

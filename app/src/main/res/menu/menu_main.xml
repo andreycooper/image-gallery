@@ -7,11 +7,11 @@
         android:orderInCategory="10"
         android:title="@string/action_mode_change"
         app:showAsAction="always"/>
-    <item
-        android:id="@+id/action_test"
-        android:orderInCategory="90"
-        android:title="@string/label_action_test"
-        app:showAsAction="never"/>
+    <!--<item-->
+    <!--android:id="@+id/action_test"-->
+    <!--android:orderInCategory="90"-->
+    <!--android:title="@string/label_action_test"-->
+    <!--app:showAsAction="never"/>-->
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"

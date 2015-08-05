@@ -12,11 +12,12 @@ import android.view.MenuItem;
 
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.activity.controller.PreviewToolbarController;
-import com.weezlabs.imagegallery.tool.LoaderManagerProvider;
-import com.weezlabs.imagegallery.view.adapter.ImagePagerAdapter;
-import com.weezlabs.imagegallery.tool.Events;
+import com.weezlabs.imagegallery.tool.Events.ChangeTitleEvent;
+import com.weezlabs.imagegallery.tool.Events.ToolbarVisibilityEvent;
 import com.weezlabs.imagegallery.tool.ImageCursorProvider;
 import com.weezlabs.imagegallery.tool.ImageCursorReceiver;
+import com.weezlabs.imagegallery.tool.LoaderManagerProvider;
+import com.weezlabs.imagegallery.view.adapter.ImagePagerAdapter;
 
 import de.greenrobot.event.EventBus;
 
@@ -129,12 +130,12 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
     // EVENTS
 
     @SuppressWarnings("unused")
-    public void onEvent(Events.ChangeTitleEvent event) {
+    public void onEvent(ChangeTitleEvent event) {
         mToolbarController.setTitle(event.getTitle());
     }
 
     @SuppressWarnings("unused")
-    public void onEvent(Events.ToolbarVisibilityEvent event) {
+    public void onEvent(ToolbarVisibilityEvent event) {
         mIsFullscreen = !mIsFullscreen;
         mToolbarController.setFullscreen(mIsFullscreen);
     }
