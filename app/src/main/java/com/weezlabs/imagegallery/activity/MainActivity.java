@@ -7,105 +7,44 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
-import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
-import com.mikepenz.materialdrawer.accountswitcher.AccountHeaderBuilder;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
-import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SectionDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.weezlabs.imagegallery.R;
+import com.weezlabs.imagegallery.activity.controller.NavigationDrawerController;
 import com.weezlabs.imagegallery.fragment.folder.BaseFolderFragment;
 import com.weezlabs.imagegallery.job.FetchFlickrPhotosJob;
-import com.weezlabs.imagegallery.job.LoginFlickrUserJob;
 import com.weezlabs.imagegallery.model.flickr.User;
+import com.weezlabs.imagegallery.tool.Events;
+import com.weezlabs.imagegallery.tool.Events.UserLogonEvent;
 import com.weezlabs.imagegallery.util.ImageFactory;
 import com.weezlabs.imagegallery.util.NetworkUtils;
+
+import de.greenrobot.event.EventBus;
 
 
 public class MainActivity extends BaseActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
-    private Drawer mDrawer;
-    private Toolbar mToolbar;
+
+    private NavigationDrawerController mDrawerController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        AccountHeader accountHeader = new AccountHeaderBuilder()
+        mDrawerController = new NavigationDrawerController.Builder()
                 .withActivity(this)
-                .withSavedInstance(savedInstanceState)
-                .withTranslucentStatusBar(true)
-                .withHeaderBackground(R.drawable.drawer_header_background)
+                .withStorages(mViewModeStorage, mFlickrStorage)
+                .withToolbar(toolbar)
+                .withState(savedInstanceState)
                 .build();
-        mDrawer = getDrawer(accountHeader, savedInstanceState);
-    }
-
-    private Drawer getDrawer(AccountHeader accountHeader, Bundle savedInstanceState) {
-        return new DrawerBuilder()
-                .withActivity(this)
-                .withToolbar(mToolbar)
-                .withSavedInstance(savedInstanceState)
-                .withActionBarDrawerToggleAnimated(true)
-                .withAccountHeader(accountHeader)
-                .addDrawerItems(
-                        new SectionDrawerItem()
-                                .withName(getString(R.string.label_drawer_section_view_mode))
-                                .setDivider(false),
-                        new PrimaryDrawerItem()
-                                .withName(R.string.label_drawer_list)
-                                .withIcon(GoogleMaterial.Icon.gmd_view_list)
-                                .withIdentifier(ViewMode.LIST_MODE.getMode()),
-                        new PrimaryDrawerItem()
-                                .withName(R.string.label_drawer_grid)
-                                .withIcon(GoogleMaterial.Icon.gmd_view_module)
-                                .withIdentifier(ViewMode.GRID_MODE.getMode()),
-                        new PrimaryDrawerItem()
-                                .withName(R.string.label_drawer_staggered)
-                                .withIcon(GoogleMaterial.Icon.gmd_view_quilt)
-                                .withIdentifier(ViewMode.STAGGERED_MODE.getMode()),
-                        new DividerDrawerItem()
-                )
-                .withOnDrawerNavigationListener(view -> {
-                    onBackPressed();
-                    return true;
-                })
-                .withOnDrawerItemClickListener((adapterView, view, position, l, drawerItem) -> {
-                    if (drawerItem != null) {
-                        if (isViewModeDrawerItem(drawerItem)) {
-                            changeViewMode(drawerItem.getIdentifier());
-                            mDrawer.closeDrawer();
-                        }
-                    }
-                    return true;
-                })
-                .build();
-    }
-
-    private boolean isViewModeDrawerItem(IDrawerItem drawerItem) {
-        return drawerItem.getIdentifier() >= ViewMode.LIST_MODE.getMode()
-                && drawerItem.getIdentifier() <= ViewMode.STAGGERED_MODE.getMode();
-    }
-
-    private int getDrawerSelectedMode() {
-        int viewMode = mViewModeStorage.getViewMode().getMode();
-        for (int i = 0; i < mDrawer.getDrawerItems().size(); i++) {
-            if (viewMode == mDrawer.getDrawerItems().get(i).getIdentifier()) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        EventBus.getDefault().registerSticky(this);
         // TODO: create abstract method setupUi() in base activity
         // show correct fragment also correct states of drawer and menu
         ViewMode viewMode = mViewModeStorage.getViewMode();
@@ -114,7 +53,13 @@ public class MainActivity extends BaseActivity {
             MenuItem item = mMenu.findItem(R.id.action_change_mode);
             setupModeIcon(item, mViewModeStorage.getViewMode());
         }
-        mDrawer.setSelection(getDrawerSelectedMode(), false);
+        mDrawerController.setCurrentViewMode();
+    }
+
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -132,14 +77,11 @@ public class MainActivity extends BaseActivity {
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_test:
-                test();
-                return true;
             case R.id.action_settings:
                 return true;
             case R.id.action_change_mode:
                 swapViewMode(item);
-                mDrawer.setSelection(getDrawerSelectedMode(), false);
+                mDrawerController.setCurrentViewMode();
                 return true;
             case android.R.id.home:
                 onBackPressed();
@@ -149,21 +91,19 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    private void test() {
+    private void loadFlickrPhotos() {
         if (NetworkUtils.isOnline(this)) {
-            if (!mFlickrStorage.isAuthenticated()) {
-                Intent intent = new Intent(this, FlickrLoginActivity.class);
+            User user = mFlickrStorage.restoreFlickrUser();
+            if (user != null) {
+                mJobManager.addJobInBackground(new FetchFlickrPhotosJob(mFlickrStorage, mFlickrService));
+                Intent intent = new Intent(this, FolderDetailActivity.class);
+                intent.putExtra(BaseFolderFragment.EXTRA_BUCKET, ImageFactory.buildFlickrBucket(this));
                 startActivity(intent);
             } else {
-                User user = mFlickrStorage.restoreFlickrUser();
-                if (user != null) {
-                    mJobManager.addJobInBackground(new FetchFlickrPhotosJob(mFlickrStorage, mFlickrService));
-                    Intent intent = new Intent(this, FolderDetailActivity.class);
-                    intent.putExtra(BaseFolderFragment.EXTRA_BUCKET, ImageFactory.buildFlickrBucket(this));
-                    startActivity(intent);
-                } else {
-                    mJobManager.addJobInBackground(new LoginFlickrUserJob(mFlickrStorage, mFlickrService));
-                }
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.toast_flickr_login_need),
+                        Toast.LENGTH_SHORT)
+                        .show();
             }
         } else {
             Toast.makeText(getApplicationContext(),
@@ -176,17 +116,29 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         //add the values which need to be saved from the drawer to the bundle
-        outState = mDrawer.saveInstanceState(outState);
+        outState = mDrawerController.saveInstanceState(outState);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onBackPressed() {
-        if (mDrawer.isDrawerOpen()) {
-            mDrawer.closeDrawer();
+        if (mDrawerController.isDrawerOpen()) {
+            mDrawerController.closeDrawer();
         } else {
             super.onBackPressed();
         }
+    }
+
+    @SuppressWarnings("unused")
+    public void onEventMainThread(UserLogonEvent event) {
+        EventBus.getDefault().removeStickyEvent(event);
+        mDrawerController.refillAccountHeader();
+    }
+
+    @SuppressWarnings("unused")
+    public void onEventMainThread(Events.LoadFlickrPhotosEvent event) {
+        EventBus.getDefault().removeStickyEvent(event);
+        loadFlickrPhotos();
     }
 
 }

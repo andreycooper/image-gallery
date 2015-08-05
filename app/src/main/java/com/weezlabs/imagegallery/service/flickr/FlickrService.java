@@ -101,7 +101,6 @@ public class FlickrService {
     }
 
     private ArrayMap<String, String> getParamsWithMethod(String method) {
-        // TODO: avoid creation of new Map
         ArrayMap<String, String> params = new ArrayMap<>(mJsonParams);
         params.put(getString(R.string.request_key_method), method);
         return params;

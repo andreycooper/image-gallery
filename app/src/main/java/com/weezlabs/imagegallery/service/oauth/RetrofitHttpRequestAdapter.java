@@ -83,14 +83,12 @@ public class RetrofitHttpRequestAdapter implements HttpRequest {
         ArrayList<Header> headers = new ArrayList<Header>();
         headers.addAll(mRequest.getHeaders());
         headers.add(new Header(key, value));
-        Request copy = new Request(mRequest.getMethod(), mRequest.getUrl(), headers, mRequest.getBody());
-        mRequest = copy;
+        mRequest = new Request(mRequest.getMethod(), mRequest.getUrl(), headers, mRequest.getBody());
     }
 
     @Override
     public void setRequestUrl(String url) {
-        Request copy = new Request(mRequest.getMethod(), url, mRequest.getHeaders(), mRequest.getBody());
-        mRequest = copy;
+        mRequest = new Request(mRequest.getMethod(), url, mRequest.getHeaders(), mRequest.getBody());
     }
 
     @Override

@@ -8,6 +8,10 @@ import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.model.flickr.User;
 import com.weezlabs.imagegallery.service.flickr.FlickrService;
 import com.weezlabs.imagegallery.storage.FlickrStorage;
+import com.weezlabs.imagegallery.tool.Events;
+import com.weezlabs.imagegallery.tool.Events.UserLogonEvent;
+
+import de.greenrobot.event.EventBus;
 
 
 public class LoginFlickrUserJob extends BaseFlickrJob {
@@ -38,6 +42,7 @@ public class LoginFlickrUserJob extends BaseFlickrJob {
         getFlickrStorage().saveUser(user);
 
         Log.i(LOG_TAG, user.toString());
+        EventBus.getDefault().postSticky(new UserLogonEvent());
     }
 
     private User parseUserInfo(String userId, String username, JsonObject personJson) {

@@ -80,7 +80,6 @@ public class FlickrContentProvider extends ContentProvider {
         }
 
         resultUri = ContentUris.withAppendedId(uri, rowId);
-        // TODO: maybe need notify original uri
         getContext().getContentResolver().notifyChange(uri, null);
         return resultUri;
     }

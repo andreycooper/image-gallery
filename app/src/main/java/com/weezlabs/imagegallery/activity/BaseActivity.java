@@ -39,7 +39,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         ImageGalleryApp.get(this).getAppComponent().inject(this);
     }
 
-    protected void changeViewMode(int viewMode) {
+    public void changeViewMode(int viewMode) {
         switch (viewMode) {
             case 0:
                 changeViewMode(ViewMode.LIST_MODE);

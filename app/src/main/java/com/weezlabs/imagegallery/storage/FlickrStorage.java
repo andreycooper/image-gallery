@@ -79,6 +79,18 @@ public final class FlickrStorage {
         editor.remove(OAuth.OAUTH_TOKEN);
         editor.remove(OAuth.OAUTH_TOKEN_SECRET);
         editor.apply();
+        deleteUser();
+    }
+
+    public void deleteUser() {
+        SharedPreferences.Editor editor = mPrefs.edit();
+        editor.remove(USER_ID);
+        editor.remove(USERNAME);
+        editor.remove(USER_NSID);
+        editor.remove(USER_REAL_NAME);
+        editor.remove(ICON_FARM);
+        editor.remove(ICON_SERVER);
+        editor.apply();
     }
 
     public void saveUser(User user) {

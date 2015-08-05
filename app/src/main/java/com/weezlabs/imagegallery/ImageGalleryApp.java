@@ -49,7 +49,7 @@ public class ImageGalleryApp extends Application {
 
             @Override
             public void cancel(ImageView imageView) {
-                Glide.clear(imageView);
+//                Glide.clear(imageView);
             }
 
             @Override
