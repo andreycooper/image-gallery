@@ -4,8 +4,8 @@ package com.weezlabs.imagegallery.activity.controller;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
-import android.widget.Toast;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -268,9 +268,9 @@ public final class NavigationDrawerController {
                     mActivity.startActivity(intent);
                 }
             } else {
-                Toast.makeText(mActivity,
+                Snackbar.make(mActivity.getWindow().getDecorView().getRootView(),
                         mActivity.getString(R.string.toast_internet_check),
-                        Toast.LENGTH_SHORT)
+                        Snackbar.LENGTH_SHORT)
                         .show();
             }
         }

@@ -138,7 +138,7 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
                 String oauthCallBackUrl = getString(R.string.flickr_oauth_callback_url);
                 try {
                     mAuthUrl = mProvider.retrieveRequestToken(mConsumer, oauthCallBackUrl);
-                    // need append permission to 'https://www.flickr.com/services/oauth/authorize?oauth_token=TOKEN'
+                    // append permission to 'https://www.flickr.com/services/oauth/authorize?oauth_token=TOKEN'
                     // because Flickr throw error without it
                     mAuthUrl += PERMS_READ;
                     Timber.d("mAuthUrl: %s", mAuthUrl);
