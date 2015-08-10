@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.webkit.MimeTypeMap;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -13,6 +14,8 @@ import java.net.URLEncoder;
 
 
 public final class FileUtils {
+    public static final String FILE_SCHEME = "file://";
+    public static final String JPG_EXTENSION = ".jpg";
     public static final String IMAGE_TYPE = "image/";
     public static final String IMAGE_TYPE_GIF = IMAGE_TYPE + "gif";
     private static final String IS_VISIBLE_INFO = "is_visible_info";
@@ -35,6 +38,10 @@ public final class FileUtils {
             type = map.getMimeTypeFromExtension(extension);
         }
         return type;
+    }
+
+    public static String getFolderPath(String filePath) {
+        return new File(filePath).getParent();
     }
 
     public static boolean isGifFile(String filePath) {

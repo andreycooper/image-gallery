@@ -37,6 +37,13 @@ public final class TextUtils {
         return formatter.format(calendar.getTime());
     }
 
+    public static String getCurrentDate(Context context) {
+        SimpleDateFormat formatter = new SimpleDateFormat(context.getString(R.string.format_current_time),
+                context.getResources().getConfiguration().locale);
+        Calendar calendar = Calendar.getInstance();
+        return formatter.format(calendar.getTime());
+    }
+
     public static String getReadableFileSize(Context context, long fileSize) {
         return Formatter.formatShortFileSize(context, fileSize);
     }

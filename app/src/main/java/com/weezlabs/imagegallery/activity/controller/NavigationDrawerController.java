@@ -4,8 +4,9 @@ package com.weezlabs.imagegallery.activity.controller;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
-import android.widget.Toast;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -31,6 +32,8 @@ import com.weezlabs.imagegallery.tool.Events.LoadFlickrPhotosEvent;
 import com.weezlabs.imagegallery.util.NetworkUtils;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import de.greenrobot.event.EventBus;
 
@@ -199,10 +202,7 @@ public final class NavigationDrawerController {
                                     EventBus.getDefault().postSticky(new LoadFlickrPhotosEvent());
                                     break;
                                 case DELETE_ACCOUNT_ID:
-                                    mFlickrStorage.resetOAuth();
-                                    mActivity.getContentResolver()
-                                            .delete(PHOTOS_DELETE_CONTENT_URI, null, null);
-                                    mController.refillAccountHeader();
+                                    deleteFlickrUser();
                                     break;
                                 default:
                                     break;
@@ -268,11 +268,35 @@ public final class NavigationDrawerController {
                     mActivity.startActivity(intent);
                 }
             } else {
-                Toast.makeText(mActivity,
+                Snackbar.make(mActivity.getWindow().getDecorView().getRootView(),
                         mActivity.getString(R.string.toast_internet_check),
-                        Toast.LENGTH_SHORT)
+                        Snackbar.LENGTH_SHORT)
                         .show();
             }
+        }
+
+        private void deleteFlickrUser() {
+            final Timer timer = new Timer();
+            Snackbar snackbar = Snackbar.make(
+                    mActivity.getWindow().getDecorView().getRootView(),
+                    mActivity.getString(R.string.toast_flickr_delete_account),
+                    Snackbar.LENGTH_SHORT)
+                    .setAction(mActivity.getString(R.string.toast_undo), v -> {
+                        timer.cancel();
+                    });
+            snackbar.show();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Handler handler = new Handler(mActivity.getApplicationContext().getMainLooper());
+                    handler.post(() -> {
+                        mFlickrStorage.resetOAuth();
+                        mActivity.getContentResolver()
+                                .delete(PHOTOS_DELETE_CONTENT_URI, null, null);
+                        mController.refillAccountHeader();
+                    });
+                }
+            }, mActivity.getResources().getInteger(R.integer.undo_duration));
         }
 
         private boolean isViewModeDrawerItem(IDrawerItem drawerItem) {

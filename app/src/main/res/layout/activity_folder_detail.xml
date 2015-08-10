@@ -17,7 +17,8 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
 
-    <!-- the layout which will be the content of the activity (which will be hosted inside the drawer (NOT the list of the drawer)) -->
+    <!-- the layout which will be the content of the activity
+    (which will be hosted inside the drawer (NOT the list of the drawer)) -->
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"

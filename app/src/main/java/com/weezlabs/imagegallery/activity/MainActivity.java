@@ -2,10 +2,10 @@ package com.weezlabs.imagegallery.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.activity.controller.NavigationDrawerController;
@@ -100,16 +100,17 @@ public class MainActivity extends BaseActivity {
                 intent.putExtra(BaseFolderFragment.EXTRA_BUCKET, ImageFactory.buildFlickrBucket(this));
                 startActivity(intent);
             } else {
-                Toast.makeText(getApplicationContext(),
+                Snackbar.make(getWindow().getDecorView().getRootView(),
                         getString(R.string.toast_flickr_login_need),
-                        Toast.LENGTH_SHORT)
+                        Snackbar.LENGTH_SHORT)
                         .show();
             }
         } else {
-            Toast.makeText(getApplicationContext(),
+            Snackbar.make(getWindow().getDecorView().getRootView(),
                     getString(R.string.toast_internet_check),
-                    Toast.LENGTH_SHORT)
+                    Snackbar.LENGTH_SHORT)
                     .show();
+            mDrawerController.setCurrentViewMode();
         }
     }
 

@@ -3,7 +3,7 @@ package com.weezlabs.imagegallery.fragment.image;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,9 +38,9 @@ public class ImageGridFragment extends BaseImageFragment {
         loadImages();
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    protected View getRootView(@NonNull LayoutInflater inflater, ViewGroup container) {
         View rootView = inflater.inflate(R.layout.fragment_image_grid, container, false);
         mListView = (StickyGridHeadersGridView) rootView.findViewById(R.id.grid_view);
         ((StickyGridHeadersGridView) mListView).setAreHeadersSticky(false);

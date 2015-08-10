@@ -3,7 +3,7 @@ package com.weezlabs.imagegallery.fragment.image;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,16 +38,6 @@ public class ImageListFragment extends BaseImageFragment {
         loadImages();
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_list, container, false);
-        mListView = (ListView) rootView.findViewById(R.id.list_view);
-        mListView.setAdapter(mImageAdapter);
-        mListView.setOnItemClickListener(new OnImageItemClickListener());
-        return rootView;
-    }
-
     @Override
     protected Intent getPreviewIntent(AdapterView<?> parent, View view, int position, long id) {
         Timber.d("click in SectionListImageAdapter, position: %s,  id: %s", position, id);
@@ -68,5 +58,14 @@ public class ImageListFragment extends BaseImageFragment {
             getActivity().startActivity(intent);
         }
         return null;
+    }
+
+    @Override
+    protected View getRootView(@NonNull LayoutInflater inflater, ViewGroup container) {
+        View rootView = inflater.inflate(R.layout.fragment_image_list, container, false);
+        mListView = (ListView) rootView.findViewById(R.id.list_view);
+        mListView.setAdapter(mImageAdapter);
+        mListView.setOnItemClickListener(new OnImageItemClickListener());
+        return rootView;
     }
 }
