@@ -5,4 +5,5 @@
     <integer name="webview_progress_max">100</integer>
 
     <integer name="preview_image_tile_dpi">160</integer>
+    <integer name="undo_duration">2000</integer>
 </resources>
