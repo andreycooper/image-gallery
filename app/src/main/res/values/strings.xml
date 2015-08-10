@@ -11,6 +11,7 @@
     <string name="label_image_date">Date: %1$s</string>
     <string name="label_image_size">Size: %1$s</string>
     <string name="format_image_date">dd/MM/yyyy</string>
+    <string name="format_current_time">yyyy-MM-dd_HH-mm-ss</string>
 
     <string name="label_drawer_list">List</string>
     <string name="label_drawer_grid">Grid</string>

@@ -1,6 +1,5 @@
 package com.weezlabs.imagegallery.fragment.folder;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +8,6 @@ import android.widget.ListView;
 
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.view.adapter.FolderAdapter;
-import com.weezlabs.imagegallery.fragment.image.ImageListFragment;
 
 
 public class FolderListFragment extends BaseFolderFragment {
@@ -34,7 +32,7 @@ public class FolderListFragment extends BaseFolderFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_list, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_folder_list, container, false);
         mListView = (ListView) rootView.findViewById(R.id.list_view);
         mListView.setAdapter(mFolderAdapter);
         mListView.setOnItemClickListener(new OnFolderItemClickListener());

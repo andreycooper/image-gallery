@@ -30,7 +30,7 @@ public class FolderStaggeredFragment extends BaseFolderFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_staggered, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_folder_staggered, container, false);
         mListView = (StaggeredGridView) rootView.findViewById(R.id.staggered_view);
         mListView.setAdapter(mFolderAdapter);
         mListView.setOnItemClickListener(new OnFolderItemClickListener());

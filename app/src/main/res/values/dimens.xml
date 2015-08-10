@@ -37,4 +37,7 @@
     <dimen name="item_section_text_size">16sp</dimen>
 
     <dimen name="webview_progress_min_height">3dp</dimen>
+    <dimen name="fab_compat_margin">0dp</dimen>
+    <dimen name="fab_compat_elevation">6dp</dimen>
+    <dimen name="fab_compat_translation_z">12dp</dimen>
 </resources>
