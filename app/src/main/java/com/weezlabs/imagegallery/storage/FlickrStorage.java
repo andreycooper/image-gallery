@@ -4,6 +4,7 @@ package com.weezlabs.imagegallery.storage;
 import android.content.SharedPreferences;
 
 import com.weezlabs.imagegallery.model.flickr.Photo;
+import com.weezlabs.imagegallery.model.flickr.Token;
 import com.weezlabs.imagegallery.model.flickr.User;
 import com.weezlabs.imagegallery.util.TextUtils;
 
@@ -64,6 +65,11 @@ public final class FlickrStorage {
         SharedPreferences.Editor editor = mPrefs.edit();
         editor.putString(OAuth.OAUTH_TOKEN_SECRET, tokenSecret);
         editor.apply();
+    }
+
+    public void saveToken(Token token) {
+        setToken(token.getToken());
+        setTokenSecret(token.getTokenSecret());
     }
 
     public String getToken() {

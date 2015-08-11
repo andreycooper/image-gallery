@@ -2,7 +2,6 @@ package com.weezlabs.imagegallery.activity;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -14,13 +13,14 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.path.android.jobqueue.JobManager;
 import com.weezlabs.imagegallery.ImageGalleryApp;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.job.LoginFlickrUserJob;
+import com.weezlabs.imagegallery.model.flickr.Token;
 import com.weezlabs.imagegallery.service.flickr.FlickrService;
-import com.weezlabs.imagegallery.service.oauth.OAuthTask;
 import com.weezlabs.imagegallery.service.oauth.OnOAuthCallBackListener;
 import com.weezlabs.imagegallery.service.oauth.RetrofitHttpOAuthConsumer;
 import com.weezlabs.imagegallery.storage.FlickrStorage;
@@ -36,6 +36,10 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCallBackListener, OnPageLoadListener {
@@ -50,7 +54,6 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
     private static final String PERMS_DELETE = "&perms=delete";
 
     private WebView mWebView;
-    private String mAuthUrl;
 
     private OAuthProvider mProvider;
     private OAuthConsumer mConsumer;
@@ -77,7 +80,6 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-
         // it's Ok to create WebView through App context for Flickr's login
         // but it's crash when login to Twitter
         mWebView = new WebView(getApplicationContext());
@@ -97,11 +99,6 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
         mWebView.setWebViewClient(webViewClient);
 
         initFlickr();
-
-        if (TextUtils.isEmpty(mAuthUrl)) {
-            mWebView.loadUrl(mAuthUrl);
-        }
-
     }
 
     @Override
@@ -131,89 +128,68 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
                 ACCESS_TOKEN_URL,
                 USER_AUTHORIZATION_URL);
 
-
-        OAuthTask oAuthTask = new OAuthTask(this) {
-            @Override
-            protected Void doInBackground(Void... params) {
-                String oauthCallBackUrl = getString(R.string.flickr_oauth_callback_url);
-                try {
-                    mAuthUrl = mProvider.retrieveRequestToken(mConsumer, oauthCallBackUrl);
-                    // append permission to 'https://www.flickr.com/services/oauth/authorize?oauth_token=TOKEN'
-                    // because Flickr throw error without it
-                    mAuthUrl += PERMS_READ;
-                    Timber.d("mAuthUrl: %s", mAuthUrl);
-                } catch (OAuthMessageSignerException e) {
-                    showErrorToUser(e);
-                    e.printStackTrace();
-                } catch (OAuthNotAuthorizedException e) {
-                    showErrorToUser(e);
-                    e.printStackTrace();
-                } catch (OAuthExpectationFailedException e) {
-                    showErrorToUser(e);
-                    e.printStackTrace();
-                } catch (OAuthCommunicationException e) {
-                    showErrorToUser(e);
-                    e.printStackTrace();
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                if (!TextUtils.isEmpty(mAuthUrl)) {
-                    mWebView.loadUrl(mAuthUrl);
-                }
-            }
-        };
-        oAuthTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
+        Observable.create(
+                new Observable.OnSubscribe<String>() {
+                    @Override
+                    public void call(Subscriber<? super String> subscriber) {
+                        try {
+                            String oauthCallBackUrl = getString(R.string.flickr_oauth_callback_url);
+                            String authUrl = mProvider.retrieveRequestToken(mConsumer, oauthCallBackUrl);
+                            subscriber.onNext(authUrl);
+                        } catch (OAuthMessageSignerException | OAuthNotAuthorizedException
+                                | OAuthExpectationFailedException | OAuthCommunicationException e) {
+                            subscriber.onError(e);
+                        }
+                        subscriber.onCompleted();
+                    }
+                })
+                // append permission to 'https://www.flickr.com/services/oauth/authorize?oauth_token=TOKEN'
+                // because Flickr throw error without it
+                .map(authUrl -> authUrl + PERMS_READ)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(authUrl -> {
+                    if (!TextUtils.isEmpty(authUrl) || !authUrl.equals(PERMS_READ)) {
+                        mWebView.loadUrl(authUrl);
+                    }
+                }, error -> Toast.makeText(getApplicationContext(),
+                        getString(R.string.toast_error_login, error.getMessage()),
+                        Toast.LENGTH_SHORT)
+                        .show());
     }
 
     @Override
     public void onOAuthCallback(final Uri uri) {
-        OAuthTask oAuthTask = new OAuthTask(this) {
-            @Override
-            protected Void doInBackground(Void... params) {
-                String pinCode = uri.getQueryParameter(OAuth.OAUTH_VERIFIER);
-                try {
-                    mProvider.retrieveAccessToken(mConsumer, pinCode);
-
-                    String token = mConsumer.getToken();
-                    String tokenSecret = mConsumer.getTokenSecret();
-
-                    mFlickrStorage.setToken(token);
-                    mFlickrStorage.setTokenSecret(tokenSecret);
-
-                } catch (OAuthMessageSignerException e) {
-                    showErrorToUser(e);
-                    e.printStackTrace();
-                } catch (OAuthNotAuthorizedException e) {
-                    showErrorToUser(e);
-                    e.printStackTrace();
-                } catch (OAuthExpectationFailedException e) {
-                    showErrorToUser(e);
-                    e.printStackTrace();
-                } catch (OAuthCommunicationException e) {
-                    showErrorToUser(e);
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                if (mFlickrStorage.isAuthenticated()) {
-                    FlickrService service = mServiceLazy.get();
-                    JobManager jobManager = mJobManagerLazy.get();
-                    jobManager.addJobInBackground(new LoginFlickrUserJob(mFlickrStorage, service));
-                }
-                finish();
-            }
-        };
-        oAuthTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        Observable.create(
+                new Observable.OnSubscribe<Token>() {
+                    @Override
+                    public void call(Subscriber<? super Token> subscriber) {
+                        String pinCode = uri.getQueryParameter(OAuth.OAUTH_VERIFIER);
+                        try {
+                            mProvider.retrieveAccessToken(mConsumer, pinCode);
+                            Token token = new Token(mConsumer.getToken(), mConsumer.getTokenSecret());
+                            subscriber.onNext(token);
+                        } catch (OAuthMessageSignerException | OAuthNotAuthorizedException
+                                | OAuthExpectationFailedException | OAuthCommunicationException e) {
+                            subscriber.onError(e);
+                        }
+                        subscriber.onCompleted();
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(token -> {
+                    mFlickrStorage.saveToken(token);
+                    if (mFlickrStorage.isAuthenticated()) {
+                        FlickrService service = mServiceLazy.get();
+                        JobManager jobManager = mJobManagerLazy.get();
+                        jobManager.addJobInBackground(new LoginFlickrUserJob(mFlickrStorage, service));
+                    }
+                    finish();
+                }, error -> Toast.makeText(getApplicationContext(),
+                        getString(R.string.toast_error_login, error.getMessage()),
+                        Toast.LENGTH_SHORT)
+                        .show());
     }
 
     @Override
