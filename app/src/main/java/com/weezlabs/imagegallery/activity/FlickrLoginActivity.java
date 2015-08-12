@@ -42,7 +42,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCallBackListener, OnPageLoadListener {
+public class FlickrLoginActivity extends AppCompatActivity
+        implements OnOAuthCallBackListener, OnPageLoadListener {
     private final static String LOG_TAG = FlickrLoginActivity.class.getSimpleName();
 
     public static final String ACCESS_TOKEN_URL = "https://www.flickr.com/services/oauth/access_token";
@@ -146,16 +147,24 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
                 // append permission to 'https://www.flickr.com/services/oauth/authorize?oauth_token=TOKEN'
                 // because Flickr throw error without it
                 .map(authUrl -> authUrl + PERMS_READ)
+                .filter(authUrl -> !TextUtils.isEmpty(authUrl) || !authUrl.equals(PERMS_READ))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(authUrl -> {
-                    if (!TextUtils.isEmpty(authUrl) || !authUrl.equals(PERMS_READ)) {
-                        mWebView.loadUrl(authUrl);
-                    }
-                }, error -> Toast.makeText(getApplicationContext(),
-                        getString(R.string.toast_error_login, error.getMessage()),
-                        Toast.LENGTH_SHORT)
-                        .show());
+                .subscribe(
+                        //onNext
+                        // its similar to authUrl -> mWebView.loadUrl(authUrl)
+                        mWebView::loadUrl,
+                        //onError
+                        error -> Toast.makeText(getApplicationContext(),
+                                getString(R.string.toast_error_login, error.getMessage()),
+                                Toast.LENGTH_SHORT)
+                                .show());
+    }
+
+    private void startLoginJob() {
+        FlickrService service = mServiceLazy.get();
+        JobManager jobManager = mJobManagerLazy.get();
+        jobManager.addJobInBackground(new LoginFlickrUserJob(mFlickrStorage, service));
     }
 
     @Override
@@ -178,18 +187,22 @@ public class FlickrLoginActivity extends AppCompatActivity implements OnOAuthCal
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(token -> {
-                    mFlickrStorage.saveToken(token);
-                    if (mFlickrStorage.isAuthenticated()) {
-                        FlickrService service = mServiceLazy.get();
-                        JobManager jobManager = mJobManagerLazy.get();
-                        jobManager.addJobInBackground(new LoginFlickrUserJob(mFlickrStorage, service));
-                    }
-                    finish();
-                }, error -> Toast.makeText(getApplicationContext(),
-                        getString(R.string.toast_error_login, error.getMessage()),
-                        Toast.LENGTH_SHORT)
-                        .show());
+                .subscribe(
+                        //onNext
+                        // its similar to token -> mFlickrStorage.saveToken(token)
+                        mFlickrStorage::saveToken,
+                        //onError
+                        error -> Toast.makeText(getApplicationContext(),
+                                getString(R.string.toast_error_login, error.getMessage()),
+                                Toast.LENGTH_SHORT)
+                                .show(),
+                        //onComplete
+                        () -> {
+                            if (mFlickrStorage.isAuthenticated()) {
+                                startLoginJob();
+                                finish();
+                            }
+                        });
     }
 
     @Override
