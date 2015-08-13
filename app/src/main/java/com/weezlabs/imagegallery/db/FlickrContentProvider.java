@@ -7,6 +7,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.weezlabs.imagegallery.model.flickr.Photo;
@@ -84,8 +85,9 @@ public class FlickrContentProvider extends ContentProvider {
         return resultUri;
     }
 
+    @NonNull
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection,
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
         Cursor cursor;
         final int match = sUriMatcher.match(uri);

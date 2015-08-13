@@ -27,6 +27,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import rx.Observable;
+import rx.Subscriber;
+import timber.log.Timber;
+
 import static com.weezlabs.imagegallery.db.FlickrContentProvider.AUTHORITY;
 import static com.weezlabs.imagegallery.db.FlickrContentProvider.PHOTOS_CONTENT_URI;
 
@@ -67,11 +71,18 @@ public class FetchFlickrPhotosJob extends BaseFlickrJob {
             List<Long> idsToRemoveFromDB = new ArrayList<>();
             idsToRemoveFromDB.addAll(localFlickrIdList);
 
-            // TODO: check "page" and "pages" and add to photoList!
-            JsonObject photosJson = getFlickrService().getUserPhotos()
+            int page = 1;
+            JsonObject photosJson = getFlickrService().getUserPhotos(page)
                     .getAsJsonObject(getString(R.string.json_key_photos));
             Photos photos = new GsonBuilder().create().fromJson(photosJson, Photos.class);
             photoList.addAll(photos.getPhotoList());
+            while (photos.getPage() < photos.getPagesCount()) {
+                page++;
+                photosJson = getFlickrService().getUserPhotos(page)
+                        .getAsJsonObject(getString(R.string.json_key_photos));
+                photos = new GsonBuilder().create().fromJson(photosJson, Photos.class);
+                photoList.addAll(photos.getPhotoList());
+            }
 
             List<Long> remoteFlickrIdList = getFlickrIdList(photoList);
             List<Long> idsToAddIntoDb = new ArrayList<>();
@@ -86,12 +97,11 @@ public class FetchFlickrPhotosJob extends BaseFlickrJob {
         } else {
 
         }
-        // TODO: send FetchCompletedEvent
+        // TODO: maybe send FetchCompletedEvent?
     }
 
     private void fillDb(List<Photo> photoList, List<Long> idsToAddIntoDb)
             throws FlickrException, RemoteException, OperationApplicationException {
-        ContentResolver resolver = getApplicationContext().getContentResolver();
         ArrayList<ContentProviderOperation> operationList = new ArrayList<>();
         for (Photo photo : photoList) {
             if (idsToAddIntoDb.contains(photo.getFlickrId())) {
@@ -105,41 +115,60 @@ public class FetchFlickrPhotosJob extends BaseFlickrJob {
             }
         }
         if (!operationList.isEmpty()) {
+            ContentResolver resolver = getApplicationContext().getContentResolver();
             resolver.applyBatch(AUTHORITY, operationList);
         }
     }
 
-    private void clearDb(List<Long> idsToRemoveFromDB) throws RemoteException, OperationApplicationException {
-        ContentResolver resolver = getApplicationContext().getContentResolver();
-        ArrayList<ContentProviderOperation> operationList = new ArrayList<>();
-        for (Long id : idsToRemoveFromDB) {
-            operationList.add(ContentProviderOperation.newDelete(PHOTOS_CONTENT_URI)
-                    .withSelection(Photo.FLICKR_ID + "=?", new String[]{String.valueOf(id)})
-                    .build());
-        }
-        if (!operationList.isEmpty()) {
-            resolver.applyBatch(AUTHORITY, operationList);
-        }
+    private void clearDb(List<Long> idsToRemoveFromDB) {
+        Observable.from(idsToRemoveFromDB)
+                .map(id -> ContentProviderOperation.newDelete(PHOTOS_CONTENT_URI)
+                        .withSelection(Photo.FLICKR_ID + "=?", new String[]{String.valueOf(id)})
+                        .build())
+                .flatMap(Observable::just)
+                .toList()
+                .filter(operationList -> !operationList.isEmpty())
+                .subscribe(operationList -> {
+                    ContentResolver resolver = getApplicationContext().getContentResolver();
+                    try {
+                        resolver.applyBatch(AUTHORITY, new ArrayList<>(operationList));
+                    } catch (RemoteException | OperationApplicationException e) {
+                        Timber.e("DB's Error : %s", e.getMessage());
+                        e.printStackTrace();
+                    }
+                });
     }
 
     private List<Long> getFlickrIdList(Cursor photoCursor) {
         List<Long> idList = new ArrayList<>();
         if (photoCursor != null && photoCursor.moveToFirst()) {
-            do {
-                idList.add(photoCursor.getLong(photoCursor.getColumnIndex(Photo.FLICKR_ID)));
-            } while (photoCursor.moveToNext());
-        }
-        if (photoCursor != null && !photoCursor.isClosed()) {
-            photoCursor.close();
+            Observable.create(new Observable.OnSubscribe<Long>() {
+                @Override
+                public void call(Subscriber<? super Long> subscriber) {
+                    do {
+                        subscriber.onNext(photoCursor.getLong(photoCursor.getColumnIndex(Photo.FLICKR_ID)));
+                    } while (photoCursor.moveToNext());
+                    subscriber.onCompleted();
+                }
+            }).subscribe(
+                    idList::add,
+                    throwable -> {
+                        Timber.e("Cursor error: %s", throwable.getMessage());
+                        throwable.printStackTrace();
+                    },
+                    () -> {
+                        if (!photoCursor.isClosed()) {
+                            photoCursor.close();
+                        }
+                    });
+
         }
         return idList;
     }
 
     private List<Long> getFlickrIdList(List<Photo> photoList) {
         List<Long> idList = new ArrayList<>();
-        for (Photo photo : photoList) {
-            idList.add(photo.getFlickrId());
-        }
+        Observable.from(photoList).map(Photo::getFlickrId).subscribe(idList::add);
         return idList;
     }
 
@@ -210,6 +239,7 @@ public class FetchFlickrPhotosJob extends BaseFlickrJob {
         try {
             dateInMillis = dateFormat.parse(takenDate).getTime();
         } catch (ParseException e) {
+            Timber.e("Parsing error: %s", e.getMessage());
             e.printStackTrace();
         }
         return dateInMillis;

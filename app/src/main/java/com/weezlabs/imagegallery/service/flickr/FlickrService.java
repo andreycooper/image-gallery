@@ -60,19 +60,21 @@ public class FlickrService {
         return parseRawResponse(mApi.executeFlickrRequest(params));
     }
 
-    public JsonObject getUserPhotos() throws FlickrException {
+    public JsonObject getUserPhotos(int page) throws FlickrException {
         User user = mFlickrStorage.restoreFlickrUser();
-        return getUserPhotos(user);
+        return getUserPhotos(user, page);
     }
 
-    public JsonObject getUserPhotos(User user) throws FlickrException {
+    public JsonObject getUserPhotos(User user, int page) throws FlickrException {
         String userId = user != null ? user.getFlickrId() : "";
-        return getUserPhotos(userId);
+        return getUserPhotos(userId, page);
     }
 
-    public JsonObject getUserPhotos(String userId) throws FlickrException {
+    public JsonObject getUserPhotos(String userId, int page) throws FlickrException {
         Map<String, String> params = getParamsWithMethod(R.string.request_value_method_get_user_photos);
         params.put(getString(R.string.request_key_user_id), userId);
+        params.put(getString(R.string.request_key_per_page), getString(R.string.request_value_per_page));
+        params.put(getString(R.string.request_key_page), String.valueOf(page));
         return parseRawResponse(mApi.executeFlickrRequest(params));
     }
 
