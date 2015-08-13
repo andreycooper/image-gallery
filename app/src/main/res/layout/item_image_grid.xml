@@ -35,7 +35,7 @@
             android:padding="@dimen/item_grid_image_info_label_padding"
             android:singleLine="true"
             android:text="@string/label_image_date_sample"
-            android:textColor="@android:color/white"
+            android:textColor="@color/md_blue_grey_500"
             android:textSize="@dimen/item_grid_image_info_label_text_size"/>
 
         <TextView
@@ -45,7 +45,7 @@
             android:padding="@dimen/item_grid_image_info_label_padding"
             android:singleLine="true"
             android:text="@string/label_image_size_sample"
-            android:textColor="@android:color/white"
+            android:textColor="@color/md_blue_grey_500"
             android:textSize="@dimen/item_grid_image_info_label_text_size"/>
 
     </LinearLayout>

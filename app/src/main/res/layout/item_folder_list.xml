@@ -15,6 +15,7 @@
         android:id="@+id/folder_name_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/md_blue_grey_500"
         android:layout_marginLeft="@dimen/item_list_label_margin"
         android:padding="@dimen/item_list_label_padding"
         android:text="@string/label_folder_name_sample"

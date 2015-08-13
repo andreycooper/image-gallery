@@ -8,4 +8,5 @@
     android:layout_marginLeft="@dimen/item_section_margin_left"
     android:padding="@dimen/item_section_padding"
     android:text="@string/label_section_name_sample"
+    android:textColor="@color/md_blue_grey_500"
     android:textSize="@dimen/item_section_text_size"/>
