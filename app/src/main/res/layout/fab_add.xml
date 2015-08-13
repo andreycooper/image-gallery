@@ -6,9 +6,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom|end"
-    android:backgroundTint="@color/md_blue_500"
-    android:src="@drawable/ic_add_black_48dp"
+    android:layout_margin="@dimen/fab_compat_margin"
+    android:src="@drawable/ic_add_white_48dp"
+    app:backgroundTint="@color/md_blue_500"
     app:borderWidth="@dimen/fab_compat_margin"
     app:elevation="@dimen/fab_compat_elevation"
-    app:pressedTranslationZ="@dimen/fab_compat_translation_z"
-    app:rippleColor="@android:color/white"/>
+    app:pressedTranslationZ="@dimen/fab_compat_translation_z"/>
