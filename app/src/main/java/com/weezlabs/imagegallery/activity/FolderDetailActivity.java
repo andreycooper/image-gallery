@@ -2,6 +2,7 @@ package com.weezlabs.imagegallery.activity;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +27,7 @@ public class FolderDetailActivity extends BaseActivity {
         mBucket = extra.getParcelable(BaseFolderFragment.EXTRA_BUCKET);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ViewCompat.setElevation(toolbar, getResources().getDimension(R.dimen.toolbar_elevation));
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

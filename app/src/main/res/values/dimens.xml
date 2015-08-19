@@ -40,4 +40,6 @@
     <dimen name="fab_compat_margin">0dp</dimen>
     <dimen name="fab_compat_elevation">6dp</dimen>
     <dimen name="fab_compat_translation_z">12dp</dimen>
+
+    <dimen name="toolbar_elevation">8dp</dimen>
 </resources>
