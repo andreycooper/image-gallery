@@ -6,4 +6,7 @@
 
     <integer name="preview_image_tile_dpi">160</integer>
     <integer name="undo_duration">2000</integer>
+
+    <integer name="slide_animation_duration">400</integer>
+    <integer name="push_animation_duration">400</integer>
 </resources>

@@ -55,7 +55,7 @@ public class ImageListFragment extends BaseImageFragment {
             Intent intent = new Intent(getActivity(), PreviewActivity.class);
             intent.putExtra(PreviewActivity.EXTRA_IMAGE_POSITION, cursorPosition);
             intent.putExtra(PreviewActivity.EXTRA_BUCKET_ID, image.getBucketId());
-            getActivity().startActivity(intent);
+            return intent;
         }
         return null;
     }

@@ -105,6 +105,12 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
     }
 
     @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
+    }
+
+    @Override
     protected void onDestroy() {
         mToolbarController.destroy();
         mCursorProvider.onDestroy();

@@ -8,12 +8,15 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.activity.FolderDetailActivity;
 import com.weezlabs.imagegallery.model.local.Bucket;
 import com.weezlabs.imagegallery.view.adapter.FolderAdapter;
@@ -101,7 +104,11 @@ public abstract class BaseFolderFragment extends Fragment
             Log.i(LOG_TAG, "click in FolderAdapter, position: " + position + " id: " + id);
 
             Bucket bucket = mFolderAdapter.getBucket(position);
-            startActivity(getFolderDetailIntent(bucket));
+            Intent folderDetailIntent = getFolderDetailIntent(bucket);
+            Bundle options = ActivityOptionsCompat
+                    .makeCustomAnimation(getActivity(), R.anim.slide_right_in, R.anim.slide_right_out)
+                    .toBundle();
+            ActivityCompat.startActivity(getActivity(), folderDetailIntent, options);
 
         }
     }

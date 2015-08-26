@@ -11,6 +11,8 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -118,7 +120,10 @@ public abstract class BaseImageFragment extends Fragment
             Intent intent = getPreviewIntent(parent, view, position, id);
             if (intent != null) {
                 Glide.get(getActivity().getApplicationContext()).clearMemory();
-                startActivity(intent);
+                Bundle options = ActivityOptionsCompat
+                        .makeCustomAnimation(getActivity(), R.anim.push_down_in, R.anim.push_down_out)
+                        .toBundle();
+                ActivityCompat.startActivity(getActivity(), intent, options);
             }
         }
     }
