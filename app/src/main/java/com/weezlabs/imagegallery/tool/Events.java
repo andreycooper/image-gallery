@@ -28,4 +28,8 @@ public final class Events {
     public static final class LoadFlickrPhotosEvent {
 
     }
+
+    public static final class LoadThumbnailEvent {
+
+    }
 }

@@ -13,6 +13,7 @@ import com.weezlabs.imagegallery.fragment.folder.FolderListFragment;
 import com.weezlabs.imagegallery.fragment.image.ImageGridFragment;
 import com.weezlabs.imagegallery.fragment.image.ImageListFragment;
 import com.weezlabs.imagegallery.fragment.image.ImageStaggeredFragment;
+import com.weezlabs.imagegallery.job.FetchFlickrPhotosJob;
 import com.weezlabs.imagegallery.model.local.Bucket;
 
 public class FolderDetailActivity extends BaseActivity {
@@ -37,6 +38,14 @@ public class FolderDetailActivity extends BaseActivity {
 
         ViewMode viewMode = mViewModeStorage.getViewMode();
         setupModeFragment(viewMode);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mBucket != null && mBucket.getBucketId() == Bucket.FLICKR_BUCKET_ID) {
+            mJobManager.addJobInBackground(new FetchFlickrPhotosJob(mFlickrStorage, mFlickrService));
+        }
     }
 
     @Override

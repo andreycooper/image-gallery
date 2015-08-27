@@ -1,14 +1,11 @@
 package com.weezlabs.imagegallery.job;
 
-import android.util.Log;
-
 import com.google.gson.JsonObject;
 import com.path.android.jobqueue.Params;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.model.flickr.User;
 import com.weezlabs.imagegallery.service.flickr.FlickrService;
 import com.weezlabs.imagegallery.storage.FlickrStorage;
-import com.weezlabs.imagegallery.tool.Events;
 import com.weezlabs.imagegallery.tool.Events.UserLogonEvent;
 
 import de.greenrobot.event.EventBus;
@@ -16,7 +13,6 @@ import de.greenrobot.event.EventBus;
 
 public class LoginFlickrUserJob extends BaseFlickrJob {
 
-    public static final String LOG_TAG = "LOGIN";
     public static final String GROUP_ID = "login-user";
 
     public LoginFlickrUserJob(FlickrStorage flickrStorage, FlickrService flickrService) {
@@ -41,7 +37,6 @@ public class LoginFlickrUserJob extends BaseFlickrJob {
         User user = parseUserInfo(userId, username, personJson);
         getFlickrStorage().saveUser(user);
 
-        Log.i(LOG_TAG, user.toString());
         EventBus.getDefault().postSticky(new UserLogonEvent());
     }
 

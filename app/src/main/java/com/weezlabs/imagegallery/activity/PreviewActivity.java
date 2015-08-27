@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.activity.controller.PreviewToolbarController;
 import com.weezlabs.imagegallery.tool.Events.ChangeTitleEvent;
+import com.weezlabs.imagegallery.tool.Events.LoadThumbnailEvent;
 import com.weezlabs.imagegallery.tool.Events.ToolbarVisibilityEvent;
 import com.weezlabs.imagegallery.tool.ImageCursorProvider;
 import com.weezlabs.imagegallery.tool.ImageCursorReceiver;
@@ -144,6 +145,11 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
     public void onEvent(ToolbarVisibilityEvent event) {
         mIsFullscreen = !mIsFullscreen;
         mToolbarController.setFullscreen(mIsFullscreen);
+    }
+
+    @SuppressWarnings("unused")
+    public void onEvent(LoadThumbnailEvent event) {
+        mImagePosition = mPager.getCurrentItem();
     }
 
 }

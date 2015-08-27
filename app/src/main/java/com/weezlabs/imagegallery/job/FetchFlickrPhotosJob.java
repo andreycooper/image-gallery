@@ -37,7 +37,6 @@ import static com.weezlabs.imagegallery.db.FlickrContentProvider.PHOTOS_CONTENT_
 public class FetchFlickrPhotosJob extends BaseFlickrJob {
     private static final AtomicInteger sJobCounter = new AtomicInteger(0);
     public static final String GROUP_ID = "fetch-photos";
-    public static final String LOG_TAG = "FETCH_PHOTO";
     public static final int MILLIS = 1000;
 
     private final int mJobId;
@@ -95,7 +94,7 @@ public class FetchFlickrPhotosJob extends BaseFlickrJob {
             fillDb(photoList, idsToAddIntoDb);
 
         } else {
-
+            Timber.e("User is null!");
         }
         // TODO: maybe send FetchCompletedEvent?
     }

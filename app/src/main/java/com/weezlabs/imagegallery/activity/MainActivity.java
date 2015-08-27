@@ -22,7 +22,6 @@ import de.greenrobot.event.EventBus;
 
 
 public class MainActivity extends BaseActivity {
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private NavigationDrawerController mDrawerController;
 
@@ -47,7 +46,6 @@ public class MainActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().registerSticky(this);
-        // TODO: create abstract method setupUi() in base activity
         // show correct fragment also correct states of drawer and menu
         ViewMode viewMode = mViewModeStorage.getViewMode();
         setupModeFragment(viewMode);
@@ -97,7 +95,6 @@ public class MainActivity extends BaseActivity {
         if (NetworkUtils.isOnline(this)) {
             User user = mFlickrStorage.restoreFlickrUser();
             if (user != null) {
-                mJobManager.addJobInBackground(new FetchFlickrPhotosJob(mFlickrStorage, mFlickrService));
                 Intent intent = new Intent(this, FolderDetailActivity.class);
                 intent.putExtra(BaseFolderFragment.EXTRA_BUCKET, ImageFactory.buildFlickrBucket(this));
                 startActivity(intent);

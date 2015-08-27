@@ -39,6 +39,7 @@ import oauth.signpost.exception.OAuthNotAuthorizedException;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 

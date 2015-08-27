@@ -67,7 +67,7 @@ public final class FileUtils {
         byte[] buffer = new byte[1024];
         ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-        int line = 0;
+        int line;
         // read bytes from stream, and store them in buffer
         while ((line = stream.read(buffer)) != -1) {
             // Writes bytes from byte array (buffer) into output stream.
