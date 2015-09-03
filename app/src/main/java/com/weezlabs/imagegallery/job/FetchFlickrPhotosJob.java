@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.os.RemoteException;
 
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.path.android.jobqueue.Params;
 import com.weezlabs.imagegallery.R;
@@ -19,6 +18,7 @@ import com.weezlabs.imagegallery.model.flickr.User;
 import com.weezlabs.imagegallery.service.flickr.FlickrException;
 import com.weezlabs.imagegallery.service.flickr.FlickrService;
 import com.weezlabs.imagegallery.storage.FlickrStorage;
+import com.weezlabs.imagegallery.tool.Events.FetchCompletedEvent;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import de.greenrobot.event.EventBus;
 import rx.Observable;
 import rx.Subscriber;
 import timber.log.Timber;
@@ -67,8 +68,8 @@ public class FetchFlickrPhotosJob extends BaseFlickrJob {
             Cursor cursor = resolver.query(PHOTOS_CONTENT_URI, new String[]{Photo.FLICKR_ID},
                     null, null, null);
             List<Long> localFlickrIdList = getFlickrIdList(cursor);
-            List<Long> idsToRemoveFromDB = new ArrayList<>();
-            idsToRemoveFromDB.addAll(localFlickrIdList);
+            List<Long> removeFromDbIdList = new ArrayList<>();
+            removeFromDbIdList.addAll(localFlickrIdList);
 
             int page = 1;
             JsonObject photosJson = getFlickrService().getUserPhotos(page)
@@ -84,39 +85,57 @@ public class FetchFlickrPhotosJob extends BaseFlickrJob {
             }
 
             List<Long> remoteFlickrIdList = getFlickrIdList(photoList);
-            List<Long> idsToAddIntoDb = new ArrayList<>();
-            idsToAddIntoDb.addAll(remoteFlickrIdList);
+            List<Long> addIntoDbIdList = new ArrayList<>();
+            addIntoDbIdList.addAll(remoteFlickrIdList);
 
-            idsToRemoveFromDB.removeAll(remoteFlickrIdList);
-            idsToAddIntoDb.removeAll(localFlickrIdList);
+            removeFromDbIdList.removeAll(remoteFlickrIdList);
+            addIntoDbIdList.removeAll(localFlickrIdList);
 
-            clearDb(idsToRemoveFromDB);
-            fillDb(photoList, idsToAddIntoDb);
-
+            clearDb(removeFromDbIdList);
+            fillDb(photoList, addIntoDbIdList);
+            EventBus.getDefault().post(new FetchCompletedEvent(true));
         } else {
             Timber.e("User is null!");
+            EventBus.getDefault().post(new FetchCompletedEvent(false));
         }
-        // TODO: maybe send FetchCompletedEvent?
     }
 
-    private void fillDb(List<Photo> photoList, List<Long> idsToAddIntoDb)
-            throws FlickrException, RemoteException, OperationApplicationException {
-        ArrayList<ContentProviderOperation> operationList = new ArrayList<>();
-        for (Photo photo : photoList) {
-            if (idsToAddIntoDb.contains(photo.getFlickrId())) {
-                JsonObject photoInfoJson = getFlickrService().getPhotoInfo(photo)
-                        .getAsJsonObject(getString(R.string.json_key_photo));
-                photo = parsePhotoInfo(photo, photoInfoJson);
-                JsonObject photoSizesJson = getFlickrService().getPhotoSizes(photo)
-                        .getAsJsonObject(getString(R.string.json_key_sizes));
-                photo = parsePhotoSize(photo, photoSizesJson);
-                operationList.add(getInsertPhotoOperation(photo));
-            }
-        }
-        if (!operationList.isEmpty()) {
-            ContentResolver resolver = getApplicationContext().getContentResolver();
-            resolver.applyBatch(AUTHORITY, operationList);
-        }
+    private void fillDb(List<Photo> photoList, List<Long> idsToAddIntoDb) {
+        Observable.from(photoList)
+                .filter(photo -> idsToAddIntoDb.contains(photo.getFlickrId()))
+                .flatMap(photo -> {
+                    JsonObject photoInfoJson;
+                    try {
+                        photoInfoJson = getFlickrService().getPhotoInfo(photo)
+                                .getAsJsonObject(getString(R.string.json_key_photo));
+                    } catch (FlickrException e) {
+                        return Observable.error(e);
+                    }
+                    photo = parsePhotoInfo(photo, photoInfoJson);
+                    JsonObject photoSizesJson;
+                    try {
+                        photoSizesJson = getFlickrService().getPhotoSizes(photo)
+                                .getAsJsonObject(getString(R.string.json_key_sizes));
+                    } catch (FlickrException e) {
+                        return Observable.error(e);
+                    }
+                    photo = parsePhotoSize(photo, photoSizesJson);
+                    return Observable.just(getInsertPhotoOperation(photo));
+                })
+                .toList()
+                .filter(providerOperations -> !providerOperations.isEmpty())
+                .subscribe(contentProviderOperations -> {
+                    ContentResolver resolver = getApplicationContext().getContentResolver();
+                    try {
+                        resolver.applyBatch(AUTHORITY, new ArrayList<>(contentProviderOperations));
+                    } catch (RemoteException | OperationApplicationException e) {
+                        Timber.e("Error with insert photos to DB: %s", e.getMessage());
+                        e.printStackTrace();
+                    }
+                }, throwable -> {
+                    Timber.e("Flickr exception: %s", throwable.getMessage());
+                    shouldReRunOnThrowable(throwable, getCurrentRunCount(), getRetryLimit());
+                });
     }
 
     private void clearDb(List<Long> idsToRemoveFromDB) {
@@ -195,18 +214,17 @@ public class FetchFlickrPhotosJob extends BaseFlickrJob {
     }
 
     private Photo parsePhotoSize(Photo photo, JsonObject photoSizesJson) {
-        JsonArray jsonArray = photoSizesJson.getAsJsonArray(getString(R.string.json_key_size));
-        JsonObject size;
-        String label;
-        for (int i = jsonArray.size() - 1; i >= 0; i++) {
-            size = jsonArray.get(i).getAsJsonObject();
-            label = size.get(getString(R.string.json_key_size_label)).getAsString();
-            if (label.equals(getString(R.string.json_value_size_original))) {
-                photo.setWidth(size.get(getString(R.string.json_key_size_width)).getAsInt());
-                photo.setHeight(size.get(getString(R.string.json_key_size_height)).getAsInt());
-                break;
-            }
-        }
+        Observable.from(photoSizesJson.getAsJsonArray(getString(R.string.json_key_size)))
+                .filter(jsonElement -> {
+                    String label = jsonElement.getAsJsonObject()
+                            .get(getString(R.string.json_key_size_label)).getAsString();
+                    return label.equals(getString(R.string.json_value_size_original));
+                })
+                .subscribe(jsonElement -> {
+                    JsonObject originalSize = jsonElement.getAsJsonObject();
+                    photo.setWidth(originalSize.get(getString(R.string.json_key_size_width)).getAsInt());
+                    photo.setHeight(originalSize.get(getString(R.string.json_key_size_height)).getAsInt());
+                });
         return photo;
     }
 
@@ -246,7 +264,7 @@ public class FetchFlickrPhotosJob extends BaseFlickrJob {
 
     @Override
     protected void onCancel() {
-
+        EventBus.getDefault().post(new FetchCompletedEvent(false));
     }
 
 }

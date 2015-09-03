@@ -17,6 +17,10 @@
         app:column_count="@integer/item_staggered_columns_number"
         app:item_margin="@dimen/item_staggered_item_margin"/>
 
+    <include layout="@layout/text_empty_flickr"/>
+
+    <include layout="@layout/progress_fetch_photos"/>
+
     <include layout="@layout/fab_add"/>
 
 </FrameLayout>

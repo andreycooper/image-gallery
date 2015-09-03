@@ -94,6 +94,7 @@ public class SectionListImageAdapter
         Glide.with(context)
                 .load(image.getPath())
                 .placeholder(R.drawable.ic_image_placeholder_48dp)
+                .error(R.mipmap.ic_error)
                 .centerCrop()
                 .crossFade()
                 .into(imageView);

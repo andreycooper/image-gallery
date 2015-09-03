@@ -51,7 +51,7 @@ public class ImageGridFragment extends BaseImageFragment {
 
     @Override
     protected Intent getPreviewIntent(AdapterView<?> parent, View view, int position, long id) {
-        Timber.d("click in SectionListImageAdapter, position: %s, %s", position, id);
+        Timber.d("click in ImageAdapter, position: %s, %s", position, id);
 
         Image image = ((ImageAdapter) mImageAdapter).getImage(position);
         Intent intent = new Intent(getActivity(), PreviewActivity.class);

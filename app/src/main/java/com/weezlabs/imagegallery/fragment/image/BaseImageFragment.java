@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -19,11 +20,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.weezlabs.imagegallery.R;
 import com.weezlabs.imagegallery.activity.FolderDetailActivity;
 import com.weezlabs.imagegallery.model.local.Bucket;
+import com.weezlabs.imagegallery.tool.Events;
 import com.weezlabs.imagegallery.tool.ImageCursorProvider;
 import com.weezlabs.imagegallery.tool.ImageCursorReceiver;
 import com.weezlabs.imagegallery.tool.LoaderManagerProvider;
@@ -31,6 +35,9 @@ import com.weezlabs.imagegallery.util.FileUtils;
 import com.weezlabs.imagegallery.util.TextUtils;
 
 import java.io.File;
+
+import de.greenrobot.event.EventBus;
+import me.zhanghai.android.materialprogressbar.IndeterminateProgressDrawable;
 
 
 public abstract class BaseImageFragment extends Fragment
@@ -47,6 +54,8 @@ public abstract class BaseImageFragment extends Fragment
     private ImageCursorProvider mImageCursorProvider;
     private long mBucketId;
     private Uri mOutputPictureUri;
+    private ProgressBar mProgressBar;
+    private TextView mEmptyFlickText;
 
     protected void loadImages() {
         Bundle args = getArguments();
@@ -70,12 +79,47 @@ public abstract class BaseImageFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = getRootView(inflater, container);
+
+        mProgressBar = (ProgressBar) rootView.findViewById(R.id.fetch_photos_progress);
+        setupProgressBar(mProgressBar);
+
+        mEmptyFlickText = (TextView) rootView.findViewById(R.id.empty_flickr_list_text);
+
+        if (mListView != null) {
+            mListView.setEmptyView(mProgressBar);
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         fab.setOnClickListener(new OnFabClickListener());
         if (mBucketId == Bucket.FLICKR_BUCKET_ID) {
             fab.setVisibility(View.GONE);
         }
+
         return rootView;
+    }
+
+    private void setupProgressBar(ProgressBar progressBar) {
+        IndeterminateProgressDrawable progressDrawable = new IndeterminateProgressDrawable(getActivity());
+        int progressColor = getResources().getColor(R.color.material_drawer_primary_dark);
+        progressDrawable.setColorFilter(progressColor, PorterDuff.Mode.SRC_IN);
+        progressBar.setIndeterminateDrawable(progressDrawable);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mBucketId == Bucket.FLICKR_BUCKET_ID && !EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        if (mBucketId == Bucket.FLICKR_BUCKET_ID && EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
+        super.onStop();
     }
 
     @Override
@@ -106,6 +150,15 @@ public abstract class BaseImageFragment extends Fragment
                 requestCode == REQUEST_CAMERA_CODE) {
             getActivity().sendBroadcast(
                     new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, mOutputPictureUri));
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public void onEventMainThread(Events.FetchCompletedEvent event) {
+        if (event.isSuccess() && mImageAdapter.isEmpty()) {
+            mProgressBar.setVisibility(View.GONE);
+            mListView.setEmptyView(mEmptyFlickText);
+            mEmptyFlickText.setVisibility(View.VISIBLE);
         }
     }
 

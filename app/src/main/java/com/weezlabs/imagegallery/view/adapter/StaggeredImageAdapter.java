@@ -27,8 +27,7 @@ public class StaggeredImageAdapter extends ImageAdapter {
         if (image.getHeight() == 0 || image.getWidth() == 0) {
             // if MediaStore contains incorrect dimension values then try to update
             if (image instanceof LocalImage) {
-                Uri uri = Uri.parse(FileUtils.FILE_SCHEME + image.getPath());
-                context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+                updateLocalImage(context, image);
             }
             dynamicHeightImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         } else {
@@ -38,9 +37,18 @@ public class StaggeredImageAdapter extends ImageAdapter {
         Glide.with(context)
                 .load(image.getPath())
                 .placeholder(R.drawable.ic_image_placeholder_48dp)
+                .error(R.mipmap.ic_error)
                 .centerCrop()
                 .fitCenter()
                 .crossFade()
                 .into(dynamicHeightImageView);
+    }
+
+    private void updateLocalImage(Context context, Image image) {
+        String filePath = FileUtils.FILE_SCHEME + image.getPath();
+        if (FileUtils.isFileExist(filePath)) {
+            Uri uri = Uri.parse(filePath);
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+        }
     }
 }

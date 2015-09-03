@@ -37,6 +37,7 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
     private ImagePagerAdapter mAdapter;
     private ViewPager mPager;
     private ImageCursorProvider mCursorProvider;
+    private long mBucketId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +45,7 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
         setContentView(R.layout.activity_preview);
 
         mImagePosition = getIntent().getIntExtra(EXTRA_IMAGE_POSITION, 0);
-        long bucketId = getIntent().getLongExtra(EXTRA_BUCKET_ID, INCORRECT_ID);
+        mBucketId = getIntent().getLongExtra(EXTRA_BUCKET_ID, INCORRECT_ID);
 
         mCursorProvider = new ImageCursorProvider(this, this);
 
@@ -57,7 +58,7 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
         mToolbarController = new PreviewToolbarController(this);
         mToolbarController.create();
 
-        mCursorProvider.loadImagesCursor(bucketId);
+        mCursorProvider.loadImagesCursor(mBucketId);
     }
 
     @Override
@@ -71,6 +72,7 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
         int currentPosition = savedInstanceState.getInt(EXTRA_IMAGE_POSITION, -1);
         if (currentPosition != -1) {
             mImagePosition = currentPosition;
+            mPager.setCurrentItem(mImagePosition);
         }
         super.onRestoreInstanceState(savedInstanceState);
     }
@@ -79,6 +81,19 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+        // Use this code and remove a ImageCursorProvider if you decide
+//        Observable.just(getContentResolver())
+//                .map(contentResolver -> contentResolver
+//                        .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+//                                null, MediaStore.Images.Media.BUCKET_ID + "=?",
+//                                new String[]{String.valueOf(mBucketId)},
+//                                MediaStore.Images.Media.DATE_ADDED + " DESC"))
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(cursor -> {
+//                    mAdapter.changeCursor(cursor);
+//                    mPager.setCurrentItem(mImagePosition, false);
+//                });
     }
 
     @Override
@@ -149,7 +164,9 @@ public class PreviewActivity extends AppCompatActivity implements ImageCursorRec
 
     @SuppressWarnings("unused")
     public void onEvent(LoadThumbnailEvent event) {
-        mImagePosition = mPager.getCurrentItem();
+        if (mPager.getCurrentItem() > 0) {
+            mImagePosition = mPager.getCurrentItem();
+        }
     }
 
 }

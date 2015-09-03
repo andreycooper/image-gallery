@@ -17,6 +17,10 @@
         android:overScrollMode="never"
         android:scrollbars="none"/>
 
+    <include layout="@layout/text_empty_flickr"/>
+
+    <include layout="@layout/progress_fetch_photos"/>
+
     <include layout="@layout/fab_add"/>
 
 </FrameLayout>

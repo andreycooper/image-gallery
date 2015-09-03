@@ -29,6 +29,17 @@ public final class Events {
 
     }
 
+    public static final class FetchCompletedEvent {
+        private boolean mIsSuccess;
+        public FetchCompletedEvent(Boolean isSuccess){
+            mIsSuccess = isSuccess;
+        }
+
+        public boolean isSuccess() {
+            return mIsSuccess;
+        }
+    }
+
     public static final class LoadThumbnailEvent {
 
     }

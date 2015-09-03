@@ -3,6 +3,7 @@ package com.weezlabs.imagegallery.activity.controller;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
@@ -10,10 +11,10 @@ import android.support.v7.widget.Toolbar;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
-import com.mikepenz.materialdrawer.accountswitcher.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
@@ -44,6 +45,7 @@ public final class NavigationDrawerController {
     private static final int ADD_ACCOUNT_ID = 20;
     private static final int DELETE_ACCOUNT_ID = 30;
     private static final int FLICKR_PHOTOS_ID = 40;
+    private static final int EMPTY_ACCOUNT_ID = 50;
 
     private Context mAppContext;
     private ViewModeStorage mViewModeStorage;
@@ -73,6 +75,19 @@ public final class NavigationDrawerController {
     public void refillAccountHeader() {
         mAccountHeader.clear();
         mAccountHeader.setProfiles(getProfileList());
+        setActiveProfile();
+    }
+
+    private void setActiveProfile() {
+        User user = mFlickrStorage.restoreFlickrUser();
+        if (user == null) {
+            mAccountHeader.setActiveProfile(new ProfileDrawerItem()
+                    .withName(getString(R.string.label_account_header_add_account))
+                    .withEmail(getString(R.string.label_account_header_add_account_description))
+                    .withIcon(new IconicsDrawable(mAppContext, GoogleMaterial.Icon.gmd_account_circle)
+                            .color(Color.GRAY))
+                    .withIdentifier(EMPTY_ACCOUNT_ID));
+        }
     }
 
     private void setAppContext(Context appContext) {
@@ -114,8 +129,8 @@ public final class NavigationDrawerController {
             profiles.add(new ProfileSettingDrawerItem()
                     .withName(getString(R.string.label_account_header_add_account))
                     .withDescription(getString(R.string.label_account_header_add_account_description))
-                    .withIcon(new IconicsDrawable(mAppContext, GoogleMaterial.Icon.gmd_add)
-                            .actionBar())
+                    .withIcon(new IconicsDrawable(mAppContext, GoogleMaterial.Icon.gmd_add).actionBar())
+                    .withIconTinted(true)
                     .withIdentifier(ADD_ACCOUNT_ID));
         }
         return profiles;
@@ -131,8 +146,8 @@ public final class NavigationDrawerController {
                     .withIdentifier(CURRENT_ACCOUNT_ID));
             userProfiles.add(new ProfileSettingDrawerItem()
                     .withName(getString(R.string.label_account_header_delete_account))
-                    .withIcon(new IconicsDrawable(mAppContext, GoogleMaterial.Icon.gmd_delete)
-                            .actionBar())
+                    .withIcon(new IconicsDrawable(mAppContext, GoogleMaterial.Icon.gmd_delete).actionBar())
+                    .withIconTinted(true)
                     .withIcon(GoogleMaterial.Icon.gmd_settings)
                     .withIdentifier(DELETE_ACCOUNT_ID));
         }
@@ -182,6 +197,7 @@ public final class NavigationDrawerController {
             mDrawer = getDrawer(mAccountHeader);
             mController.setAccountHeader(mAccountHeader);
             mController.setDrawer(mDrawer);
+            mController.setActiveProfile();
             return mController;
         }
 
@@ -196,6 +212,9 @@ public final class NavigationDrawerController {
                         if (profile != null) {
                             switch (profile.getIdentifier()) {
                                 case ADD_ACCOUNT_ID:
+                                    startFlickrLogin();
+                                    break;
+                                case EMPTY_ACCOUNT_ID:
                                     startFlickrLogin();
                                     break;
                                 case CURRENT_ACCOUNT_ID:
@@ -246,7 +265,7 @@ public final class NavigationDrawerController {
                         mActivity.onBackPressed();
                         return true;
                     })
-                    .withOnDrawerItemClickListener((adapterView, view, position, l, drawerItem) -> {
+                    .withOnDrawerItemClickListener((view, i, drawerItem) -> {
                         if (drawerItem != null) {
                             if (isViewModeDrawerItem(drawerItem)) {
                                 mActivity.changeViewMode(drawerItem.getIdentifier());

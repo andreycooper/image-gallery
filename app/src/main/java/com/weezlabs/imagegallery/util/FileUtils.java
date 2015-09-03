@@ -44,6 +44,16 @@ public final class FileUtils {
         return new File(filePath).getParent();
     }
 
+    public static boolean isFileExist(String filePath) {
+        File file;
+        if (filePath.startsWith(FILE_SCHEME)) {
+            file = new File(filePath);
+        } else {
+            file = new File(FILE_SCHEME + filePath);
+        }
+        return file.exists() && file.length() > 0;
+    }
+
     public static boolean isGifFile(String filePath) {
         String mimeType = getMimeType(filePath);
         return !android.text.TextUtils.isEmpty(mimeType) && mimeType.startsWith(IMAGE_TYPE_GIF);

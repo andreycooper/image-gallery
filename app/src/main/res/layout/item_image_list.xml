@@ -23,7 +23,6 @@
         android:textColor="@color/md_blue_grey_500"
         android:textSize="@dimen/item_list_label_text_size"/>
 
-    <!-- TODO: insert TextViews into LinearLayout -->
     <LinearLayout
         android:id="@+id/info_layout"
         android:layout_width="wrap_content"

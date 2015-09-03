@@ -27,6 +27,7 @@
     <string name="format_date_year">, yyyy</string>
 
     <string name="toast_error_login">Error: %1$s</string>
+    <string name="toast_error_load_image">Can\'t load local image!</string>
     <string name="toast_internet_check">Check internet connection!</string>
     <string name="toast_flickr_login_need">Please add Flickr account!</string>
     <string name="toast_flickr_failure">Error: %1$s</string>
@@ -35,5 +36,6 @@
 
     <string name="flickr_time_format">"yyyy-MM-dd HH:mm:ss"</string>
     <string name="flickr_bucket_name">Flickr Photos</string>
+    <string name="flickr_empty_flickr_list">No photos in current flickr account!</string>
 
 </resources>

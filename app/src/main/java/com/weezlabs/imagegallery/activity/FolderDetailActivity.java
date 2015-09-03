@@ -43,7 +43,7 @@ public class FolderDetailActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (mBucket != null && mBucket.getBucketId() == Bucket.FLICKR_BUCKET_ID) {
+        if (isFlickrFolder()) {
             mJobManager.addJobInBackground(new FetchFlickrPhotosJob(mFlickrStorage, mFlickrService));
         }
     }
@@ -98,4 +98,9 @@ public class FolderDetailActivity extends BaseActivity {
         super.finish();
         overridePendingTransition(R.anim.slide_left_in, R.anim.slide_left_out);
     }
+
+    private boolean isFlickrFolder() {
+        return mBucket != null && mBucket.getBucketId() == Bucket.FLICKR_BUCKET_ID;
+    }
+
 }
