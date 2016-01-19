@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="item_grid_columns_number">3</integer>
+    <integer name="item_staggered_columns_number">2</integer>
+    <integer name="webview_progress_max">100</integer>
+
+    <integer name="preview_image_tile_dpi">160</integer>
+    <integer name="undo_duration">2000</integer>
+
+    <integer name="slide_animation_duration">400</integer>
+    <integer name="push_animation_duration">400</integer>
+</resources>

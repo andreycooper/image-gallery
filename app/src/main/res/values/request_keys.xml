@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="request_key_format">format</string>
+    <string name="request_key_no_json_callback">nojsoncallback</string>
+    <string name="request_key_method">method</string>
+    <string name="request_key_photo_id">photo_id</string>
+    <string name="request_key_user_id">user_id</string>
+    <string name="request_key_per_page">per_page</string>
+    <string name="request_key_page">page</string>
+</resources>

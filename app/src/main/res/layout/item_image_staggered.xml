@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+    <com.etsy.android.grid.util.DynamicHeightImageView
+        android:id="@+id/image_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:src="@mipmap/ic_gallery"/>
+
+    <TextView
+        android:id="@+id/image_name_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:background="@color/item_staggered_label_background_color"
+        android:gravity="center_horizontal"
+        android:singleLine="true"
+        android:padding="@dimen/item_staggered_label_text_padding"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/item_staggered_label_text_size"/>
+
+    <LinearLayout
+        android:id="@+id/info_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/item_grid_label_background_color"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/image_date_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/item_staggered_image_info_label_text_padding"
+            android:singleLine="true"
+            android:text="@string/label_image_date_sample"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/item_staggered_image_info_label_text_size"/>
+
+        <TextView
+            android:id="@+id/image_size_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/item_staggered_image_info_label_text_padding"
+            android:singleLine="true"
+            android:text="@string/label_image_size_sample"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/item_staggered_image_info_label_text_size"/>
+
+    </LinearLayout>
+
+</FrameLayout>

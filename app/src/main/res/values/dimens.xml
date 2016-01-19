@@ -1,5 +1,45 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="activity_horizontal_margin">1dp</dimen>
+    <dimen name="activity_vertical_margin">1dp</dimen>
+
+    <dimen name="folder_view_image_padding">2dp</dimen>
+    <dimen name="folder_view_label_padding">2dp</dimen>
+    <dimen name="folder_view_label_text_size">12sp</dimen>
+
+
+    <dimen name="item_list_padding">10dp</dimen>
+    <dimen name="item_list_folder_view_size">110dp</dimen>
+    <dimen name="item_list_label_padding">10dp</dimen>
+    <dimen name="item_list_label_text_size">18sp</dimen>
+    <dimen name="item_list_label_margin">12dp</dimen>
+
+    <dimen name="item_list_image_size">110dp</dimen>
+    <dimen name="item_list_image_label_padding">2dp</dimen>
+    <dimen name="item_list_image_info_label_text_size">12sp</dimen>
+
+    <dimen name="item_grid_spacing">1dp</dimen>
+    <dimen name="item_grid_label_text_size">18sp</dimen>
+    <dimen name="item_grid_label_text_padding">2dp</dimen>
+
+    <dimen name="item_grid_image_info_label_padding">1dp</dimen>
+    <dimen name="item_grid_image_info_label_text_size">12sp</dimen>
+
+    <dimen name="item_staggered_item_margin">1dp</dimen>
+    <dimen name="item_staggered_label_text_size">18sp</dimen>
+    <dimen name="item_staggered_label_text_padding">2dp</dimen>
+
+    <dimen name="item_staggered_image_info_label_text_padding">2dp</dimen>
+    <dimen name="item_staggered_image_info_label_text_size">12sp</dimen>
+
+    <dimen name="item_section_padding">12dp</dimen>
+    <dimen name="item_section_margin_left">16dp</dimen>
+    <dimen name="item_section_text_size">16sp</dimen>
+
+    <dimen name="webview_progress_min_height">3dp</dimen>
+    <dimen name="fab_compat_margin">0dp</dimen>
+    <dimen name="fab_compat_elevation">6dp</dimen>
+    <dimen name="fab_compat_translation_z">12dp</dimen>
+
+    <dimen name="toolbar_elevation">8dp</dimen>
 </resources>

@@ -1,25 +1,76 @@
 apply plugin: 'com.android.application'
+// This does not break the build when Android Studio is missing the JRebel for Android plugin.
+apply plugin: 'com.zeroturnaround.jrebel.android'
+apply plugin: 'com.ofg.uptodate'
+apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'com.getkeepsafe.dexcount'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.0"
 
     defaultConfig {
         applicationId "com.weezlabs.imagegallery"
-        minSdkVersion 15
-        targetSdkVersion 22
+        minSdkVersion 16
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.android.support:appcompat-v7:23.0.0'
+
+    compile 'io.reactivex:rxjava:1.0.14'
+    compile 'io.reactivex:rxandroid:1.0.1'
+    compile 'com.birbit:android-priority-jobqueue:1.3.3'
+    compile 'de.greenrobot:eventbus:2.4.0'
+    compile 'com.github.bumptech.glide:glide:3.6.1'
+    compile 'com.github.bumptech.glide:okhttp-integration:1.3.1'
+    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.squareup.okio:okio:1.6.0'
+
+    compile 'com.google.dagger:dagger:2.0.1'
+    apt "com.google.dagger:dagger-compiler:2.0.1"
+    // Needed specifically for annotations in Java 1.6
+    provided 'org.glassfish:javax.annotation:10.0-b28'
+
+    // Network libs
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.5.0'
+    compile 'com.squareup.retrofit:retrofit:1.9.0'
+    compile 'oauth.signpost:signpost-core:1.2.1.2'
+
+    // Debug libs
+    compile 'com.jakewharton.timber:timber:3.1.0'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3.1'
+
+    // UI libs
+    compile 'com.android.support:design:23.0.0'
+    compile 'com.github.d-max:spots-dialog:0.4@aar'
+    compile 'com.twotoasters.SectionCursorAdapter:library:2.0.1'
+    compile 'com.tonicartos:stickygridheaders:1.0.1'
+    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.2.0'
+    compile 'com.etsy.android.grid:library:1.0.5'
+    compile('com.mikepenz:materialdrawer:4.0.5@aar') {
+        transitive = true
+    }
+    compile('com.mikepenz:google-material-typeface:1.2.0.1') {
+        transitive = false
+    }
+    compile 'me.zhanghai.android.materialprogressbar:library:1.0.2'
 }
